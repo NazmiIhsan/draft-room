@@ -1,0 +1,1155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c1018">
+<meta name="description" content="MLBB draft practice with pick and ban tips, builds and counters for Patch 2.2.23.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Draft Room">
+<title>MLBB Draft Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: draft-room HUD — Blue column | phase + advisor | Red column, hero pool below; stacks on phones */
+:root{
+  --bg:#eef0f5; --panel:#ffffff; --panel2:#f5f6fa; --line:#d7dbe6; --fg:#151a26; --muted:#5c6478;
+  --blue:#1f6fe0; --blue-soft:#e3edfd; --red:#d83a3a; --red-soft:#fbe6e6;
+  --gold:#b98a12; --good:#1e9a5a; --warn:#c77a0a; --bad:#cc3344;
+  --tS:#d9480f; --tA:#b8860b; --tB:#2f7d4f; --tC:#55657e; --tD:#8a8f9c;
+  --display:"Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --body:"Barlow", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c1018; --panel:#141a26; --panel2:#1a2232; --line:#273145; --fg:#e7ebf3; --muted:#8d97ad;
+  --blue:#4b8dff; --blue-soft:#15284a; --red:#ff5a5a; --red-soft:#3d1a1f;
+  --gold:#e6b84a; --good:#3ccf86; --warn:#f0a43a; --bad:#ff6b7a;
+  --tS:#ff7a3d; --tA:#e6b84a; --tB:#4fc286; --tC:#8d9bb4; --tD:#6b7386; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c1018; --panel:#141a26; --panel2:#1a2232; --line:#273145; --fg:#e7ebf3; --muted:#8d97ad;
+  --blue:#4b8dff; --blue-soft:#15284a; --red:#ff5a5a; --red-soft:#3d1a1f;
+  --gold:#e6b84a; --good:#3ccf86; --warn:#f0a43a; --bad:#ff6b7a;
+  --tS:#ff7a3d; --tA:#e6b84a; --tB:#4fc286; --tC:#8d9bb4; --tD:#6b7386; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 40px}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.wrap{max-width:1280px;margin:0 auto;display:grid;gap:14px}
+header.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;justify-content:space-between}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.brand h1{font:700 24px/1 var(--display);letter-spacing:.02em;margin:0;text-transform:uppercase}
+.patch{font:600 12px var(--display);letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;border:1px solid var(--gold);color:var(--gold);border-radius:4px;background:transparent}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.controls label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+select,.btn{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:7px 10px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{background:var(--panel);border:0;padding:7px 11px}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+
+/* phase strip */
+.phase{display:grid;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.phase-now{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.turn{font:700 18px var(--display);text-transform:uppercase;letter-spacing:.04em}
+.turn.B{color:var(--blue)} .turn.R{color:var(--red)}
+.steps{display:flex;gap:3px;flex-wrap:wrap}
+.step{width:18px;height:8px;border-radius:2px;background:var(--line);position:relative}
+.step.sban{height:5px;align-self:center}
+.step.B.done{background:var(--blue)} .step.R.done{background:var(--red)}
+.step.cur{outline:2px solid var(--gold);outline-offset:1px}
+.phase .hint{color:var(--muted);font-size:13px}
+
+/* board */
+.board{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1fr);gap:14px;align-items:start}
+.team{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}
+.team h2{margin:0;font:700 15px var(--display);text-transform:uppercase;letter-spacing:.08em;padding:9px 12px;display:flex;justify-content:space-between;align-items:center}
+.team.B h2{background:var(--blue-soft);color:var(--blue)} .team.R h2{background:var(--red-soft);color:var(--red)}
+.team.active{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.bans{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;padding:10px 12px 4px}
+.ban{height:30px;border:1px dashed var(--line);border-radius:5px;font:600 11px var(--display);display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.05;padding:2px;color:var(--muted);overflow:hidden}
+.ban.filled{border-style:solid;text-decoration:line-through;background:var(--panel2);color:var(--fg)}
+.ban.off{opacity:.35}
+.ban.cur,.pick.cur{border:2px solid var(--gold)}
+.picks{display:grid;gap:6px;padding:8px 12px 12px}
+.pick{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:7px;padding:6px 8px;min-height:50px;background:var(--panel2)}
+.pick.empty{background:transparent;border-style:dashed;color:var(--muted)}
+.mono{width:38px;height:38px;border-radius:6px;display:grid;place-items:center;font:700 14px var(--display);color:#fff;letter-spacing:.02em}
+.pick .nm{font:600 15px var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pick .sub{font-size:12px;color:var(--muted)}
+.lane{font:600 11px var(--display);text-transform:uppercase;letter-spacing:.06em;padding:3px 6px;border-radius:4px;border:1px solid var(--line);color:var(--muted)}
+
+/* advisor */
+.advisor{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:10px;min-width:0}
+.advisor h3,.section h3{margin:0;font:700 13px var(--display);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.sugg{display:grid;gap:6px}
+.sg{display:grid;grid-template-columns:38px minmax(0,1fr) 46px;gap:10px;align-items:center;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 9px;width:100%}
+.sg:hover{border-color:var(--gold)}
+.sg .nm{font:600 15px var(--display);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.chip{font-size:11.5px;padding:1px 6px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip.pos{color:var(--good);border-color:color-mix(in srgb,var(--good) 45%,transparent)}
+.chip.neg{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,transparent)}
+.score{font:700 17px var(--display);text-align:right;font-variant-numeric:tabular-nums}
+.tier{font:700 11px var(--display);padding:1px 5px;border-radius:3px;color:#fff}
+.tS{background:var(--tS)} .tA{background:var(--tA)} .tB{background:var(--tB)} .tC{background:var(--tC)} .tD{background:var(--tD)}
+.pf{font:600 10.5px var(--display);text-transform:uppercase;letter-spacing:.05em;padding:1px 5px;border-radius:3px;border:1px solid}
+.pf.buff{color:var(--good)} .pf.nerf{color:var(--bad)} .pf.rework{color:var(--gold)} .pf.adj{color:var(--muted)}
+.done-box{padding:6px 2px;display:grid;gap:8px}
+
+/* analysis */
+.analysis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:10px;min-width:0}
+.meters{display:grid;gap:6px}
+.meter{display:grid;grid-template-columns:92px minmax(0,1fr) 22px;gap:8px;align-items:center;font-size:13px}
+.bar{height:7px;border-radius:4px;background:var(--panel2);overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%}
+.B .bar i{background:var(--blue)} .R .bar i{background:var(--red)}
+.split{display:flex;height:10px;border-radius:5px;overflow:hidden;border:1px solid var(--line)}
+.split .p{background:#d9822b} .split .m{background:#7b5cd6}
+.legend{font-size:12px;color:var(--muted);display:flex;gap:12px}
+.warns{display:grid;gap:5px;margin:0;padding:0;list-style:none}
+.warns li{font-size:13px;padding:6px 8px;border-radius:6px;background:var(--panel2);border-left:3px solid var(--warn)}
+.warns li.ok{border-left-color:var(--good)}
+.warns li.tip{border-left-color:var(--muted)}
+.mu{display:grid;gap:5px}
+.mu-row{display:grid;grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr);gap:8px;align-items:center;font-size:13px}
+.mu-row .l{text-align:right;color:var(--blue);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mu-row .r{color:var(--red);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mu-row .c{text-align:center;font:600 11px var(--display);text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:2px 0}
+.mu-row .c.eB{color:var(--blue);border-color:var(--blue)} .mu-row .c.eR{color:var(--red);border-color:var(--red)}
+
+/* pool */
+.pool{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:10px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filters input{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:7px 10px;min-width:0;flex:1 1 160px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:6px}
+.hero{display:grid;grid-template-columns:30px minmax(0,1fr);gap:7px;align-items:center;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:5px 6px}
+.hero .mono{width:30px;height:30px;font-size:11px}
+.hero .nm{font:600 13px var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero .meta{display:flex;gap:4px;align-items:center}
+.hero:hover:not(:disabled){border-color:var(--gold)}
+.hero:disabled{opacity:.28;cursor:not-allowed}
+.hero.B-used{opacity:.45;border-color:var(--blue)} .hero.R-used{opacity:.45;border-color:var(--red)}
+.patchbox{font-size:13px;color:var(--muted);display:grid;gap:6px}
+.patchbox b{color:var(--fg)}
+.patchbox ul{margin:0;padding-left:18px}
+footer{font-size:12px;color:var(--muted);line-height:1.6}
+footer a{color:inherit}
+details summary{cursor:pointer;font:700 13px var(--display);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+
+/* role colors for monograms */
+.mono{position:relative;overflow:hidden;align-content:center;gap:0;line-height:1}
+.mono .ri{width:56%;height:56%;fill:none;stroke:rgba(255,255,255,.95);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mono b{font:700 10px var(--display);letter-spacing:.02em;margin-top:1px}
+.hero .mono b{font-size:8.5px}
+.mono.badge{display:block;padding:0}
+.mono.badge svg{width:100%;height:100%;display:block}
+.rF{background:#b5532a}.rT{background:#3e6b8c}.rA{background:#7a3a8c}.rM{background:#5b4fc4}.rK{background:#b8862a}.rS{background:#2e8a6e}
+
+
+button.ban{background:transparent;cursor:pointer;font:600 11px var(--display);color:var(--muted)}
+button.ban.filled{color:var(--fg)}
+.ban.skipped{font-style:italic;opacity:.6}
+.pick[role="button"]{cursor:pointer}
+.pick:focus-visible,.ban:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.pr{display:flex;gap:6px;align-items:center}
+.info{width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:var(--panel);font:700 12px var(--display);color:var(--muted);display:grid;place-items:center;padding:0}
+.info:hover{border-color:var(--gold);color:var(--fg)}
+button.step{border:0;padding:0;cursor:pointer}
+.step.sk{opacity:.4}
+.choosing{font:600 13px var(--display);text-transform:uppercase;letter-spacing:.05em}
+.choosing.B{color:var(--blue)} .choosing.R{color:var(--red)}
+.ctl{display:flex;flex-wrap:wrap;gap:6px}
+.ctl .btn{padding:5px 9px;font-size:13px}
+.ctl:empty{display:none}
+.hint{font-size:12.5px;color:var(--muted)}
+.ghead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.gtop{display:flex;gap:10px;align-items:center}
+.gtop .mono{width:46px;height:46px}
+.gname{font:700 18px var(--display);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.gcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px}
+.gbox{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:8px;align-content:start;min-width:0}
+.gbox h4{margin:0;font:700 12px var(--display);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.items{margin:0;padding-left:22px;display:grid;gap:3px;font-weight:600}
+.items li::marker{color:var(--muted);font-variant-numeric:tabular-nums}
+.kv{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;font-size:13.5px}
+.kv span:first-child{color:var(--muted)}
+.src{font-size:12px;padding:5px 8px;border-radius:6px;border-left:3px solid var(--muted);background:var(--panel)}
+.src.r{border-left-color:var(--good)}
+.clist{display:grid;gap:4px}
+.crow{display:grid;grid-template-columns:28px minmax(0,1fr) auto auto;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 6px;text-align:left}
+.crow:hover{border-color:var(--gold)}
+.crow .mono{width:28px;height:28px}
+.cn{font:600 13.5px var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cv{font:600 12px var(--display);color:var(--good);font-variant-numeric:tabular-nums}
+.tips{margin:0;padding-left:18px;display:grid;gap:5px;font-size:14px}
+.t5{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px}
+.t5c{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:7px;align-content:start;min-width:0}
+.t5c p{margin:0;font-size:13.5px}
+.t5c .btn{justify-self:start;padding:5px 10px;font-size:13px}
+.mini{font-size:12.5px;color:var(--muted)}
+
+@media (max-width:980px){
+  .board{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .advisor{grid-column:1 / -1;order:-1}
+}
+@media (max-width:560px){
+  .pick{grid-template-columns:30px minmax(0,1fr);gap:7px;padding:5px 6px;min-height:42px}
+  .pick .mono{width:30px;height:30px;font-size:11px}
+  .pick .lane{display:none}
+  .pick .nm{font-size:13px}
+  .bans{gap:3px;padding:8px 8px 2px}
+  .ban{font-size:9.5px;height:28px}
+  .picks{padding:6px 8px 8px}
+  .board{gap:8px}
+}
+@media (prefers-reduced-motion:no-preference){.sg,.hero{transition:border-color .12s}}
+</style>
+<style>html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>MLBB Draft Room</h1>
+      <span class="patch" id="patchTag">Patch 2.2.23 · S42</span>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Language"><button id="lEN" aria-pressed="true">EN</button><button id="lMS" aria-pressed="false">BM</button></div>
+      <label for="fmt" data-i="format">Format</label>
+      <select id="fmt">
+        <option value="tour" data-i="fmt_tour">Tournament (2 ban phases)</option>
+        <option value="r10" data-i="fmt_r10">Ranked · 10 bans</option>
+        <option value="r6" data-i="fmt_r6">Ranked · 6 bans</option>
+      </select>
+      <label for="meta" data-i="meta">Meta</label>
+      <select id="meta">
+        <option value="ranked" data-i="meta_ranked">Ranked (all servers)</option>
+        <option value="proAll" data-i="meta_proAll">Pro · all MPL</option>
+        <option value="proMY">Pro · MPL MY</option>
+        <option value="proPH">Pro · MPL PH</option>
+        <option value="proID">Pro · MPL ID</option>
+      </select>
+      <button class="btn" id="undo" data-i="undo">Undo</button>
+      <button class="btn" id="reset" data-i="reset">Reset</button>
+    </div>
+  </header>
+
+  <section class="phase" aria-live="polite">
+    <div class="phase-now"><span class="turn" id="turn"></span><span class="hint" id="turnHint"></span></div>
+    <div class="steps" id="steps"></div>
+  </section>
+
+  <section class="board">
+    <div class="team B" id="teamB"></div>
+    <div class="advisor" id="advisor"></div>
+    <div class="team R" id="teamR"></div>
+  </section>
+
+  <section class="analysis" id="analysis"></section>
+
+  <section class="pool">
+    <div class="filters">
+      <input id="q" type="search" placeholder="Search hero…" aria-label="Search hero" data-iph="search">
+      <select id="fRole" aria-label="Role">
+        <option value="" data-i="allRoles">All roles</option><option value="T">Tank</option><option value="F">Fighter</option><option value="A">Assassin</option><option value="M">Mage</option><option value="K">Marksman</option><option value="S">Support</option>
+      </select>
+      <select id="fLane" aria-label="Lane">
+        <option value="" data-i="allLanes">All lanes</option><option value="e">EXP</option><option value="j">Jungle</option><option value="m">Mid</option><option value="g">Gold</option><option value="r">Roam</option>
+      </select>
+      <select id="fSort" aria-label="Sort">
+        <option value="tier" data-i="sortTier">Sort: tier</option><option value="name" data-i="sortName">Sort: A–Z</option><option value="fit" data-i="sortFit">Sort: best for now</option>
+      </select>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="section" id="guide"></section>
+
+  <section class="section" id="top5"></section>
+
+  <section class="section" id="proNotes"></section>
+
+  <section class="section">
+    <details>
+      <summary data-i="patchSum">What changed in Patch 2.2.23</summary>
+      <div class="patchbox" style="margin-top:10px" data-i="patchBody"></div>
+    </details>
+  </section>
+
+  <footer><div data-i="footer"></div><div style="margin-top:8px;font:600 13px var(--display);letter-spacing:.04em;color:var(--fg)" data-i="copyright">© 2026 Mican. All rights reserved.</div></footer>
+</div>
+
+<script>
+// name | roles | lanes (primary first) | tags | tier (after 2.2.23 adjustment)
+const RAW = `Masha|F,T|e,r|P front sus dps early|A
+Marcel|S|r|M cc peel aoe zone|S
+Argus|F|e,j|P dps late dash sus|S
+Khufra|T,S|r|P cc eng antidash front|S
+Rafaela|S|r|M heal peel cc|S
+Popol and Kupa|K|g|P cc dps zone|A
+Valir|M|m,r|M poke cc peel zone aoe|S
+Gloo|T|r,e|M front cc eng sus|A
+Floryn|S|r|M heal|S
+Sun|F|e,j|P dps split sus antitank late|S
+Aulus|F|e,j|P dps late sus|S
+Minotaur|T,S|r|P cc eng heal front|S
+Carmilla|S,T|r|M cc eng front aoe|S
+Obsidia|K|g|P dps poke late squish|S
+Diggie|S|r|M purify poke squish|A
+Bruno|K|g|P dps burst cc late squish|A
+Lolita|T,S|r|P cc eng peel front|A
+Gord|M|m|M poke dps zone squish|A
+Estes|S|r|M heal|A
+Ling|A|j|P dash burst late pick|A
+Zhask|M|m,g|M dps zone squish|A
+Hanabi|K|g|P aoe late immune squish|A
+Lukas|F|e,j|P sus cc dps front|A
+Irithel|K|g,j|P dps late squish|A
+Edith|T,K|r,e|P cc eng front|A
+Benedetta|A,F|e|P dash immune split burst|A
+Atlas|T|r|M cc eng front aoe|B
+Belerick|T|r,e|M front cc sus|A
+Minsitthar|F|e,r|P cc antidash eng|A
+Barats|T,F|e,j,r|P front cc sus dps|A
+Kadita|M,A|m,r|M burst cc eng aoe|A
+Silvanna|F|e|M cc pick dps|A
+Saber|A|j,r|P suppress burst pick dash|A
+Zetian|M|m,g|M poke aoe zone squish|A
+Alice|M,T|j,e,m,r|M sus dash dps front|A
+Yve|M|m|M poke aoe zone cc squish|B
+Bane|F|e,j|P poke aoe early|B
+Cyclops|M|m|M burst cc squish|B
+Natan|K|g|M dps late squish|B
+Kagura|M|m|M burst dash cc|B
+Guinevere|F|e,j|M burst cc dash eng|B
+Cecilion|M|m|M poke late aoe squish|B
+Fredrinn|T,F|j,e|P front cc sus eng|B
+Natalia|A|r,j|P invis pick burst|B
+Hilda|F,T|r,e|P sus front early|B
+Aldous|F|e|P pick burst late split|B
+Faramis|S,M|r,m|M heal aoe|B
+Terizla|F|e|P cc aoe front sus|B
+Clint|K|g|P burst early poke squish|B
+Beatrix|K|g|P burst late squish|B
+Khaleed|F|e|P sus aoe front cc|B
+Eudora|M|m|M burst cc squish|B
+Kalea|F,S|r,e|P cc sus eng heal peel|B
+Moskov|K|g|P dps late squish|B
+Aamon|A|j|P invis burst|B
+Angela|S|r|M heal peel cc|B
+Hirara|A|j|P dash burst|B
+Badang|F|e|P cc burst|B
+Akai|T|r,j|P cc eng front zone|B
+Leomord|F|j,e|P dps late dash|B
+Zhuxin|M|m|M aoe zone cc poke|B
+Vale|M|m|M aoe burst cc squish|B
+Paquito|F|e|P burst cc dash early|B
+Brody|K|g|P burst early squish|B
+Ixia|K|g|P aoe dps sus|B
+Julian|F,A|j,e|P burst cc dash|B
+Hanzo|A|j|P poke late|B
+X.Borg|F|e|P sus aoe antitank|B
+Miya|K|g|P dps late squish|B
+Nolan|A|j,g|P dash burst early|B
+Suyou|A,F|j|P dash burst|B
+Xavier|M|m|M poke aoe zone squish|B
+Sora|F,A|e,j|P dash burst sus|B
+Novaria|M|m|M poke squish|B
+Kaja|S,F|r|M suppress pick cc antidash eng|B
+Odette|M|m|M aoe burst cc squish|B
+Yin|F|e,j|P burst pick|B
+Layla|K|g|P dps late squish|B
+Dyrroth|F|e|P burst antitank early|B
+Lylia|M|m,g|M poke aoe zone|B
+Cici|F|e,j|P sus dash dps|B
+Vexana|M|m|M burst cc aoe squish|B
+Yi Sun-shin|A,K|j,g|P dash dps late|B
+Thamuz|F|e|P sus dps antitank front|B
+Kimmy|K,M|g,m|M dps poke|B
+Alpha|F|e,j|P cc sus aoe|B
+Gusion|A|j,m|M dash burst pick|B
+Selena|A,M|r,m|M cc pick poke burst|B
+Lesley|K,A|g|P burst antitank late squish|B
+Melissa|K|g|P dps peel late|B
+Lunox|M|m|M burst sus immune late|B
+Freya|F|e,j,r|P dps sus burst|B
+Uranus|T|e,r|M front sus late|C
+Ruby|F|e,r|P sus cc dash aoe|C
+Aurora|M|m|M burst cc aoe squish|C
+Yu Zhong|F|e,j|P sus aoe cc late|C
+Johnson|T,S|r|M eng cc front|C
+Claude|K|g|P dps late dash aoe|C
+Alucard|F,A|j,e|P sus dps|C
+Karrie|K|g|P antitank dps late|C
+Joy|A|j|M dash immune burst|C
+Hylos|T|r|M front cc eng sus|C
+Karina|A|j|M burst antitank|C
+Roger|F,K|j|P burst pick|C
+Chang'e|M|m|M poke aoe squish|C
+Harley|A,M|j|M burst dash pick|C
+Hayabusa|A|j|P dash burst split pick|C
+Lapu-Lapu|F|e|P aoe cc sus|C
+Phoveus|F|e|M antidash sus aoe|C
+Jawhead|F,T|r,e|P pick eng cc|C
+Luo Yi|M|m|M aoe cc zone|C
+Wanwan|K|g|P dash immune late|C
+Helcurt|A|j|P invis pick burst|C
+Pharsa|M|m|M aoe poke squish|C
+Arlott|F,A|e|P dash cc sus|C
+Nana|M|m|M cc poke squish|C
+Martis|F,A|e,j|P immune aoe burst|C
+Esmeralda|M,T|e,m,r|M sus front shield|C
+Balmond|F|j|P aoe sus|C
+Chip|T,S|r|M eng cc front|D
+Harith|M|g,m|M dash dps|D
+Grock|T|r,e|P eng cc front zone|D
+Zilong|F,A|e|P split dash|D
+Baxia|T|r,j|M front antiheal eng|D
+Gatotkaca|T,F|r,e|M eng cc front|D
+Chou|F|r,e|P immune pick cc dash|D
+Tigreal|T|r|P eng cc front aoe|D
+Valentina|M|m|M burst sus|D
+Mathilda|S,A|r|M peel dash heal|D
+Granger|K|g,j|P burst|D
+Lancelot|A|j|P dash immune burst|D
+Fanny|A|j|P dash burst|D
+Franco|T|r|P pick cc eng|D`;
+
+const ROLE_NAME={F:"Fighter",T:"Tank",A:"Assassin",M:"Mage",K:"Marksman",S:"Support"};
+const LANE_NAME={e:"EXP",j:"Jungle",m:"Mid",g:"Gold",r:"Roam"};
+const LANES=["e","j","m","g","r"];
+const TIER_PTS={S:10,A:7.5,B:5.5,C:3.5,D:2};
+
+// Patch 2.2.23 flags
+const PATCH={Xavier:"buff",Lunox:"buff",Freya:"buff",Aldous:"buff",Kaja:"buff",Melissa:"buff",Gloo:"nerf",Masha:"nerf",Atlas:"nerf","Popol and Kupa":"rework",Lukas:"adj",Karrie:"adj",Kagura:"adj",Uranus:"adj"};
+// Ranked ban rate %, mlbbhub 11 Nov 2026 (heroes above 15%)
+const BANRATE={Hirara:68.1,Belerick:57.6,Obsidia:50.1,Eudora:48.3,Estes:47.2,Gloo:43.6,Masha:42.6,Marcel:41.7,Sun:35.8,Lukas:33.9,Aulus:32.5,Saber:24.9,Carmilla:21.9,Paquito:17.9};
+// MPL Season 18 hero stats [picks, bans, wins] per league (mlbbhub, 11–12 Nov 2026; games played on 2.2.16/2.2.16a)
+const PRO_RAW={
+ MY:"Freya:20,149,11 Atlas:42,107,21 Marcel:37,103,19 Paquito:77,61,40 Hirara:78,55,38 Uranus:63,63,35 Esmeralda:56,60,24 Nolan:65,36,33 Belerick:66,31,32 Fanny:16,79,4 Rafaela:50,43,32 Selena:41,52,24 Carmilla:31,60,18 Barats:51,38,27 Melissa:31,56,19 Obsidia:52,28,24 Zhuxin:44,36,19 Valentina:49,27,24 Alice:39,36,19 Masha:14,54,8 Eudora:40,22,18 Claude:44,16,21 Aulus:27,32,16 Kalea:26,30,16 Gloo:24,30,13 Brody:23,31,11 Gatotkaca:37,16,9 Mathilda:14,36,11 Moskov:36,12,19 Minotaur:36,12,16",
+ PH:"Freya:24,148,18 Atlas:35,133,22 Hirara:127,39,57 Paquito:71,81,42 Marcel:47,75,26 Barats:54,62,31 Uranus:42,72,21 Fanny:15,96,7 Selena:36,63,17 Nolan:63,36,36 Eudora:64,30,32 Carmilla:49,45,22 Belerick:68,25,36 Masha:13,74,9 Esmeralda:28,56,11 Valentina:46,34,21 Aulus:48,30,26 Zhuxin:44,34,25 Minotaur:56,20,26 Melissa:23,52,10 Rafaela:29,44,19 Gatotkaca:54,12,22 Mathilda:26,38,12 Obsidia:37,25,19 Gloo:22,36,13 Lylia:19,35,8 Claude:43,8,26 Kalea:29,21,11 Alice:25,24,10 Brody:28,21,7",
+ ID:"Freya:62,149,33 Atlas:66,133,33 Hirara:103,88,55 Paquito:102,79,45 Fanny:23,131,13 Marcel:35,114,23 Nolan:74,60,43 Zhuxin:69,56,35 Esmeralda:37,83,15 Carmilla:48,69,26 Uranus:56,60,25 Masha:27,88,14 Selena:52,53,21 Belerick:75,26,39 Aulus:69,29,36 Gloo:50,47,31 Melissa:34,53,18 Barats:42,44,19 Alice:49,36,27 Eudora:51,33,29 Obsidia:51,33,29 Rafaela:39,44,20 Cici:57,25,29 Lylia:38,40,18 Claude:65,11,32 Valentina:43,33,15 Mathilda:23,51,11 Minotaur:44,29,18 Kimmy:53,13,27 Novaria:23,38,12"
+};
+const PRO_LEAGUE={};for(const lg in PRO_RAW){PRO_LEAGUE[lg]={};for(const t of PRO_RAW[lg].split(" ")){const [n,v]=t.split(":");PRO_LEAGUE[lg][n]=v.split(",").map(Number)}}
+// Side first-ban leaders from game-by-game drafts (share of that side's first bans)
+const FIRSTBAN={MY:{R:{Freya:62,Masha:17,Aulus:8},B:{Atlas:22,Aulus:11,Fanny:10,Marcel:10}},PH:{R:{Freya:52},B:{Fanny:20}},ID:{R:{Freya:40},B:{Fanny:17}}};
+const LEAGUE_INFO={MY:{name:"MPL MY",blue:47,games:105},PH:{name:"MPL PH",blue:53,games:163},ID:{name:"MPL ID",blue:59,games:206}};
+let PRO={};
+function buildPro(){const lgs=state.meta==="ranked"?["MY","PH","ID"]:state.meta==="proAll"?["MY","PH","ID"]:[state.meta.slice(3)];
+ PRO={};for(const lg of lgs)for(const n in PRO_LEAGUE[lg]){const v=PRO_LEAGUE[lg][n];PRO[n]=PRO[n]||[0,0,0];PRO[n][0]+=v[0];PRO[n][1]+=v[1];PRO[n][2]+=v[2]}
+ const vals=Object.values(PRO);PRO._maxPB=Math.max(...vals.map(v=>v[0]+v[1]));PRO._maxB=Math.max(...vals.map(v=>v[1]));PRO._maxP=Math.max(...vals.map(v=>v[0]));PRO._lgs=lgs;}
+const isPro=()=>state.meta!=="ranked";
+
+
+// Builds: name|items|emblem,t1,t2,core|spell|src (r = researched 2026 guide, g = standard role build)
+const BUILDS_RAW=`Masha|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Marcel|Tough Boots,Thunder Belt,Dominance Ice,Oracle,Radiant Armor,Immortality|Support,Agility,Pull Yourself Together,Focusing Mark|Flicker|r
+Argus|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Khufra|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Rafaela|Tough Boots,Flask of the Oasis,Fleeting Time,Dominance Ice,Oracle,Immortality|Support,Agility,Pull Yourself Together,Focusing Mark|Flicker|g
+Popol and Kupa|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Valir|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Genius Wand,Divine Glaive|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|g
+Gloo|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Floryn|Tough Boots,Flask of the Oasis,Fleeting Time,Dominance Ice,Oracle,Immortality|Support,Agility,Pull Yourself Together,Focusing Mark|Flicker|g
+Sun|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Aulus|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Minotaur|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Carmilla|Tough Boots,Flask of the Oasis,Fleeting Time,Dominance Ice,Oracle,Immortality|Support,Agility,Pull Yourself Together,Focusing Mark|Flicker|g
+Obsidia|Swift Boots,Corrosion Scythe,Demon Hunter Sword,Golden Staff,Malefic Gun,Rose Gold Meteor|Marksman,Swift,Weapons Master,Weakness Finder|Flicker|r
+Diggie|Tough Boots,Flask of the Oasis,Fleeting Time,Dominance Ice,Oracle,Immortality|Support,Agility,Pull Yourself Together,Focusing Mark|Flicker|g
+Bruno|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Lolita|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Gord|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Genius Wand,Divine Glaive|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|g
+Estes|Tough Boots,Flask of the Oasis,Fleeting Time,Dominance Ice,Oracle,Immortality|Support,Agility,Pull Yourself Together,Focusing Mark|Flicker|g
+Ling|Tough Boots,Hunter Strike,Blade of the Heptaseas,Blade of Despair,Malefic Roar,Immortality|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Zhask|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Genius Wand,Divine Glaive|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|g
+Hanabi|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Lukas|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Irithel|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Edith|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Benedetta|Tough Boots,Hunter Strike,Blade of the Heptaseas,Blade of Despair,Malefic Roar,Immortality|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Atlas|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Belerick|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Minsitthar|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Barats|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Kadita|Arcane Boots,Clock of Destiny,Genius Wand,Lightning Truncheon,Holy Crystal,Divine Glaive|Mage,Inspire,Bargain Hunter,Lethal Ignition|Flicker|g
+Silvanna|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Saber|Tough Boots,Hunter Strike,Blade of the Heptaseas,Blade of Despair,Malefic Roar,Immortality|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Zetian|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Genius Wand,Divine Glaive|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|g
+Alice|Arcane Boots,Feather of Heaven,Genius Wand,Holy Crystal,Concentrated Energy,Blood Wings|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Yve|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Genius Wand,Divine Glaive|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|g
+Bane|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Cyclops|Arcane Boots,Clock of Destiny,Genius Wand,Lightning Truncheon,Holy Crystal,Divine Glaive|Mage,Inspire,Bargain Hunter,Lethal Ignition|Flicker|g
+Natan|Arcane Boots,Enchanted Talisman,Glowing Wand,Genius Wand,Holy Crystal,Divine Glaive|Marksman,Inspire,Bargain Hunter,Weakness Finder|Flicker|g
+Kagura|Arcane Boots,Clock of Destiny,Genius Wand,Lightning Truncheon,Holy Crystal,Divine Glaive|Mage,Inspire,Bargain Hunter,Lethal Ignition|Flicker|g
+Guinevere|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Cecilion|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Genius Wand,Divine Glaive|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|g
+Fredrinn|Tough Boots,War Axe,Hunter Strike,Oracle,Queen's Wings,Immortality|Assassin,Thrill,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Natalia|Tough Boots,Hunter Strike,Blade of the Heptaseas,Blade of Despair,Malefic Roar,Immortality|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Hilda|Tough Boots,Dominance Ice,Thunder Belt,Oracle,Radiant Armor,Immortality|Fighter,Firmness,Tenacity,Unbending Will|Flicker|g
+Aldous|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Faramis|Tough Boots,Flask of the Oasis,Fleeting Time,Dominance Ice,Oracle,Immortality|Support,Agility,Pull Yourself Together,Focusing Mark|Flicker|g
+Terizla|Tough Boots,Dominance Ice,Thunder Belt,Oracle,Radiant Armor,Immortality|Fighter,Firmness,Tenacity,Unbending Will|Flicker|g
+Clint|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Beatrix|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Khaleed|Tough Boots,Dominance Ice,Thunder Belt,Oracle,Radiant Armor,Immortality|Fighter,Firmness,Tenacity,Unbending Will|Flicker|g
+Eudora|Arcane Boots,Clock of Destiny,Genius Wand,Lightning Truncheon,Holy Crystal,Divine Glaive|Mage,Inspire,Bargain Hunter,Lethal Ignition|Flicker|g
+Kalea|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Moskov|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Aamon|Tough Boots,Hunter Strike,Blade of the Heptaseas,Blade of Despair,Malefic Roar,Immortality|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Angela|Tough Boots,Flask of the Oasis,Fleeting Time,Dominance Ice,Oracle,Immortality|Support,Agility,Pull Yourself Together,Focusing Mark|Flicker|g
+Hirara|Tough Boots,Hunter Strike,War Axe,Blade of Despair,Malefic Roar,Immortality|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|r
+Badang|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Akai|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Leomord|Tough Boots,War Axe,Hunter Strike,Oracle,Queen's Wings,Immortality|Assassin,Thrill,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Zhuxin|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Divine Glaive,Blood Wings|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|r
+Vale|Arcane Boots,Clock of Destiny,Genius Wand,Lightning Truncheon,Holy Crystal,Divine Glaive|Mage,Inspire,Bargain Hunter,Lethal Ignition|Flicker|g
+Paquito|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Brody|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Ixia|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Julian|Tough Boots,War Axe,Hunter Strike,Oracle,Queen's Wings,Immortality|Assassin,Thrill,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Hanzo|Tough Boots,Hunter Strike,Blade of the Heptaseas,Blade of Despair,Malefic Roar,Immortality|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+X.Borg|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Miya|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Nolan|Tough Boots,Hunter Strike,Blade of the Heptaseas,Blade of Despair,Malefic Roar,Immortality|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Suyou|Tough Boots,Hunter Strike,Blade of the Heptaseas,Blade of Despair,Malefic Roar,Immortality|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Xavier|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Genius Wand,Divine Glaive|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|g
+Sora|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Novaria|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Genius Wand,Divine Glaive|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|g
+Kaja|Tough Boots,Flask of the Oasis,Fleeting Time,Dominance Ice,Oracle,Immortality|Support,Agility,Pull Yourself Together,Focusing Mark|Flicker|g
+Odette|Arcane Boots,Clock of Destiny,Genius Wand,Lightning Truncheon,Holy Crystal,Divine Glaive|Mage,Inspire,Bargain Hunter,Lethal Ignition|Flicker|g
+Yin|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Layla|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Dyrroth|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Lylia|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Genius Wand,Divine Glaive|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|g
+Cici|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Vexana|Arcane Boots,Clock of Destiny,Genius Wand,Lightning Truncheon,Holy Crystal,Divine Glaive|Mage,Inspire,Bargain Hunter,Lethal Ignition|Flicker|g
+Yi Sun-shin|Tough Boots,Hunter Strike,Blade of the Heptaseas,Blade of Despair,Malefic Roar,Immortality|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Thamuz|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Kimmy|Arcane Boots,Enchanted Talisman,Glowing Wand,Genius Wand,Holy Crystal,Divine Glaive|Marksman,Inspire,Bargain Hunter,Weakness Finder|Flicker|g
+Alpha|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Gusion|Arcane Boots,Feather of Heaven,Genius Wand,Holy Crystal,Concentrated Energy,Blood Wings|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Selena|Arcane Boots,Clock of Destiny,Genius Wand,Lightning Truncheon,Holy Crystal,Divine Glaive|Mage,Inspire,Bargain Hunter,Lethal Ignition|Flicker|g
+Lesley|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Melissa|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Lunox|Arcane Boots,Clock of Destiny,Genius Wand,Lightning Truncheon,Holy Crystal,Divine Glaive|Mage,Inspire,Bargain Hunter,Lethal Ignition|Flicker|g
+Freya|Tough Boots,Corrosion Scythe,War Axe,Endless Battle,Malefic Roar,Immortality|Fighter,Thrill,Weapons Master,War Cry|Inspire|r
+Uranus|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Ruby|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Aurora|Arcane Boots,Clock of Destiny,Genius Wand,Lightning Truncheon,Holy Crystal,Divine Glaive|Mage,Inspire,Bargain Hunter,Lethal Ignition|Flicker|g
+Yu Zhong|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Johnson|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Claude|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Alucard|Tough Boots,War Axe,Hunter Strike,Oracle,Queen's Wings,Immortality|Assassin,Thrill,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Karrie|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Joy|Arcane Boots,Feather of Heaven,Genius Wand,Holy Crystal,Concentrated Energy,Blood Wings|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Hylos|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Karina|Arcane Boots,Feather of Heaven,Genius Wand,Holy Crystal,Concentrated Energy,Blood Wings|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Roger|Tough Boots,War Axe,Hunter Strike,Oracle,Queen's Wings,Immortality|Assassin,Thrill,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Chang'e|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Genius Wand,Divine Glaive|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|g
+Harley|Arcane Boots,Feather of Heaven,Genius Wand,Holy Crystal,Concentrated Energy,Blood Wings|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Hayabusa|Tough Boots,Hunter Strike,Blade of the Heptaseas,Blade of Despair,Malefic Roar,Immortality|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Lapu-Lapu|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Phoveus|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Jawhead|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Luo Yi|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Genius Wand,Divine Glaive|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|g
+Wanwan|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Helcurt|Tough Boots,Hunter Strike,Blade of the Heptaseas,Blade of Despair,Malefic Roar,Immortality|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Pharsa|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Genius Wand,Divine Glaive|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|g
+Arlott|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Nana|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Genius Wand,Divine Glaive|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|g
+Martis|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Esmeralda|Arcane Boots,Clock of Destiny,Winter Crown,Glowing Wand,Radiant Armor,Immortality|Mage,Vitality,Bargain Hunter,Impure Rage|Flicker|g
+Balmond|Tough Boots,War Axe,Hunter Strike,Oracle,Queen's Wings,Immortality|Assassin,Thrill,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Chip|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Harith|Arcane Boots,Enchanted Talisman,Glowing Wand,Ice Queen Wand,Genius Wand,Divine Glaive|Mage,Inspire,Bargain Hunter,Impure Rage|Flicker|g
+Grock|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Zilong|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Baxia|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Gatotkaca|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Chou|Tough Boots,War Axe,Hunter Strike,Queen's Wings,Oracle,Immortality|Fighter,Thrill,Festival of Blood,Brave Smite|Flicker|g
+Tigreal|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g
+Valentina|Arcane Boots,Clock of Destiny,Genius Wand,Lightning Truncheon,Holy Crystal,Divine Glaive|Mage,Inspire,Bargain Hunter,Lethal Ignition|Flicker|g
+Mathilda|Tough Boots,Flask of the Oasis,Fleeting Time,Dominance Ice,Oracle,Immortality|Support,Agility,Pull Yourself Together,Focusing Mark|Flicker|g
+Granger|Swift Boots,Windtalker,Berserker's Fury,Haas's Claws,Blade of Despair,Wind of Nature|Marksman,Fatal,Weapons Master,Quantum Charge|Flicker|g
+Lancelot|Tough Boots,Hunter Strike,Blade of the Heptaseas,Blade of Despair,Malefic Roar,Immortality|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Fanny|Tough Boots,Hunter Strike,Blade of the Heptaseas,Blade of Despair,Malefic Roar,Immortality|Assassin,Rupture,Seasoned Hunter,Killing Spree|Ice Retribution|g
+Franco|Tough Boots,Dominance Ice,Antique Cuirass,Athena's Shield,Radiant Armor,Immortality|Tank,Vitality,Tenacity,Concussive Blast|Flicker|g`;
+const BUILDS={};BUILDS_RAW.split("\n").forEach(l=>{const [n,i,e,sp,src]=l.split("|");BUILDS[n]={i:i.split(","),e:e.split(","),s:sp,src}});
+// Measured counters from official ranked stats via MLBBHub (Patch 2.2.16a, 5 Nov 2026): hero|counters pp|beats pp
+const COUNTERS_RAW=`Freya|Phoveus 4.8,Minsitthar 4.5,Baxia 2.0,Franco 1.9,Edith 1.7|Yve 3.1,Masha 2.5,Harith 2.3
+Hirara|Saber 2.6,Phoveus 2.1,Bruno 1.9,Minsitthar 1.8,Odette 1.7|Hanzo 2.7,Karina 2.5,X.Borg 2.2
+Atlas|Marcel 5.7,Wanwan 3.9,Valentina 3.5,Alice 3.4,Ling 3.1|Popol and Kupa 4.4,Layla 3.7,Lolita 3.7
+Marcel|Angela 4.5,Floryn 4.4,Esmeralda 3.7,Cyclops 3.6,Lesley 3.5|Atlas 5.8,Sun 3.6,Akai 3.5
+Paquito|Esmeralda 3.0,Khufra 2.1,Phoveus 1.9,Fredrinn 1.9,Melissa 1.7|Natalia 3.5,X.Borg 3.3,Karina 2.5
+Uranus|Dyrroth 2.8,Karrie 2.8,Joy 2.7,Aldous 2.7,Angela 2.6|Yin 3.2,Argus 3.1,Gatotkaca 3.0
+Esmeralda|Lunox 3.4,Karrie 3.3,Dyrroth 3.2,Natan 3.1,Alice 2.6|Lolita 5.7,Mathilda 4.3,Marcel 3.7
+Nolan|Saber 3.9,Natalia 3.8,Hayabusa 2.1,Jawhead 2.0,Helcurt 1.7|Estes 4.0,Zhuxin 2.6,X.Borg 2.5
+Belerick|Beatrix 3.2,Brody 3.2,Marcel 3.0,Lesley 2.9,Cici 2.9|Miya 3.7,Silvanna 3.1,Zhask 2.7
+Fanny|Moskov 3.0,Bruno 2.9,Badang 2.7,Franco 2.7,Kalea 2.6|Yve 3.6,Granger 3.5,Gloo 3.4
+Rafaela|Odette 2.7,Ixia 2.7,Silvanna 2.1,Eudora 2.0,Sora 2.0|Valir 3.5,Natalia 3.3,Marcel 2.9
+Selena|Chip 2.5,Popol and Kupa 2.0,Gloo 2.0,Khufra 1.6,Fredrinn 1.6|Benedetta 2.1,X.Borg 1.9,Yve 1.8
+Carmilla|Valentina 4.1,X.Borg 3.3,Lesley 2.3,Natalia 2.1,Benedetta 2.0|Popol and Kupa 3.6,Hilda 2.3,Johnson 2.2
+Barats|X.Borg 5.3,Gord 3.6,Alice 3.4,Yve 3.3,Valir 2.8|Phoveus 3.4,Argus 3.1,Silvanna 3.1
+Melissa|Belerick 2.6,Terizla 2.0,Edith 1.7,Harley 1.7,Gatotkaca 1.6|Joy 3.3,Leomord 2.8,Mathilda 2.8
+Obsidia|Baxia 2.8,Estes 2.5,Miya 2.4,Odette 2.2,Bruno 2.2|Benedetta 2.9,Helcurt 2.8,Aldous 2.2
+Zhuxin|Nolan 2.6,Odette 2.5,Diggie 2.4,Arlott 2.3,Hayabusa 2.2|Lolita 6.2,Khufra 4.0,Gloo 3.5
+Valentina|Saber 3.0,Odette 2.9,Phoveus 2.5,Minsitthar 2.3,Dyrroth 2.2|Carmilla 4.1,Atlas 3.4,Lukas 3.1
+Alice|Angela 4.6,Karrie 4.1,Floryn 4.1,Valir 3.9,Estes 3.9|Chip 3.9,Gloo 3.8,Tigreal 3.7
+Masha|Estes 3.4,Freya 2.9,Rafaela 2.4,Bruno 2.2,Floryn 2.2|Gloo 3.6,Eudora 2.6,Lesley 2.5
+Eudora|Atlas 2.7,Masha 2.6,Barats 2.1,Leomord 1.8,Aurora 1.4|Floryn 2.3,Irithel 2.2,Helcurt 2.1
+Claude|Lesley 3.9,Aamon 2.9,Edith 2.5,Natan 2.4,Baxia 2.1|Lolita 2.6,Chang'e 2.4,Johnson 2.3
+Aulus|Alice 3.2,Floryn 2.5,Zhuxin 2.4,Freya 2.1,Estes 1.9|Gloo 3.4,Lolita 2.5,Tigreal 2.3
+Kalea|Phoveus 2.0,Balmond 1.8,Yin 1.7,Bane 1.6,Miya 1.5|Fanny 2.6,Khaleed 2.3,Yve 2.1
+Gloo|Faramis 6.3,Moskov 5.3,Natan 4.6,Alice 3.7,Masha 3.6|Aamon 4.6,Johnson 3.8,Jawhead 3.6
+Kimmy|Karina 3.6,Lolita 3.5,Fanny 2.5,Natalia 2.5,Odette 2.3|Sun 3.3,Hylos 3.0,Atlas 2.9
+Cici|Aamon 4.5,Estes 3.9,Diggie 3.0,X.Borg 2.8,Zilong 2.8|Balmond 4.8,Thamuz 4.5,Alice 3.2
+Lylia|Joy 2.7,Mathilda 2.2,Chou 1.7,Benedetta 1.6,Yve 1.5|Johnson 2.4,Alpha 2.2,Hanabi 2.1
+Argus|Barats 3.1,Uranus 3.1,Terizla 3.0,Baxia 2.5,Ruby 2.4|Karrie 2.7,Arlott 2.4,Saber 2.4
+Valir|Kaja 3.5,Helcurt 3.2,Rafaela 3.2,Lolita 3.0,Mathilda 3.0|Fredrinn 4.0,Alice 3.8,Balmond 3.5
+Sun|Natan 5.0,Joy 4.0,Ruby 3.7,Marcel 3.6,Faramis 3.4|Jawhead 3.7,Diggie 3.0,Popol and Kupa 2.8
+Floryn|Lolita 4.2,Yin 2.8,Ixia 2.6,Silvanna 2.3,Eudora 2.3|Marcel 4.4,Alice 4.1,X.Borg 3.6
+Estes|Ixia 5.4,Beatrix 5.1,Sora 4.6,Nolan 4.0,Luo Yi 3.4|Cyclops 3.9,Cici 3.8,Alice 3.6
+Minotaur|Alice 2.9,Yve 2.8,Zhuxin 2.7,Beatrix 2.6,Joy 2.2|Lolita 4.6,Silvanna 2.9,Johnson 2.8
+Khufra|Zhuxin 4.1,Alice 3.4,Marcel 2.8,Bane 2.6,Minotaur 2.5|Wanwan 3.5,Silvanna 3.5,Alucard 3.3
+Lukas|Baxia 3.4,Valentina 3.1,Balmond 2.8,Phoveus 2.7,Zhuxin 2.7|Ling 3.5,Natalia 2.3,Fanny 2.1
+Saber|Balmond 3.1,Leomord 3.1,Baxia 2.7,Sun 2.7,Miya 2.7|Ling 4.3,Nolan 3.9,Natalia 3.5
+Zetian|Valentina 2.3,Floryn 2.0,Gloo 1.9,Diggie 1.7,Harith 1.7|Lolita 4.4,Natalia 2.9,Tigreal 2.6
+Harith|Phoveus 4.9,Minsitthar 3.3,Popol and Kupa 2.8,Edith 2.5,Cyclops 2.4|Lolita 3.4,Yve 3.0,Suyou 2.6
+Gord|Natalia 3.2,Helcurt 2.8,Ling 2.6,Benedetta 2.4,Harley 2.0|Barats 3.6,Lolita 2.8,Fredrinn 2.8
+Hanabi|Lolita 4.0,Beatrix 3.3,Joy 2.9,Wanwan 2.8,Ixia 2.5|Popol and Kupa 3.0,Saber 2.6,Kaja 2.1
+Bruno|Lolita 3.5,Lesley 3.0,Aamon 2.8,Odette 2.5,Saber 2.1|Wanwan 3.4,Ling 3.0,Fanny 2.9`;
+const CM={},CB={};
+COUNTERS_RAW.split("\n").forEach(l=>{const [n,c,b]=l.split("|");const parse=x=>Object.fromEntries((x||"").split(",").filter(Boolean).map(z=>{const m=z.trim().match(/^(.*) ([\d.]+)$/);return[m[1],+m[2]]}));CM[n]=parse(c);CB[n]=parse(b)});
+// Top 5 heroes for Patch 2.2.23, one per lane
+const TOP5=[
+ {n:"Freya",lane:"e",why:{en:"Banned more than any hero in MPL MY, PH and ID, and the new patch made her stronger.",ms:"Paling banyak di-ban dalam MPL MY, PH dan ID, dan patch baru buat dia lebih kuat."},
+  tips:{en:["Hit minions and enemies to fill your Sacred Orbs before a fight. Try to keep about 4 ready.","Start with your ultimate. Land it behind the enemy tank, on their damage heroes, then use Skill 2 and basic attacks.","Use Skill 1 to jump in with a shield, or to chase. Don't use it while in Valkyrie form.","She is strongest early. Fight a lot before 15 minutes. Stay away from Phoveus and Minsitthar."],
+        ms:["Pukul minion dan musuh untuk isi Sacred Orb sebelum war. Cuba simpan kira-kira 4.","Mula dengan ultimate. Mendarat di belakang tank musuh, atas hero damage mereka, kemudian guna Skill 2 dan basic attack.","Guna Skill 1 untuk lompat masuk dengan shield, atau untuk kejar. Jangan guna semasa bentuk Valkyrie.","Dia paling kuat di awal game. Banyakkan war sebelum minit ke-15. Jauhi Phoveus dan Minsitthar."]}},
+ {n:"Hirara",lane:"j",why:{en:"Most-picked hero in MPL ID and PH, and banned in 68% of ranked games.",ms:"Hero paling banyak dipilih dalam MPL ID dan PH, dan di-ban dalam 68% game ranked."},
+  tips:{en:["She has no ultimate. Her passive joins her two skills into combos and holds 2 energy. With 0 energy, don't go in.","Combo: dash in with Skill 1, hit with Skill 2 (the second hit does double damage), then use the second dash to get out.","Gank early. She is strongest before 10 minutes, so take Turtle and help your lanes.","Go for weak backline heroes like mages and marksmen. Tanks soak up her combo."],
+        ms:["Dia tiada ultimate. Passive dia gabungkan dua skill jadi combo dan simpan 2 tenaga. Kalau tenaga 0, jangan masuk.","Combo: dash masuk dengan Skill 1, pukul dengan Skill 2 (pukulan kedua buat damage dua kali ganda), kemudian guna dash kedua untuk keluar.","Gank awal. Dia paling kuat sebelum minit ke-10, jadi ambil Turtle dan bantu lane.","Sasarkan hero belakang yang lemah seperti mage dan marksman. Tank boleh tahan combo dia."]}},
+ {n:"Zhuxin",lane:"m",why:{en:"A pro favourite in mid lane. She is strong against Lolita, Khufra and Gloo.",ms:"Kegemaran pro di mid lane. Dia kuat melawan Lolita, Khufra dan Gloo."},
+  tips:{en:["Clear the first two waves without using all your mana, then move to the side your jungler is going.","Fight near walls, jungle entrances and the river, not in open mid.","Combo: Skill 1 to control space, Skill 2 to control where enemies walk, then ultimate when they try to escape.","Be careful of Nolan, Hayabusa and Odette."],
+        ms:["Bersihkan dua wave pertama tanpa habiskan mana, kemudian gerak ke arah jungler anda.","War dekat dinding, pintu masuk jungle dan sungai, bukan di tengah mid yang terbuka.","Combo: Skill 1 untuk kawal ruang, Skill 2 untuk kawal pergerakan musuh, kemudian ultimate bila mereka cuba lari.","Hati-hati dengan Nolan, Hayabusa dan Odette."]}},
+ {n:"Obsidia",lane:"g",why:{en:"Top tier in ranked (banned in half of all games) and a regular pro pick in gold lane.",ms:"Tier teratas dalam ranked (di-ban dalam separuh game) dan pilihan pro biasa di gold lane."},
+  tips:{en:["Her passive only charges from hitting heroes, not jungle monsters. Poke enemies with Skill 1 in lane.","Her ultimate stuns the first enemy hit and ties you to them. Aim it at mages and marksmen, never at Belerick or someone with Vengeance.","Don't start fights, she has little escape. Let your tank go first.","Use Skill 2 for speed to move to a safe spot. During your ultimate it comes back much faster."],
+        ms:["Passive dia hanya bertambah bila pukul hero, bukan monster jungle. Poke musuh dengan Skill 1 di lane.","Ultimate dia stun musuh pertama yang kena dan ikat anda dengan mereka. Sasarkan mage dan marksman, jangan sesekali Belerick atau yang guna Vengeance.","Jangan mulakan war, dia susah nak lari. Biar tank anda masuk dulu.","Guna Skill 2 untuk laju dan pindah ke tempat selamat. Semasa ultimate, skill ni cepat sedia semula."]}},
+ {n:"Marcel",lane:"r",why:{en:"Banned 292 times across the three MPL leagues and wins 57% in ranked.",ms:"Di-ban 292 kali dalam tiga liga MPL dan menang 57% dalam ranked."},
+  tips:{en:["His passive camera snaps nearby enemies for true damage and shields you and a teammate. Basic attacks make it come back faster, so stay close.","Skill 1 takes 2.5 seconds to fire, then holds enemies for 1 second. Cast it where they must stand, like Turtle, Lord or narrow paths.","His ultimate freezes everything in an area for 3 seconds and only Marcel can hurt them. Use it to stop a diver on your carry or to save Lord. It freezes your teammates too.","Skill 2 makes you faster when moving toward enemies. Cast it again to dash between a diver and your carry."],
+        ms:["Kamera passive dia tangkap musuh berdekatan dengan true damage dan beri shield kepada anda dan seorang rakan. Basic attack buat ia cepat sedia, jadi duduk dekat.","Skill 1 ambil 2.5 saat untuk tembak, kemudian tahan musuh 1 saat. Guna di tempat musuh mesti berdiri, seperti Turtle, Lord atau laluan sempit.","Ultimate dia bekukan semua dalam kawasan selama 3 saat, dan hanya Marcel boleh cederakan mereka. Guna untuk halang diver serang carry anda atau selamatkan Lord. Ia bekukan rakan anda juga.","Skill 2 buat anda laju bila bergerak ke arah musuh. Tekan lagi untuk dash ke antara diver dan carry anda."]}}
+];
+
+// Curated hard counters: victim -> heroes that punish it
+const HARD={
+ Fanny:["Khufra","Minsitthar","Kaja","Saber","Phoveus","Chou","Franco"],
+ Ling:["Khufra","Minsitthar","Kaja","Saber","Phoveus"],
+ Lancelot:["Khufra","Minsitthar","Phoveus","Kaja"],
+ Benedetta:["Minsitthar","Phoveus","Khufra"],
+ Wanwan:["Minsitthar","Phoveus","Saber"],
+ Joy:["Minsitthar","Phoveus","Khufra"],
+ Gusion:["Khufra","Minsitthar","Kaja","Phoveus"],
+ Hirara:["Khufra","Minsitthar","Kaja","Saber"],
+ Hayabusa:["Saber","Kaja","Chou"],
+ Esmeralda:["Karrie","Dyrroth","Lesley","Karina","Baxia"],
+ Uranus:["Baxia","Karrie","Dyrroth","X.Borg"],
+ Belerick:["Karrie","X.Borg","Thamuz"],
+ Masha:["Karrie","X.Borg","Baxia"],
+ Estes:["Baxia","Natalia","Saber"],Floryn:["Baxia","Natalia","Saber"],Rafaela:["Baxia","Natalia","Saber"],Angela:["Baxia","Saber"],
+ Alucard:["Baxia"],Ruby:["Baxia"],"Yu Zhong":["Baxia"],Aulus:["Baxia","Karrie"],Argus:["Baxia","Kaja"],
+ Atlas:["Diggie"],Tigreal:["Diggie"],Khufra:["Diggie"],Johnson:["Diggie"],
+ Sun:["Vale","Odette","Pharsa","Yve"],
+ Layla:["Saber","Natalia","Helcurt","Aamon","Hirara"],Miya:["Saber","Natalia","Helcurt","Aamon"],Beatrix:["Saber","Natalia","Helcurt","Hirara"],Obsidia:["Saber","Natalia","Hirara","Aamon"],Moskov:["Saber","Natalia","Aamon"],
+ Gord:["Helcurt","Saber","Natalia","Gusion"],Novaria:["Helcurt","Saber","Natalia","Gusion"],Cecilion:["Helcurt","Saber","Gusion","Hirara"],Pharsa:["Helcurt","Saber","Natalia"],"Chang'e":["Helcurt","Saber","Gusion"],
+ Lunox:["Saber","Helcurt"],Hanabi:["Saber","Natalia","Aamon"]
+};
+const HARD_SET={}; for(const v in HARD) for(const c of HARD[v]) HARD_SET[c+">"+v]=1;
+
+// Known pairings
+// pro = seen together repeatedly in MPL S18 drafts
+const PRO_PAIRS=[["Freya","Nolan"],["Aulus","Marcel"],["Aulus","Kimmy"],["Kalea","Marcel"],["Kalea","Carmilla"],["Paquito","Esmeralda"],["Esmeralda","Kimmy"],["Hirara","Esmeralda"],["Masha","Freya"],["Freya","Alice"],["Esmeralda","Zhuxin"],["Paquito","Atlas"],["Paquito","Chou"],["Kalea","Esmeralda"],["Aulus","Carmilla"],["Kalea","Masha"]];
+const PAIRS=[["Johnson","Odette"],["Johnson","Vale"],["Atlas","Odette"],["Atlas","Pharsa"],["Atlas","Vale"],["Atlas","Carmilla"],["Tigreal","Odette"],["Tigreal","Vale"],["Khufra","Pharsa"],["Angela","Ling"],["Angela","Lancelot"],["Mathilda","Ling"],["Mathilda","Fanny"],["Kaja","Eudora"],["Franco","Eudora"],["Lolita","Gord"],["Lolita","Layla"],["Selena","Brody"],["Lylia","Atlas"],["Floryn","Moskov"],["Estes","Uranus"],["Estes","Esmeralda"],["Rafaela","Paquito"],["Diggie","Hanabi"],["Marcel","Vale"],["Marcel","Zhuxin"],["Minotaur","Odette"],["Carmilla","Zhuxin"],["Gloo","Yve"],["Belerick","Moskov"],["Edith","Kadita"]];
+const PAIR_SET={}; for(const [a,b] of PAIRS){PAIR_SET[a+"|"+b]=1;PAIR_SET[b+"|"+a]=1}
+for(const [a,b] of PRO_PAIRS){PAIR_SET[a+"|"+b]=2;PAIR_SET[b+"|"+a]=2}
+
+const HEROES=RAW.trim().split("\n").map(l=>{const [n,r,ln,t,tier]=l.split("|");return{n,roles:r.split(","),lanes:ln.split(","),tags:new Set(t.split(" ")),tier}});
+const BY=Object.fromEntries(HEROES.map(h=>[h.n,h]));
+const has=(h,t)=>h.tags.has(t);
+const initials=n=>{const w=n.replace(/[^A-Za-z .'-]/g,"").split(/[ .\-]+/).filter(Boolean);return(w.length>1?w[0][0]+w[1][0]:n.slice(0,2)).toUpperCase()};
+
+// ---------- formats ----------
+const FORMATS={
+ tour:["bB","bR","bB","bR","bB","bR","pB","pR","pR","pB","pB","pR","bR","bB","bR","bB","pR","pB","pB","pR"],
+ r10:["bB","bR","bB","bR","bB","bR","bB","bR","bB","bR","pB","pR","pR","pB","pB","pR","pR","pB","pB","pR"],
+ r6:["bB","bR","bB","bR","bB","bR","pB","pR","pR","pB","pB","pR","pR","pB","pB","pR"]
+};
+
+
+let state={fmt:"tour",meta:"ranked",lang:"en",slots:{},skip:{},hist:[],sel:null,guide:null};
+const METAS=["ranked","proAll","proMY","proPH","proID"];
+const seqKeys=fmt=>{const c={};return FORMATS[fmt].map(x=>{c[x]=c[x]||0;return x+(c[x]++)})};
+try{const o=JSON.parse(localStorage.getItem("mlbbDraft2")||"null");if(o&&FORMATS[o.fmt]){state=Object.assign(state,o);const ks=seqKeys(state.fmt);
+ for(const k in state.slots)if(!ks.includes(k)||!BY[state.slots[k]])delete state.slots[k];if(!Array.isArray(state.hist))state.hist=[];if(state.guide&&!BY[state.guide])state.guide=null;state.sel=null}
+ else{const old=JSON.parse(localStorage.getItem("mlbbDraft")||"null");if(old&&FORMATS[old.fmt]){state.fmt=old.fmt;state.meta=old.meta;state.lang=old.lang;const ks=seqKeys(old.fmt);(old.actions||[]).forEach((n,i)=>{if(BY[n]&&ks[i])state.slots[ks[i]]=n})}}
+ if(!METAS.includes(state.meta))state.meta="ranked";if(!["en","ms"].includes(state.lang))state.lang="en"}catch(e){}
+function save(){try{localStorage.setItem("mlbbDraft2",JSON.stringify(state))}catch(e){}}
+const rankedFmt=()=>state.fmt!=="tour";
+
+function derive(){
+ const keys=seqKeys(state.fmt);
+ const d={keys,bans:{B:[],R:[]},picks:{B:[],R:[]},banSlots:{B:[],R:[]},pickSlots:{B:[],R:[]},used:new Set()};
+ d.maxBans={B:keys.filter(k=>k.startsWith("bB")).length,R:keys.filter(k=>k.startsWith("bR")).length};
+ const cur=state.sel&&keys.includes(state.sel)?state.sel:(keys.find(k=>!state.slots[k]&&!state.skip[k])||null);
+ for(const k of keys){const n=state.slots[k],type=k[0],side=k[1],i=+k.slice(2);
+  (type==="b"?d.banSlots:d.pickSlots)[side][i]=n||null;
+  if(n&&k!==cur){(type==="b"?d.bans:d.picks)[side].push(n);d.used.add(n)}}
+ d.curKey=cur;d.cur=cur?cur.slice(0,2):null;d.step=cur?keys.indexOf(cur):keys.length;d.total=keys.length;
+ d.editing=!!(cur&&state.slots[cur]);
+ d.blocked=n=>{if(!cur)return true;const side=cur[1],isBan=cur[0]==="b";
+  for(const k of keys){if(k===cur||state.slots[k]!==n)continue;
+   if(isBan&&rankedFmt()&&k[0]==="b"&&k[1]!==side)continue; // ranked: the other team's ban doesn't stop yours
+   return true}
+  return false};
+ return d;
+}
+
+// ---------- language ----------
+const I18N={en:{
+skipped:"Skipped",skipBan:"Skip this ban",skipAll:"Skip all bans",clearSlot:"Clear slot",cancel:"Cancel",choosingFor:"Choosing: {0}",slotHint:"Tap any slot on the board to fill or change it.",
+dupNote:"In ranked, both teams can ban the same hero.",guideTitle:"Hero guide",guideFor:"Guide for {0}",chooseHero:"Choose a hero",buildT:"Build",emblemT:"Emblem",spellT:"Battle spell",
+src_r:"Researched build from 2026 guides",src_g:"Standard build for this role. Adjust it to the enemy team.",beatenBy:"Heroes that beat {0}",strongVs:"{0} is strong against",
+measured:"ranked data",kit:"skill matchup",howTo:"How to play",inDraft:"taken",top5Title:"Top 5 heroes for Patch 2.2.23",top5Note:"One hero per lane, picked from MPL Season 18 pick/ban data, ranked results and the new patch changes.",
+openGuide:"Full guide",whyMeta:"Why now",counterNote:"Percent = how much more often they win in this matchup (official ranked data, Patch 2.2.16a). Skill matchups are based on hero skills.",
+format:"Format",meta:"Meta",undo:"Undo",reset:"Reset",fmt_tour:"Tournament (2 ban phases)",fmt_r10:"Ranked · 10 bans",fmt_r6:"Ranked · 6 bans",meta_ranked:"Ranked (all servers)",meta_proAll:"Pro · all MPL",
+search:"Search hero…",allRoles:"All roles",allLanes:"All lanes",sortTier:"Sort: tier",sortName:"Sort: A–Z",sortFit:"Sort: best for now",
+hint_tour:"Like MPL: each team bans 3, then picks 3. Then each team bans 2 more and picks the last 2.",hint_r10:"Mythic and up: each team bans 5, then teams take turns picking.",hint_r6:"Epic to Legend: each team bans 3, then teams take turns picking.",
+Blue:"Blue",Red:"Red",blueSide:"Blue side",redSide:"Red side",ban:"Ban",pick:"Pick",pickN:"Pick {0}",turn:"{0} · {1} {2} of {3}",
+draftDone:"Draft complete",doneMsg:"Both teams are ready. See who wins each lane and what items to buy below.",newDraft:"Start a new draft",
+suggBan:"Ban suggestions for {0}",suggPick:"Pick suggestions for {0}",tapHint:"Tap a hero to choose it. The number shows how good it is compared to the top choice.",
+sTier:"S-tier",usedPro:"Used {0}× in pro",winsPct:" · wins {0}%",buffed:"Made stronger in new patch",nerfed:"Made weaker in new patch",oddLane:"Odd lane (pros only)",noLane:"No lane left",manyLanes:"Plays many lanes",
+beats:"Beats {0}",losesTo:"Loses to {0}",prosPair:"Pros pair it with {0}",worksWith:"Works well with {0}",addTank:"Adds a tank",addStuns:"Adds stuns",startFights:"Can start fights",addMagic:"Adds magic damage",addPhys:"Adds physical damage",
+tooMagic:"Too much magic",tooPhys:"Too much physical",protects:"Protects your carry",easyCounter:"Easy to counter: {0}",bannedPro:"Banned {0}× in pro",firstBan:"Pros ban it first {0}% of the time",
+bannedRanked:"Banned in {0}% of ranked games",rework:"New rework, not tested yet",beatsYour:"Beats your {0}",enemyNoLane:"Enemy has no lane for it",worksEnemy:"Works well with enemy {0}",
+comp:"{0} comp",physical:"Physical",magic:"Magic",m_tanks:"Tanks",m_stuns:"Stuns",m_start:"Start fights",m_burst:"Quick kills",m_heal:"Healing",m_late:"Late game",
+noPicks:"No picks yet.",noTank:"No tank yet",noTankPick:". Pick a tank or a tough fighter",lowStuns:"Not enough stuns",noEngage:"Nobody can start fights",
+allPhys:"All physical damage. The enemy can easily build armor against it",allMagic:"All magic damage. The enemy can easily build armor against it",noPeel:"Weak carries with nobody to protect them",
+earlyComp:"Strong early. Push hard and try to win before 15 minutes",lateComp:"Strong late. Play safe early and get stronger with time",
+antiHeal:"Enemy heals a lot. Buy anti-heal items (Dominance Ice, Sea Halberd, Necklace of Durance)",enemyPhys:"Enemy does mostly physical damage. Buy Antique Cuirass (stronger in new patch) or Blade Armor",
+enemyMagic:"Enemy does mostly magic damage. Buy Athena's Shield or Radiant Armor",enemyDash:"Enemy dashes a lot. Minsitthar, Khufra, Phoveus or Kaja can stop them",enemyCC:"Enemy has many stuns. Use Purify and Tough Boots",looksGood:"Looks good so far",
+laneTitle:"Lane matchups",laneNote:"Each hero is put in its usual lane. The winner is based on who counters who, then hero strength.",even:"Even",noMatch:"No heroes match.",
+proTitle:"Pro scene · {0} Season 18",sideLine:"{0}: blue side won {1}% of {2} games. Red side bans Freya first {3}% of the time. Blue side's favourite first ban is {4} ({5}%).",
+lgPicks:"picks",lgBans:"bans",lgWin:"% = how often it wins",
+tip1:"Freya is the most banned hero in all three leagues, and the new patch made her stronger. Expect pros to keep banning her first.",
+tip2:"Pros used Masha, Gloo and Atlas a lot, but the new patch made all three weaker. Their pro numbers are from before that.",
+tip3:"Pros love Kalea (roam or EXP) even though she is only average in ranked. Pairs pros often pick together: Kalea + Marcel, Paquito + Esmeralda, Aulus + Marcel or Kimmy, Freya + Nolan.",
+tip4:"Pros sometimes play heroes in unusual lanes, like Kimmy or Harith in gold lane, Freya in jungle, or three mages and no marksman. Pro mode allows this.",
+pf_buff:"Buff",pf_nerf:"Nerf",pf_rework:"Rework",pf_adj:"Adj",
+patchSum:"What changed in Patch 2.2.23",
+patchBody:`<div><b>Came out 11 Nov 2026.</b> Hero ranks come from ranked games up to 11 Nov. Heroes made weaker in this patch moved down, heroes made stronger moved up, and the reworked hero is marked as not tested yet.</div><ul>
+<li><b>Made weaker:</b> Masha (S→A), Gloo (S→A), Atlas (A→B). Atlas's freeze is shorter, but he is tougher.</li>
+<li><b>Reworked:</b> Popol and Kupa. Popol can now ride Kupa, and most skills are new.</li>
+<li><b>Made stronger:</b> Freya, Melissa, Lunox (C→B), Xavier, Aldous, Kaja.</li>
+<li><b>Small changes:</b> Lukas, Karrie, Kagura, Uranus.</li>
+<li><b>Items:</b> Chastise Pauldron is weaker. Antique Cuirass is stronger.</li>
+<li><b>Map:</b> Sprint comes back faster (75s). Gold lane gets more early gold. The base turret is twice as tough. Killing the enemy Turtle gives more gold.</li>
+<li><b>From the last patch (2.2.16a):</b> Aulus, Hirara, Eudora and Rafaela were made weaker, Kalea stronger.</li></ul>`,
+footer:`Suggestions look at how strong a hero is, which lane is free, who beats who, and what your team still needs. Use them as a guide. Heroes your players are good at matter more.
+Data: <a href="https://mlbbhub.com/patch-notes/original/2.2.23" target="_blank" rel="noopener">Patch 2.2.23 notes</a> · <a href="https://mlbbhub.com/tier-list" target="_blank" rel="noopener">ranked tier list (11 Nov 2026)</a> · MPL S18 stats and drafts for <a href="https://mlbbhub.com/mpl/my/stats" target="_blank" rel="noopener">MY</a>, <a href="https://mlbbhub.com/mpl/ph/stats" target="_blank" rel="noopener">PH</a> and <a href="https://mlbbhub.com/mpl/id/stats" target="_blank" rel="noopener">ID</a> (11–12 Nov 2026). Fan-made, not affiliated with Moonton.`,
+copyright:"© 2026 Mican. All rights reserved."
+},ms:{
+skipped:"Dilangkau",skipBan:"Langkau ban ini",skipAll:"Langkau semua ban",clearSlot:"Kosongkan slot",cancel:"Batal",choosingFor:"Memilih: {0}",slotHint:"Tekan mana-mana slot di papan untuk isi atau tukar.",
+dupNote:"Dalam ranked, kedua-dua pasukan boleh ban hero yang sama.",guideTitle:"Panduan hero",guideFor:"Panduan untuk {0}",chooseHero:"Pilih hero",buildT:"Build",emblemT:"Emblem",spellT:"Battle spell",
+src_r:"Build hasil kajian dari panduan 2026",src_g:"Build biasa untuk role ini. Ubah ikut pasukan musuh.",beatenBy:"Hero yang kalahkan {0}",strongVs:"{0} kuat melawan",
+measured:"data ranked",kit:"lawan skill",howTo:"Cara main",inDraft:"dah diambil",top5Title:"Top 5 hero untuk Patch 2.2.23",top5Note:"Satu hero untuk setiap lane, dipilih dari data pick/ban MPL Season 18, keputusan ranked dan perubahan patch baru.",
+openGuide:"Panduan penuh",whyMeta:"Kenapa sekarang",counterNote:"Peratus = berapa kerap mereka lebih banyak menang dalam lawan ini (data ranked rasmi, Patch 2.2.16a). Lawan skill berdasarkan skill hero.",
+format:"Format",meta:"Meta",undo:"Batal",reset:"Mula semula",fmt_tour:"Kejohanan (2 fasa ban)",fmt_r10:"Ranked · 10 ban",fmt_r6:"Ranked · 6 ban",meta_ranked:"Ranked (semua server)",meta_proAll:"Pro · semua MPL",
+search:"Cari hero…",allRoles:"Semua role",allLanes:"Semua lane",sortTier:"Susun: tier",sortName:"Susun: A–Z",sortFit:"Susun: terbaik sekarang",
+hint_tour:"Macam MPL: setiap pasukan ban 3, kemudian pilih 3. Lepas tu setiap pasukan ban 2 lagi dan pilih 2 terakhir.",hint_r10:"Mythic ke atas: setiap pasukan ban 5, kemudian bergilir pilih hero.",hint_r6:"Epic hingga Legend: setiap pasukan ban 3, kemudian bergilir pilih hero.",
+Blue:"Biru",Red:"Merah",blueSide:"Pihak Biru",redSide:"Pihak Merah",ban:"Ban",pick:"Pilih",pickN:"Pilihan {0}",turn:"{0} · {1} {2} daripada {3}",
+draftDone:"Draf selesai",doneMsg:"Kedua-dua pasukan dah siap. Tengok siapa menang setiap lane dan item apa nak beli di bawah.",newDraft:"Mula draf baru",
+suggBan:"Cadangan ban untuk {0}",suggPick:"Cadangan pilihan untuk {0}",tapHint:"Tekan hero untuk pilih. Nombor itu tunjuk sebaik mana hero tu berbanding pilihan teratas.",
+sTier:"S-tier",usedPro:"Diguna {0}× oleh pro",winsPct:" · menang {0}%",buffed:"Lebih kuat dalam patch baru",nerfed:"Lebih lemah dalam patch baru",oddLane:"Lane luar biasa (pro sahaja)",noLane:"Tiada lane kosong",manyLanes:"Boleh main banyak lane",
+beats:"Kalahkan {0}",losesTo:"Kalah dengan {0}",prosPair:"Pro selalu gandingkan dengan {0}",worksWith:"Serasi dengan {0}",addTank:"Tambah tank",addStuns:"Tambah stun",startFights:"Boleh mulakan war",addMagic:"Tambah magic damage",addPhys:"Tambah physical damage",
+tooMagic:"Terlalu banyak magic",tooPhys:"Terlalu banyak physical",protects:"Lindungi carry anda",easyCounter:"Senang di-counter: {0}",bannedPro:"Di-ban {0}× oleh pro",firstBan:"Pro ban hero ini dulu dalam {0}% game",
+bannedRanked:"Di-ban dalam {0}% game ranked",rework:"Rework baru, belum diuji",beatsYour:"Kalahkan {0} anda",enemyNoLane:"Musuh tiada lane untuknya",worksEnemy:"Serasi dengan {0} musuh",
+comp:"Komposisi {0}",physical:"Physical",magic:"Magic",m_tanks:"Tank",m_stuns:"Stun",m_start:"Mula war",m_burst:"Bunuh pantas",m_heal:"Heal",m_late:"Late game",
+noPicks:"Belum ada pilihan.",noTank:"Belum ada tank",noTankPick:". Pilih tank atau fighter yang tahan lasak",lowStuns:"Stun tak cukup",noEngage:"Tiada siapa boleh mulakan war",
+allPhys:"Semua physical damage. Musuh senang beli armor untuk lawan",allMagic:"Semua magic damage. Musuh senang beli armor untuk lawan",noPeel:"Carry lemah tapi tiada siapa lindungi",
+earlyComp:"Kuat di awal game. Tekan kuat dan cuba menang sebelum minit ke-15",lateComp:"Kuat di late game. Main selamat dulu, nanti jadi lebih kuat",
+antiHeal:"Musuh banyak heal. Beli item anti-heal (Dominance Ice, Sea Halberd, Necklace of Durance)",enemyPhys:"Musuh kebanyakannya physical damage. Beli Antique Cuirass (lebih kuat dalam patch baru) atau Blade Armor",
+enemyMagic:"Musuh kebanyakannya magic damage. Beli Athena's Shield atau Radiant Armor",enemyDash:"Musuh banyak dash. Minsitthar, Khufra, Phoveus atau Kaja boleh halang mereka",enemyCC:"Musuh banyak stun. Guna Purify dan Tough Boots",looksGood:"Setakat ini nampak bagus",
+laneTitle:"Lawan setiap lane",laneNote:"Setiap hero diletak di lane biasa mereka. Pemenang dikira ikut siapa counter siapa, kemudian kekuatan hero.",even:"Seri",noMatch:"Tiada hero dijumpai.",
+proTitle:"Arena pro · {0} Season 18",sideLine:"{0}: pihak biru menang {1}% daripada {2} game. Pihak merah ban Freya dulu dalam {3}% game. Ban pertama kegemaran pihak biru ialah {4} ({5}%).",
+lgPicks:"pilih",lgBans:"ban",lgWin:"% = kadar menang",
+tip1:"Freya hero paling banyak di-ban dalam ketiga-tiga liga, dan patch baru buat dia lebih kuat. Pro mungkin terus ban dia dulu.",
+tip2:"Pro banyak guna Masha, Gloo dan Atlas, tapi patch baru buat ketiga-tiganya lebih lemah. Data pro mereka dari sebelum perubahan itu.",
+tip3:"Pro suka Kalea (roam atau EXP) walaupun dia biasa-biasa saja dalam ranked. Gandingan yang pro selalu pilih: Kalea + Marcel, Paquito + Esmeralda, Aulus + Marcel atau Kimmy, Freya + Nolan.",
+tip4:"Pro kadang-kadang main hero di lane luar biasa, contohnya Kimmy atau Harith di gold lane, Freya di jungle, atau tiga mage tanpa marksman. Mod pro benarkan ini.",
+pf_buff:"Buff",pf_nerf:"Nerf",pf_rework:"Rework",pf_adj:"Ubah",
+patchSum:"Apa yang berubah dalam Patch 2.2.23",
+patchBody:`<div><b>Keluar pada 11 Nov 2026.</b> Ranking hero diambil dari game ranked sehingga 11 Nov. Hero yang jadi lebih lemah dalam patch ini turun, hero yang jadi lebih kuat naik, dan hero yang di-rework ditanda sebagai belum diuji.</div><ul>
+<li><b>Lebih lemah:</b> Masha (S→A), Gloo (S→A), Atlas (A→B). Freeze Atlas lebih pendek, tapi dia lebih tahan lasak.</li>
+<li><b>Rework:</b> Popol and Kupa. Popol kini boleh tunggang Kupa, dan kebanyakan skill baru.</li>
+<li><b>Lebih kuat:</b> Freya, Melissa, Lunox (C→B), Xavier, Aldous, Kaja.</li>
+<li><b>Perubahan kecil:</b> Lukas, Karrie, Kagura, Uranus.</li>
+<li><b>Item:</b> Chastise Pauldron lebih lemah. Antique Cuirass lebih kuat.</li>
+<li><b>Peta:</b> Sprint lebih cepat sedia (75s). Gold lane dapat lebih banyak gold awal. Turret base dua kali lebih tahan. Bunuh Turtle musuh beri lebih banyak gold.</li>
+<li><b>Dari patch lepas (2.2.16a):</b> Aulus, Hirara, Eudora dan Rafaela jadi lebih lemah, Kalea lebih kuat.</li></ul>`,
+footer:`Cadangan mengambil kira kekuatan hero, lane yang masih kosong, siapa kalahkan siapa, dan apa yang pasukan anda masih perlukan. Guna sebagai panduan sahaja. Hero yang pemain anda mahir lebih penting.
+Data: <a href="https://mlbbhub.com/patch-notes/original/2.2.23" target="_blank" rel="noopener">nota Patch 2.2.23</a> · <a href="https://mlbbhub.com/tier-list" target="_blank" rel="noopener">tier list ranked (11 Nov 2026)</a> · statistik dan draf MPL S18 untuk <a href="https://mlbbhub.com/mpl/my/stats" target="_blank" rel="noopener">MY</a>, <a href="https://mlbbhub.com/mpl/ph/stats" target="_blank" rel="noopener">PH</a> dan <a href="https://mlbbhub.com/mpl/id/stats" target="_blank" rel="noopener">ID</a> (11–12 Nov 2026). Dibuat oleh peminat, tiada kaitan dengan Moonton.`,
+copyright:"© 2026 Mican. Hak cipta terpelihara."
+}};
+function t(k,...a){const L=I18N[state.lang]||I18N.en;let v=L[k]??I18N.en[k]??k;a.forEach((x,i)=>{v=v.split("{"+i+"}").join(x)});return v}
+function applyStatic(){
+ document.documentElement.lang=state.lang==="ms"?"ms":"en";
+ document.querySelectorAll("[data-i]").forEach(el=>{el.innerHTML=t(el.dataset.i)});
+ document.querySelectorAll("[data-iph]").forEach(el=>{el.placeholder=t(el.dataset.iph);el.setAttribute("aria-label",t(el.dataset.iph))});
+ $("lEN").setAttribute("aria-pressed",state.lang==="en");$("lMS").setAttribute("aria-pressed",state.lang==="ms");
+}
+
+// ---------- engine ----------
+function assign(list){
+ let best=null,bestCost=1e9;const used={},cur=[];
+ (function rec(i,cost){if(cost>=bestCost)return;if(i===list.length){bestCost=cost;best=cur.slice();return}
+  list[i].lanes.forEach((ln,k)=>{if(used[ln])return;used[ln]=1;cur[i]=ln;rec(i+1,cost+k);used[ln]=0})})(0,0);
+ return best;
+}
+function counterScore(a,b){ // how hard a punishes b
+ let s=0;
+ if(HARD_SET[a.n+">"+b.n])s+=4;
+ {const m=Math.max((CM[b.n]&&CM[b.n][a.n])||0,(CB[a.n]&&CB[a.n][b.n])||0);if(m)s+=m*.9;} // measured edge, counted once
+ if(has(a,"antidash")&&has(b,"dash"))s+=2.5;
+ if(has(a,"antiheal")&&(has(b,"sus")||has(b,"heal")))s+=1.5;
+ if(has(a,"antitank")&&has(b,"front"))s+=1.5;
+ if((has(a,"suppress")||has(a,"invis")||has(a,"pick"))&&has(b,"squish"))s+=1.2;
+ if(has(a,"burst")&&has(b,"squish")&&!has(b,"dash"))s+=.6;
+ if(has(a,"purify")&&has(b,"eng"))s+=1;
+ if(has(a,"immune")&&has(b,"eng")&&has(b,"cc"))s+=.5;
+ if((has(a,"suppress"))&&has(b,"dash")&&!has(b,"immune"))s+=1;
+ return s;
+}
+function synergy(a,b){
+ let s=0;if(PAIR_SET[a.n+"|"+b.n])s+=PAIR_SET[a.n+"|"+b.n]===2?(isPro()?3.5:2.5):3;
+ if(has(a,"eng")&&has(b,"aoe")&&b.roles.includes("M"))s+=1;
+ if(has(b,"eng")&&has(a,"aoe")&&a.roles.includes("M"))s+=1;
+ if((has(a,"peel")||has(a,"heal"))&&has(b,"squish")&&b.roles.includes("K"))s+=.8;
+ if((has(b,"peel")||has(b,"heal"))&&has(a,"squish")&&a.roles.includes("K"))s+=.8;
+ return s;
+}
+function profile(list){
+ const c=k=>list.filter(h=>has(h,k)).length;
+ return{n:list.length,front:c("front"),cc:c("cc")+c("suppress"),eng:c("eng"),heal:c("heal"),sus:c("sus"),peel:c("peel")+c("heal"),burst:c("burst"),late:c("late"),early:c("early"),dash:c("dash"),squish:c("squish"),P:c("P"),M:c("M"),aoe:c("aoe"),poke:c("poke")};
+}
+function metaPts(h){
+ let p=TIER_PTS[h.tier];
+ if(isPro()){const pr=PRO[h.n];p=p*.45+(pr?(pr[0]+pr[1])/PRO._maxPB*7+((pr[0]>=20?pr[2]/pr[0]:.5)-.5)*4:0)}
+ else p+= (BANRATE[h.n]||0)/14;
+ if(PATCH[h.n]==="buff")p+=.6;if(PATCH[h.n]==="nerf")p-=.6;
+ return p;
+}
+const names=a=>a.slice(0,2).map(h=>h.n).join(", ");
+
+function scorePick(h,side,d){
+ const mine=d.picks[side].map(n=>BY[n]),opp=d.picks[side==="B"?"R":"B"].map(n=>BY[n]);
+ const R=[];let s=metaPts(h);
+ if(h.tier==="S")R.push([t("sTier"),1]);
+ if(isPro()&&PRO[h.n]){const pr=PRO[h.n];R.push([t("usedPro",pr[0]+pr[1])+(pr[0]>=20?t("winsPct",Math.round(pr[2]/pr[0]*100)):""),1])}
+ if(PATCH[h.n]==="buff")R.push([t("buffed"),1]);
+ if(PATCH[h.n]==="nerf")R.push([t("nerfed"),-1]);
+ const a=assign([...mine,h]);
+ if(!a){s-=isPro()?8:25;R.push([t(isPro()?"oddLane":"noLane"),-1])}
+ else{const myLane=a[a.length-1];R.push([LANE_NAME[myLane],0]);
+  if(mine.length<2&&h.lanes.length>1){s+=1.2;R.push([t("manyLanes"),1])}}
+ const beat=opp.filter(e=>counterScore(h,e)>=1.5).sort((x,y)=>counterScore(h,y)-counterScore(h,x));
+ s+=opp.reduce((t,e)=>t+counterScore(h,e),0)*1.5;if(beat.length)R.push([t("beats",names(beat)),1]);
+ const lose=opp.filter(e=>counterScore(e,h)>=1.5);
+ s-=opp.reduce((t,e)=>t+counterScore(e,h),0)*1.4;if(lose.length)R.push([t("losesTo",names(lose)),-1]);
+ const syn=mine.filter(m=>synergy(h,m)>=1);s+=mine.reduce((t,m)=>t+synergy(h,m),0)*1.2;
+ const proSyn=syn.filter(m=>PAIR_SET[h.n+"|"+m.n]===2);
+ if(proSyn.length)R.push([t("prosPair",names(proSyn)),1]);else if(syn.length)R.push([t("worksWith",names(syn)),1]);
+ const p=profile(mine),left=5-mine.length;
+ if(mine.length){
+  if(!p.front&&has(h,"front")){s+=3;R.push([t("addTank"),1])}
+  if(p.cc<2&&(has(h,"cc")||has(h,"suppress"))){s+=1.5;R.push([t("addStuns"),1])}
+  if(!p.eng&&has(h,"eng")){s+=1.5;R.push([t("startFights"),1])}
+  if(p.P>=2&&!p.M&&has(h,"M")){s+=2.5;R.push([t("addMagic"),1])}
+  if(p.M>=2&&!p.P&&has(h,"P")){s+=2.5;R.push([t("addPhys"),1])}
+  if(p.M>=3&&has(h,"M")&&left<=2){s-=2;R.push([t("tooMagic"),-1])}
+  if(p.P>=3&&has(h,"P")&&left<=2){s-=2;R.push([t("tooPhys"),-1])}
+  if(p.squish>=2&&!p.peel&&(has(h,"peel")||has(h,"heal"))){s+=1.5;R.push([t("protects"),1])}
+  if(left===1&&!p.front&&!has(h,"front")){s-=3}
+ }
+ // exposure to counter-picks still open
+ if(opp.length<5){
+  const threats=HEROES.filter(x=>!d.used.has(x.n)&&x!==h&&counterScore(x,h)>=3);
+  if(threats.length>=2){s-=Math.min(3,threats.length*.6)*(5-opp.length)/5;R.push([t("easyCounter",names(threats)),-1])}
+ }
+ return{h,s,R};
+}
+function scoreBan(h,side,d){
+ const enemy=side==="B"?"R":"B";const mine=d.picks[side].map(n=>BY[n]),opp=d.picks[enemy].map(n=>BY[n]);
+ const R=[];let s=TIER_PTS[h.tier];
+ if(isPro()){const pr=PRO[h.n];s=s*.4+(pr?pr[1]/PRO._maxB*7+pr[0]/PRO._maxP*2:0);if(pr&&pr[1]/PRO._maxB>=.35)R.push([t("bannedPro",pr[1]),1]);
+  if(d.bans[side].length===0){let fb=0;for(const lg of PRO._lgs){const f=FIRSTBAN[lg][side][h.n];if(f)fb=Math.max(fb,f)}if(fb){s+=fb/8;R.push([t("firstBan",fb),1])}}}
+ else{s+=(BANRATE[h.n]||0)/9;if((BANRATE[h.n]||0)>=30)R.push([t("bannedRanked",Math.round(BANRATE[h.n])),1])}
+ if(h.tier==="S")R.push([t("sTier"),1]);
+ if(PATCH[h.n]==="buff"){s+=isPro()&&PRO[h.n]?1.5:.6;R.push([t("buffed"),1])}
+ if(PATCH[h.n]==="nerf"){s-=1.2;R.push([t("nerfed"),-1])}
+ if(PATCH[h.n]==="rework")R.push([t("rework"),0]);
+ const hurt=mine.filter(m=>counterScore(h,m)>=1.5);s+=mine.reduce((t,m)=>t+counterScore(h,m),0)*1.6;
+ if(hurt.length)R.push([t("beatsYour",names(hurt)),1]);
+ if(opp.length){
+  if(!assign([...opp,h])){s*=.45;R.push([t("enemyNoLane"),-1])}
+  else{const syn=opp.filter(o=>synergy(h,o)>=1);s+=opp.reduce((t,o)=>t+synergy(h,o),0)*.8;if(syn.length)R.push([t("worksEnemy",names(syn)),1])}
+ }
+ return{h,s,R};
+}
+function ranked(d){
+ if(!d.cur)return[];
+ const side=d.cur[1],isBan=d.cur[0]==="b";
+ return HEROES.filter(h=>!d.blocked(h.n)).map(h=>isBan?scoreBan(h,side,d):scorePick(h,side,d)).sort((a,b)=>b.s-a.s);
+}
+
+// ---------- render ----------
+const $=id=>document.getElementById(id);
+const ROLE_ICON={
+ T:'<path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z"/>',
+ F:'<path d="M14.5 3H21v6.5L10 20.5 7.5 18l-2 2L4 18.5l2-2L3.5 14z"/>',
+ A:'<path d="M20 4 9 15l-2.5-.5L4 17l3 3 2.5-2.5L9 15"/><path d="M20 4l-1 6-6 1"/>',
+ M:'<path d="M12 2l2.4 5.6L20 10l-5.6 2.4L12 18l-2.4-5.6L4 10l5.6-2.4z"/><path d="M18 17l1 2 2 1-2 1-1 2-1-2-2-1 2-1z"/>',
+ K:'<path d="M5 3c6 2 9 6 9 9s-3 7-9 9"/><path d="M5 3v18"/><path d="M3 12h18M17 9l4 3-4 3"/>',
+ S:'<path d="M12 21s-8-4.8-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6.2-8 11-8 11z"/>'};
+const roleSvg=r=>`<svg class="ri" viewBox="0 0 24 24" aria-hidden="true">${ROLE_ICON[r]}</svg>`;
+// Original generated badge per hero: shape, colour and pattern come from a hash of the name
+const ROLE_HUE={F:16,T:205,A:285,M:248,K:40,S:158};
+const SHAPES=[
+ r=>`<polygon points="20,${20-r} ${20+r},20 20,${20+r} ${20-r},20"/>`,
+ r=>{let p=[];for(let i=0;i<6;i++){const a=Math.PI/3*i+Math.PI/6;p.push((20+r*Math.cos(a)).toFixed(1)+","+(20+r*Math.sin(a)).toFixed(1))}return`<polygon points="${p.join(" ")}"/>`},
+ r=>{let p=[];for(let i=0;i<10;i++){const a=Math.PI/5*i-Math.PI/2,rr=i%2?r*.45:r;p.push((20+rr*Math.cos(a)).toFixed(1)+","+(20+rr*Math.sin(a)).toFixed(1))}return`<polygon points="${p.join(" ")}"/>`},
+ r=>`<polygon points="20,${20-r} ${20+r*.95},${20+r*.75} ${20-r*.95},${20+r*.75}"/>`,
+ r=>`<circle cx="20" cy="20" r="${r}"/>`,
+ r=>`<path d="M${20-r} ${20-r*.4}L20 ${20-r}L${20+r} ${20-r*.4}V${20+r*.2}L20 ${20+r}L${20-r} ${20+r*.2}Z"/>`,
+ r=>`<rect x="${20-r*.8}" y="${20-r*.8}" width="${r*1.6}" height="${r*1.6}" rx="${r*.3}"/>`,
+ r=>{let p=[];for(let i=0;i<8;i++){const a=Math.PI/4*i,rr=i%2?r*.6:r;p.push((20+rr*Math.cos(a)).toFixed(1)+","+(20+rr*Math.sin(a)).toFixed(1))}return`<polygon points="${p.join(" ")}"/>`}
+];
+const PATTERNS=[
+ c=>`<path d="M-5 10L10 -5M-5 25L25 -5M-5 40L40 -5M10 45L45 10M25 45L45 25" stroke="${c}" stroke-width="2.5"/>`,
+ c=>`<circle cx="20" cy="20" r="17" fill="none" stroke="${c}" stroke-width="2"/><circle cx="20" cy="20" r="11" fill="none" stroke="${c}" stroke-width="1.5"/>`,
+ c=>`<path d="M0 30L10 24L20 30L30 24L40 30M0 38L10 32L20 38L30 32L40 38" fill="none" stroke="${c}" stroke-width="2"/>`,
+ c=>[6,14,22,30,38].map(x=>[6,14,22,30,38].map(y=>`<circle cx="${x}" cy="${y}" r="1.3" fill="${c}"/>`).join("")).join(""),
+ c=>`<path d="M20 0V40M0 20H40" stroke="${c}" stroke-width="2"/>`,
+ c=>`<path d="M0 0L40 40M40 0L0 40" stroke="${c}" stroke-width="1.6"/>`
+];
+const hashStr=s=>{let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0};
+const BADGE_CACHE={};
+function hsl(h,sa,l){sa/=100;l/=100;const k=n=>(n+h/30)%12,a=sa*Math.min(l,1-l),f=n=>l-a*Math.max(-1,Math.min(k(n)-3,9-k(n),1));return"#"+[f(0),f(8),f(4)].map(v=>Math.round(v*255).toString(16).padStart(2,"0")).join("")}
+function badge(h){
+ if(BADGE_CACHE[h.n])return BADGE_CACHE[h.n];
+ const x=hashStr(h.n),r=h.roles[0];
+ const hue=(ROLE_HUE[r]+(x%44)-22+360)%360,sat=48+(x>>>6)%22,lit=36+(x>>>9)%12;
+ const c1=hsl(hue,sat,lit+10),c2=hsl((hue+28+(x>>>12)%30)%360,sat+8,lit-12),acc=hsl((hue+180)%360,70,72);
+ const id="bg"+x.toString(36);
+ const shape=SHAPES[(x>>>4)%SHAPES.length],shape2=SHAPES[(x>>>14)%SHAPES.length],pat=PATTERNS[(x>>>8)%PATTERNS.length];
+ const rot=((x>>>17)%8)*15;
+ const svg=`<svg viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs>
+<rect width="40" height="40" fill="url(#${id})"/><g opacity=".16">${pat("#fff")}</g>
+<g transform="rotate(${rot} 20 20)" fill="#fff" fill-opacity=".92">${shape(12.5)}</g>
+<g transform="rotate(${-rot} 20 20)" fill="${acc}">${shape2(5.2)}</g>
+<g transform="translate(26.5 26.5) scale(.5)"><circle cx="12" cy="12" r="12" fill="rgba(0,0,0,.45)"/><g fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(3.6 3.6) scale(.7)">${ROLE_ICON[r]}</g></g></svg>`;
+ return BADGE_CACHE[h.n]=svg;
+}
+const mono=h=>`<span class="mono badge" title="${esc(h.n)} · ${ROLE_NAME[h.roles[0]]}">${badge(h)}</span>`;
+const tierTag=h=>`<span class="tier t${h.tier}" title="${h.tier}-tier">${h.tier}</span>`;
+const patchTag=h=>PATCH[h.n]?`<span class="pf ${PATCH[h.n]}">${t("pf_"+PATCH[h.n])}</span>`:"";
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+
+function renderTeam(side,d){
+ const el=$("team"+side);const label=t(side==="B"?"blueSide":"redSide");
+ const active=d.cur&&d.cur[1]===side;el.classList.toggle("active",!!active);
+ const filled=d.pickSlots[side].map(n=>n?BY[n]:null);const comp=filled.filter(Boolean);const la=assign(comp)||[];const laneOf={};comp.forEach((h,i)=>laneOf[h.n]=la[i]);
+ let bans="";for(let i=0;i<5;i++){const k="b"+side+i,off=i>=d.maxBans[side],n=d.banSlots[side][i],sk=state.skip[k];
+  bans+=off?`<div class="ban off">–</div>`:`<button class="ban ${n?"filled":""} ${sk?"skipped":""} ${k===d.curKey?"cur":""}" data-k="${k}" aria-label="${esc(label)} ${t("ban")} ${i+1}">${n?esc(n):sk?t("skipped"):t("ban")}</button>`}
+ let picks="";for(let i=0;i<5;i++){const k="p"+side+i,h=filled[i];
+  if(h)picks+=`<div class="pick ${k===d.curKey?"cur":""}" data-k="${k}" role="button" tabindex="0" aria-label="${t("pickN",i+1)}: ${esc(h.n)}">${mono(h)}<div style="min-width:0"><div class="nm">${esc(h.n)}</div><div class="sub">${h.roles.map(r=>ROLE_NAME[r]).join(" / ")}</div></div><span class="pr"><span class="lane">${laneOf[h.n]?LANE_NAME[laneOf[h.n]]:"?"}</span><button class="info" data-g="${esc(h.n)}" aria-label="${esc(t("guideFor",h.n))}" title="${esc(t("guideFor",h.n))}">i</button></span></div>`;
+  else picks+=`<div class="pick empty ${k===d.curKey?"cur":""}" data-k="${k}" role="button" tabindex="0" aria-label="${esc(label)} ${t("pickN",i+1)}"><span class="mono" style="background:var(--line)" aria-hidden="true"></span><div class="sub">${t("pickN",i+1)}</div></div>`}
+ el.innerHTML=`<h2><span>${label}</span><span style="font-size:12px">${comp.length}/5</span></h2><div class="bans">${bans}</div><div class="picks">${picks}</div>`;
+}
+let lastRanked=[];
+function slotName(k){return t(k[1]==="B"?"Blue":"Red")+" · "+(k[0]==="b"?t("ban")+" "+(+k.slice(2)+1):t("pickN",+k.slice(2)+1))}
+function renderAdvisor(d){
+ const el=$("advisor");
+ const anyBanLeft=d.keys.some(k=>k[0]==="b"&&!state.slots[k]&&!state.skip[k]);
+ if(!d.cur){el.innerHTML=`<h3>${t("draftDone")}</h3><div class="done-box"><div>${t("doneMsg")}</div><div class="ctl"><button class="btn primary" id="again">${t("newDraft")}</button></div><div class="hint">${t("slotHint")}</div></div>`;$("again").onclick=reset;return}
+ const side=d.cur[1],isBan=d.cur[0]==="b",who=t(side==="B"?"Blue":"Red");
+ const top=lastRanked.slice(0,7);const max=Math.max(1,top[0]?top[0].s:1);
+ const ctl=[];
+ if(isBan&&!d.editing)ctl.push(`<button class="btn" id="skipOne">${t("skipBan")}</button>`);
+ if(anyBanLeft)ctl.push(`<button class="btn" id="skipAll">${t("skipAll")}</button>`);
+ if(d.editing)ctl.push(`<button class="btn" id="clearSlot">${t("clearSlot")}</button>`);
+ if(state.sel)ctl.push(`<button class="btn" id="cancelSel">${t("cancel")}</button>`);
+ el.innerHTML=`<h3>${t(isBan?"suggBan":"suggPick",who)}</h3>
+  <div class="choosing ${side}">${t("choosingFor",slotName(d.curKey))}${d.editing?" ("+esc(state.slots[d.curKey])+")":""}</div>
+  <div class="ctl">${ctl.join("")}</div>
+  <div class="sugg">${top.map(r=>{
+   const pct=Math.round(Math.max(0,r.s)/max*100);
+   return `<button class="sg" data-n="${esc(r.h.n)}" aria-label="${t(isBan?"ban":"pick")} ${esc(r.h.n)}">${mono(r.h)}<div style="min-width:0"><div class="nm">${esc(r.h.n)} ${tierTag(r.h)} ${patchTag(r.h)}</div><div class="chips">${r.R.slice(0,4).map(([tx,v])=>`<span class="chip ${v>0?"pos":v<0?"neg":""}">${esc(tx)}</span>`).join("")}</div></div><div class="score">${pct}</div></button>`}).join("")}</div>
+  <div class="hint">${t("tapHint")} ${t("slotHint")}${rankedFmt()&&isBan?" "+t("dupNote"):""}</div>`;
+ el.querySelectorAll(".sg").forEach(b=>b.onclick=()=>act(b.dataset.n));
+ const on=(id,f)=>{const b=$(id);if(b)b.onclick=f};
+ on("skipOne",()=>skipBan(false));on("skipAll",()=>skipBan(true));on("clearSlot",clearSlot);on("cancelSel",()=>{state.sel=null;save();render()});
+}
+function meter(label,v,max){return`<div class="meter"><span>${label}</span><div class="bar"><i style="width:${Math.min(100,v/max*100)}%"></i></div><span style="text-align:right;font-variant-numeric:tabular-nums">${v}</span></div>`}
+function teamNotes(side,d){
+ const mine=d.picks[side].map(n=>BY[n]),opp=d.picks[side==="B"?"R":"B"].map(n=>BY[n]);const p=profile(mine),o=profile(opp);const W=[];
+ if(!mine.length)return`<li class="tip">${t("noPicks")}</li>`;
+ const left=5-mine.length;
+ if(!p.front)W.push([t("noTank")+(left?t("noTankPick"):""),""]);
+ if(mine.length>=3&&p.cc<2)W.push([t("lowStuns"),""]);
+ if(mine.length>=3&&!p.eng)W.push([t("noEngage"),""]);
+ if(mine.length>=3&&(p.P===mine.length||p.M===mine.length))W.push([t(p.P===mine.length?"allPhys":"allMagic"),""]);
+ if(p.squish>=2&&!p.peel)W.push([t("noPeel"),""]);
+ if(p.early>p.late+1)W.push([t("earlyComp"),"tip"]);
+ if(p.late>=3)W.push([t("lateComp"),"tip"]);
+ // item notes vs enemy
+ if(o.heal+o.sus>=2)W.push([t("antiHeal"),"tip"]);
+ if(opp.length>=3&&o.P>=4)W.push([t("enemyPhys"),"tip"]);
+ if(opp.length>=3&&o.M>=3)W.push([t("enemyMagic"),"tip"]);
+ if(o.dash>=3)W.push([t("enemyDash"),"tip"]);
+ if(o.cc>=4)W.push([t("enemyCC"),"tip"]);
+ if(!W.length)W.push([t("looksGood"),"ok"]);
+ return W.map(([t,c])=>`<li class="${c}">${esc(t)}</li>`).join("");
+}
+function renderAnalysis(d){
+ const parts=["B","R"].map(side=>{const mine=d.picks[side].map(n=>BY[n]);const p=profile(mine);const tot=Math.max(1,p.P+p.M);
+  return`<div class="section ${side}"><h3 style="color:var(--${side==="B"?"blue":"red"})">${t("comp",t(side==="B"?"Blue":"Red"))}</h3>
+  <div><div class="split"><span class="p" style="width:${p.P/tot*100}%"></span><span class="m" style="width:${p.M/tot*100}%"></span></div><div class="legend" style="margin-top:4px"><span>${t("physical")} ${p.P}</span><span>${t("magic")} ${p.M}</span></div></div>
+  <div class="meters">${meter(t("m_tanks"),p.front,3)}${meter(t("m_stuns"),p.cc,5)}${meter(t("m_start"),p.eng,3)}${meter(t("m_burst"),p.burst,4)}${meter(t("m_heal"),p.heal+p.sus,4)}${meter(t("m_late"),p.late,4)}</div>
+  <ul class="warns">${teamNotes(side,d)}</ul></div>`});
+ // lane matchups
+ const bl=d.picks.B.map(n=>BY[n]),rl=d.picks.R.map(n=>BY[n]);const ba=assign(bl)||[],ra=assign(rl)||[];
+ const rows=LANES.map(ln=>{const b=bl[ba.indexOf(ln)],r=rl[ra.indexOf(ln)];
+  let edge="",cls="";if(b&&r){const x=counterScore(b,r)-counterScore(r,b)+(TIER_PTS[b.tier]-TIER_PTS[r.tier])*.15;if(x>.6){edge=t("Blue");cls="eB"}else if(x<-.6){edge=t("Red");cls="eR"}else edge=t("even")}
+  return`<div class="mu-row"><span class="l">${b?esc(b.n):"—"}</span><span class="c ${cls}">${LANE_NAME[ln]}${edge?"<br>"+edge:""}</span><span class="r">${r?esc(r.n):"—"}</span></div>`}).join("");
+ parts.splice(1,0,`<div class="section"><h3>${t("laneTitle")}</h3><div class="mu">${rows}</div><div style="font-size:12px;color:var(--muted)">${t("laneNote")}</div></div>`);
+ $("analysis").innerHTML=parts.join("");
+}
+function renderPool(d){
+ const q=$("q").value.trim().toLowerCase(),role=$("fRole").value,lane=$("fLane").value,sort=$("fSort").value;
+ const scoreMap=Object.fromEntries(lastRanked.map((r,i)=>[r.h.n,i]));
+ let list=HEROES.filter(h=>(!q||h.n.toLowerCase().includes(q))&&(!role||h.roles.includes(role))&&(!lane||h.lanes.includes(lane)));
+ const order={S:0,A:1,B:2,C:3,D:4};
+ list.sort((a,b)=>sort==="name"?a.n.localeCompare(b.n):sort==="fit"?((scoreMap[a.n]??999)-(scoreMap[b.n]??999)):(order[a.tier]-order[b.tier]||a.n.localeCompare(b.n)));
+ const whoUsed=n=>d.picks.B.includes(n)||d.bans.B.includes(n)?"B":"R";
+ $("grid").innerHTML=list.map(h=>{const u=d.used.has(h.n);return`<button class="hero ${u?whoUsed(h.n)+"-used":""}" data-n="${esc(h.n)}" ${!d.cur||d.blocked(h.n)?"disabled":""} title="${esc(h.n)} · ${h.roles.map(r=>ROLE_NAME[r]).join("/")} · ${h.lanes.map(l=>LANE_NAME[l]).join("/")}">${mono(h)}<span style="min-width:0"><span class="nm" style="display:block">${esc(h.n)}</span><span class="meta">${tierTag(h)}${patchTag(h)}</span></span></button>`}).join("")||`<div style="color:var(--muted)">${t("noMatch")}</div>`;
+}
+function renderPhase(d){
+ const keys=d.keys;
+ if(d.cur){const side=d.cur[1];$("turn").className="turn "+side;
+  $("turn").textContent=slotName(d.curKey);
+  $("turnHint").textContent=t("hint_"+state.fmt)+(rankedFmt()?" "+t("dupNote"):"")}
+ else{$("turn").className="turn";$("turn").textContent=t("draftDone");$("turnHint").textContent=""}
+ $("steps").innerHTML=keys.map(k=>{const done=state.slots[k]||state.skip[k];return`<button class="step ${k[1]} ${k[0]==="b"?"sban":""} ${done?"done":""} ${state.skip[k]?"sk":""} ${k===d.curKey?"cur":""}" data-k="${k}" title="${esc(slotName(k))}" aria-label="${esc(slotName(k))}"></button>`}).join("");
+}
+
+function renderPro(){
+ const lgs=state.meta.startsWith("pro")&&state.meta!=="proAll"?[state.meta.slice(3)]:["MY","PH","ID"];
+ const label=lgs.length>1?"MPL MY · PH · ID":LEAGUE_INFO[lgs[0]].name;
+ const rows=Object.entries(PRO).filter(([k])=>k[0]!=="_").map(([n,v])=>({n,p:v[0],b:v[1],w:v[2]})).sort((a,b)=>(b.p+b.b)-(a.p+a.b)).slice(0,10);
+ const max=rows[0]?rows[0].p+rows[0].b:1;
+ const side=lgs.map(l=>`<li class="tip">${t("sideLine",LEAGUE_INFO[l].name,LEAGUE_INFO[l].blue,LEAGUE_INFO[l].games,FIRSTBAN[l].R.Freya,Object.entries(FIRSTBAN[l].B)[0][0],Object.entries(FIRSTBAN[l].B)[0][1])}</li>`).join("");
+ $("proNotes").innerHTML=`<h3>${t("proTitle",label)}</h3>
+ <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px">
+  <div style="display:grid;gap:5px">${rows.map(r=>{const h=BY[r.n];return`<div class="meter" style="grid-template-columns:96px minmax(0,1fr) 92px"><span style="font-weight:600">${esc(r.n)} ${patchTag(h)}</span><div class="bar"><i style="width:${(r.p/max*100).toFixed(1)}%;background:var(--gold);float:left"></i><i style="width:${(r.b/max*100).toFixed(1)}%;background:var(--muted);float:left"></i></div><span style="text-align:right;font-variant-numeric:tabular-nums;font-size:12px">${r.p}P · ${r.b}B · ${r.p?Math.round(r.w/r.p*100):0}%</span></div>`}).join("")}
+   <div class="legend"><span><i style="display:inline-block;width:10px;height:8px;background:var(--gold)"></i> ${t("lgPicks")}</span><span><i style="display:inline-block;width:10px;height:8px;background:var(--muted)"></i> ${t("lgBans")}</span><span>${t("lgWin")}</span></div></div>
+  <ul class="warns">
+   ${side}
+   <li class="tip">${t("tip1")}</li>
+   <li class="tip">${t("tip2")}</li>
+   <li class="tip">${t("tip3")}</li>
+   <li class="tip">${t("tip4")}</li>
+  </ul>
+ </div>`;
+}
+function itemList(b){return`<ol class="items">${b.i.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>`}
+function emblemLine(b){return`<b>${esc(b.e[0])}</b> · ${b.e.slice(1).map(esc).join(" · ")}`}
+function counterRows(map,eng,d){
+ const rows=Object.entries(map||{}).map(([n,pp])=>({n,pp})).filter(r=>BY[r.n]);
+ for(const [x,v] of eng){if(rows.length>=6)break;if(!rows.some(r=>r.n===x.n))rows.push({n:x.n,pp:null})}
+ return rows.slice(0,6).map(r=>{const h=BY[r.n];const taken=d.used.has(r.n)||Object.values(state.slots).includes(r.n);
+  return`<button class="crow" data-g="${esc(r.n)}">${mono(h)}<span class="cn">${esc(r.n)}</span><span class="cv">${r.pp!=null?"+"+r.pp.toFixed(1)+"%":t("kit")}</span>${taken?`<span class="chip">${t("inDraft")}</span>`:""}</button>`}).join("");
+}
+function renderGuide(d){
+ const lastPick=[...d.pickSlots.B,...d.pickSlots.R].filter(Boolean).pop();
+ const n=state.guide&&BY[state.guide]?state.guide:(lastPick||TOP5[0].n);const h=BY[n];const b=BUILDS[n];const top=TOP5.find(x=>x.n===n);
+ const beaten=HEROES.filter(x=>x!==h).map(x=>[x,counterScore(x,h)]).filter(([,v])=>v>=1.5).sort((a,b)=>b[1]-a[1]);
+ const strong=HEROES.filter(x=>x!==h).map(x=>[x,counterScore(h,x)]).filter(([,v])=>v>=1.5).sort((a,b)=>b[1]-a[1]);
+ const opts=[...HEROES].sort((a,b)=>a.n.localeCompare(b.n)).map(x=>`<option value="${esc(x.n)}" ${x.n===n?"selected":""}>${esc(x.n)}</option>`).join("");
+ $("guide").innerHTML=`<div class="ghead"><h3>${t("guideTitle")}</h3><label class="sr" for="gsel">${t("chooseHero")}</label><select id="gsel">${opts}</select></div>
+ <div class="gtop">${mono(h)}<div><div class="gname">${esc(n)} ${tierTag(h)} ${patchTag(h)}</div><div class="sub">${h.roles.map(r=>ROLE_NAME[r]).join(" / ")} · ${h.lanes.map(l=>LANE_NAME[l]).join(" / ")}</div></div></div>
+ <div class="gcols">
+  <div class="gbox"><h4>${t("buildT")}</h4>${itemList(b)}
+   <div class="kv"><span>${t("emblemT")}</span><span>${emblemLine(b)}</span></div>
+   <div class="kv"><span>${t("spellT")}</span><span><b>${esc(b.s)}</b></span></div>
+   <div class="src ${b.src}">${t("src_"+b.src)}</div></div>
+  <div class="gbox"><h4>${t("beatenBy",esc(n))}</h4><div class="clist">${counterRows(CM[n],beaten,d)}</div>
+   <h4 style="margin-top:10px">${t("strongVs",esc(n))}</h4><div class="clist">${counterRows(CB[n],strong,d)}</div>
+   <div class="hint">${t("counterNote")}</div></div>
+  ${top?`<div class="gbox"><h4>${t("howTo")}</h4><ul class="tips">${top.tips[state.lang].map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:""}
+ </div>`;
+ $("gsel").onchange=e=>{state.guide=e.target.value;save();renderGuide(derive())};
+}
+function renderTop5(){
+ $("top5").innerHTML=`<h3>${t("top5Title")}</h3><div class="hint">${t("top5Note")}</div>
+ <div class="t5">${TOP5.map(x=>{const h=BY[x.n],b=BUILDS[x.n];return`<article class="t5c">
+  <div class="gtop">${mono(h)}<div><div class="gname">${esc(x.n)} ${tierTag(h)} ${patchTag(h)}</div><div class="sub">${LANE_NAME[x.lane]}</div></div></div>
+  <p><b>${t("whyMeta")}:</b> ${esc(x.why[state.lang])}</p>
+  <div class="mini">${b.i.map(esc).join(" → ")}</div>
+  <div class="mini">${emblemLine(b)} · <b>${esc(b.s)}</b></div>
+  <ul class="tips">${x.tips[state.lang].slice(0,2).map(z=>`<li>${esc(z)}</li>`).join("")}</ul>
+  <button class="btn" data-g="${esc(x.n)}">${t("openGuide")}</button></article>`}).join("")}</div>`;
+}
+function openGuide(n){if(!BY[n])return;state.guide=n;save();renderGuide(derive());const g=$("guide");if(g.scrollIntoView)g.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"})}
+function render(){
+ applyStatic();buildPro();const d=derive();lastRanked=ranked(d);
+ renderPhase(d);renderTeam("B",d);renderTeam("R",d);renderAdvisor(d);renderAnalysis(d);renderPool(d);renderGuide(d);renderTop5();renderPro();
+ $("fmt").value=state.fmt;$("meta").value=state.meta;
+ $("undo").disabled=!state.hist.length;
+}
+function act(n){const d=derive();if(!d.curKey||d.blocked(n)||!BY[n])return;const k=d.curKey;
+ state.hist.push({k,prev:state.slots[k]||null,sk:!!state.skip[k]});state.slots[k]=n;delete state.skip[k];state.sel=null;if(k[0]==="p")state.guide=n;save();render()}
+function skipBan(all){const d=derive();
+ const ks=all?d.keys.filter(k=>k[0]==="b"&&!state.slots[k]&&!state.skip[k]):(d.curKey&&d.curKey[0]==="b"&&!state.slots[d.curKey]?[d.curKey]:[]);
+ if(!ks.length)return;state.hist.push({multi:ks.map(k=>({k,prev:null,sk:false}))});ks.forEach(k=>state.skip[k]=1);state.sel=null;save();render()}
+function clearSlot(){const k=state.sel;if(!k||!state.slots[k])return;state.hist.push({k,prev:state.slots[k],sk:false});delete state.slots[k];save();render()}
+function undo(){const h=state.hist.pop();if(!h)return;(h.multi||[h]).forEach(e=>{if(e.prev)state.slots[e.k]=e.prev;else delete state.slots[e.k];if(e.sk)state.skip[e.k]=1;else delete state.skip[e.k]});state.sel=null;save();render()}
+function reset(){state.slots={};state.skip={};state.hist=[];state.sel=null;save();render()}
+function selectSlot(k){if(!k)return;if(state.sel===k){state.sel=null}else{state.sel=k;if(state.skip[k])delete state.skip[k]}save();render()}
+
+$("grid").addEventListener("click",e=>{const b=e.target.closest(".hero");if(b&&!b.disabled)act(b.dataset.n)});
+document.addEventListener("click",e=>{const g=e.target.closest("[data-g]");if(g){e.preventDefault();openGuide(g.dataset.g);return}
+ const k=e.target.closest("[data-k]");if(k&&(k.closest(".board")||k.closest("#steps")))selectSlot(k.dataset.k)});
+document.addEventListener("keydown",e=>{const k=e.target.closest&&e.target.closest(".pick[data-k]");if(k&&(e.key==="Enter"||e.key===" ")){e.preventDefault();selectSlot(k.dataset.k)}});
+$("undo").onclick=undo;
+$("reset").onclick=reset;
+$("fmt").onchange=e=>{state.fmt=e.target.value;state.slots={};state.skip={};state.hist=[];state.sel=null;save();render()};
+$("meta").onchange=e=>{state.meta=e.target.value;save();render()};
+$("lEN").onclick=()=>{state.lang="en";save();render()};
+$("lMS").onclick=()=>{state.lang="ms";save();render()};
+["q","fRole","fLane","fSort"].forEach(id=>$(id).addEventListener("input",()=>renderPool(derive())));
+document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key==="z"&&!["INPUT","SELECT"].includes(document.activeElement.tagName)){e.preventDefault();undo()}});
+render();
+if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+</script>
+</body>
+</html>
