@@ -172,6 +172,19 @@ button.step{border:0;padding:0;cursor:pointer}
 .ctl{display:flex;flex-wrap:wrap;gap:6px}
 .ctl .btn{padding:5px 9px;font-size:13px}
 .ctl:empty{display:none}
+.tabs{display:flex;gap:0;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.tab{flex:1;background:var(--panel2);border:0;border-right:1px solid var(--line);padding:6px 4px;font:600 12.5px var(--display);color:var(--muted)}
+.tab:last-child{border-right:0}
+.tab.on{background:var(--fg);color:var(--bg)}
+.lchips{display:flex;flex-wrap:wrap;gap:5px}
+.lchip{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font:600 12px var(--display);color:var(--muted);position:relative}
+.lchip.open{color:var(--fg);border-color:color-mix(in srgb,var(--good) 55%,var(--line))}
+.lchip.open::after{content:"";position:absolute;top:2px;right:2px;width:6px;height:6px;border-radius:50%;background:var(--good)}
+.lchip.on{background:var(--gold);border-color:var(--gold);color:#111}
+.lgh{font:700 12px var(--display);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-top:4px;display:flex;gap:6px;align-items:center}
+.lbtn{background:var(--panel);cursor:pointer}
+.lbtn:hover{border-color:var(--gold);color:var(--fg)}
+.lbtn.set{border-color:var(--gold);color:var(--gold)}
 .advs{display:grid;gap:6px}
 .advs input{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%}
 .advres{display:flex;flex-wrap:wrap;gap:5px}
@@ -229,6 +242,57 @@ button.step{border:0;padding:0;cursor:pointer}
 .altb{background:none;border:0;padding:0;color:var(--fg);font:inherit;text-decoration:underline;text-underline-offset:2px}
 @media (max-width:560px){.tm5 li{grid-template-columns:48px minmax(0,1fr)}.alt{grid-column:2;text-align:left}}
 
+
+/* in-game style draft bar */
+.dbar{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:"b mid r" "foot foot foot";align-items:center;gap:8px 14px;padding:10px 14px;border-radius:10px;border:1px solid var(--line);
+ background:linear-gradient(90deg,color-mix(in srgb,var(--blue) 26%,var(--panel)) 0%,var(--panel) 38%,var(--panel) 62%,color-mix(in srgb,var(--red) 26%,var(--panel)) 100%)}
+.dbans{display:flex;gap:6px;min-width:0}
+.dbans.B{grid-area:b;justify-content:flex-start}
+.dbans.R{grid-area:r;justify-content:flex-end}
+.dmid{grid-area:mid;text-align:center;display:grid;gap:1px;min-width:140px}
+.dmid .turn{font:700 17px var(--display);text-transform:uppercase;letter-spacing:.06em}
+.dstatus{font-size:12.5px;color:var(--muted)}
+.timer{font:700 26px/1.1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.timer.low{color:var(--warn)} .timer.over{color:var(--bad)}
+.dfoot{grid-area:foot;display:grid;gap:6px;justify-items:center}
+.dhint{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:center}
+.tbtn{background:none;border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:12px;color:var(--muted)}
+.bc{width:42px;height:42px;border-radius:50%;border:2px solid color-mix(in srgb,var(--fg) 25%,transparent);background:color-mix(in srgb,var(--bg) 55%,transparent);display:grid;place-items:center;padding:0;position:relative;overflow:hidden;color:var(--muted);font:700 14px var(--display);flex:none}
+.dbans.B .bc{border-color:color-mix(in srgb,var(--blue) 60%,transparent)}
+.dbans.R .bc{border-color:color-mix(in srgb,var(--red) 60%,transparent)}
+.bc svg{width:56%;height:56%;fill:none;stroke:currentColor;stroke-width:2}
+.bc .mono{width:100%;height:100%;border-radius:50%}
+.bc.filled .mono{filter:grayscale(.75) brightness(.8)}
+.bc.filled::after{content:"";position:absolute;left:-10%;right:-10%;top:50%;height:3px;background:var(--bad);transform:rotate(-45deg);box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+.bc.skipped{border-style:dashed;opacity:.55}
+.bc.off{opacity:.18;border-style:dotted}
+.bc.cur{border-color:var(--gold)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 35%,transparent)}
+@media (prefers-reduced-motion:no-preference){.bc.cur,.pick.cur{animation:glow 1.4s ease-in-out infinite}}
+@keyframes glow{50%{box-shadow:0 0 0 5px color-mix(in srgb,var(--gold) 18%,transparent)}}
+/* pick columns like the in-game side lists */
+.team.B{border-left:4px solid var(--blue)} .team.R{border-right:4px solid var(--red)}
+.team .picks{gap:5px;padding:8px}
+.team .pick{grid-template-columns:54px minmax(0,1fr) auto;min-height:62px;padding:4px 8px 4px 4px}
+.team.R .pick{grid-template-columns:auto minmax(0,1fr) 54px;padding:4px 4px 4px 8px}
+.team.R .pick .txt{text-align:right}
+.team .pick>.mono{width:54px;height:54px;border-radius:6px}
+.team .pick .mono.ph{background:color-mix(in srgb,var(--line) 60%,transparent)}
+.team.B .pick:not(.empty){background:linear-gradient(90deg,color-mix(in srgb,var(--blue) 16%,var(--panel2)),var(--panel2))}
+.team.R .pick:not(.empty){background:linear-gradient(270deg,color-mix(in srgb,var(--red) 16%,var(--panel2)),var(--panel2))}
+.team .pick.cur{border:2px solid var(--gold)}
+.team .pick .nm{font-size:16px}
+@media (max-width:600px){
+ .dbar{grid-template-columns:1fr 1fr;grid-template-areas:"mid mid" "b r" "foot foot";padding:10px}
+ .bc{width:30px;height:30px;font-size:11px}
+ .dbans{gap:4px}
+ .timer{font-size:22px}
+ .team .pick,.team.R .pick{grid-template-columns:38px minmax(0,1fr);min-height:46px}
+ .team.R .pick{grid-template-columns:minmax(0,1fr) 38px}
+ .team.R .pick>.pr,.team.R .pick>span:first-child{display:none}
+ .team .pick>.mono{width:38px;height:38px}
+ .team .pick .nm{font-size:13px}
+}
+
 @media (max-width:980px){
   .board{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .advisor{grid-column:1 / -1;order:-1}
@@ -279,9 +343,11 @@ button.step{border:0;padding:0;cursor:pointer}
 
   <section class="section" id="team5"></section>
 
-  <section class="phase" aria-live="polite">
-    <div class="phase-now"><span class="turn" id="turn"></span><span class="hint" id="turnHint"></span></div>
-    <div class="steps" id="steps"></div>
+  <section class="dbar">
+    <div class="dbans B" id="bansB"></div>
+    <div class="dmid" aria-live="polite"><div class="turn" id="turn"></div><div class="dstatus" id="dstatus"></div><div class="timer" id="timer" role="timer"></div></div>
+    <div class="dbans R" id="bansR"></div>
+    <div class="dfoot"><div class="steps" id="steps"></div><div class="dhint"><span class="hint" id="turnHint"></span><button class="tbtn" id="tToggle"></button></div></div>
   </section>
 
   <section class="board">
@@ -738,7 +804,7 @@ const FORMATS={
 };
 
 
-let state={fmt:"tour",meta:"ranked",lang:"en",slots:{},skip:{},hist:[],sel:null,guide:null,team5:null};
+let state={fmt:"tour",meta:"ranked",lang:"en",slots:{},skip:{},hist:[],sel:null,guide:null,team5:null,timerOn:true,advTab:"best",advLane:"",laneOv:{}};
 const METAS=["ranked","proAll","proMY","proPH","proID"];
 const seqKeys=fmt=>{const c={};return FORMATS[fmt].map(x=>{c[x]=c[x]||0;return x+(c[x]++)})};
 try{const o=JSON.parse(localStorage.getItem("mlbbDraft2")||"null");if(o&&FORMATS[o.fmt]){state=Object.assign(state,o);const ks=seqKeys(state.fmt);
@@ -768,7 +834,7 @@ function derive(){
 
 // ---------- language ----------
 const I18N={en:{
-skipped:"Skipped",teamTitle:"Recommended team for Patch 2.2.23",teamNote:"Built to fight together, close to what MPL teams won with. Ban Freya, Valentina and Alice to protect it.",ifBanned:"If banned:",refresh:"Refresh",style_cc:"Lockdown",style_heal:"Sustain",style_dive:"Dive",style_aoe:"Teamfight",style_early:"Early game",style_late:"Late game",style_poke:"Poke",style_def:"Balanced",lineupN:"Lineup {0}",genNote:"A new lineup using only current-meta heroes for Patch 2.2.23 (top tier in ranked or often picked or banned in MPL). It has a tank, stuns, someone to start fights and both damage types. Ban {0} to protect it.",metaTier:"{0}-tier in ranked",metaPro:"MPL S18: {0} picks + bans",backToRec:"Show the recommended team",job_tank:"Tank. Starts fights and protects the team",job_heal:"Healer. Keeps the team alive",job_eng:"Starts fights and locks enemies down",job_peel:"Protects your carries",job_control:"Area control. Traps enemies and stops escapes",job_poke:"Hits from long range before fights",job_burst:"Burst. Kills key targets fast",job_late:"Carry. Gets stronger later in the game",job_dps:"Steady damage in long fights",job_dive:"Dives the backline",job_def:"Flexible pick for this lane",advSearch:"Search a hero to {0}…",skipBan:"Skip this ban",skipAll:"Skip all bans",clearSlot:"Clear slot",cancel:"Cancel",choosingFor:"Choosing: {0}",slotHint:"Tap any slot on the board to fill or change it.",
+skipped:"Skipped",unusualLane:"Unusual lane: {0}",tab_best:"Best",tab_counter:"Counters",tab_counter_ban:"Beats your team",tab_meta:"Meta",tab_lanes:"Open lanes",tab_lanes_ban:"Enemy open lanes",anyLane:"Any lane",youOpen:"open",enemyOpen:"enemy open",noCounterYet:"Counter picks show up once the enemy has picked. Showing the best options for now.",noThreatYet:"Heroes that beat your team show up once you have picked. Showing the best options for now.",allLanesFilled:"All lanes are filled.",laneTip:"Tap to change lane",enemyLane:"Enemy {0}",suggType:"Suggestion type",laneFilter:"Lane",selecting:"Selecting hero…",banning:"Choosing a ban…",timerOff:"Hide timer",timerOn:"Show timer",teamTitle:"Recommended team for Patch 2.2.23",teamNote:"Built to fight together, close to what MPL teams won with. Ban Freya, Valentina and Alice to protect it.",ifBanned:"If banned:",refresh:"Refresh",style_cc:"Lockdown",style_heal:"Sustain",style_dive:"Dive",style_aoe:"Teamfight",style_early:"Early game",style_late:"Late game",style_poke:"Poke",style_def:"Balanced",lineupN:"Lineup {0}",genNote:"A new lineup using only current-meta heroes for Patch 2.2.23 (top tier in ranked or often picked or banned in MPL). It has a tank, stuns, someone to start fights and both damage types. Ban {0} to protect it.",metaTier:"{0}-tier in ranked",metaPro:"MPL S18: {0} picks + bans",backToRec:"Show the recommended team",job_tank:"Tank. Starts fights and protects the team",job_heal:"Healer. Keeps the team alive",job_eng:"Starts fights and locks enemies down",job_peel:"Protects your carries",job_control:"Area control. Traps enemies and stops escapes",job_poke:"Hits from long range before fights",job_burst:"Burst. Kills key targets fast",job_late:"Carry. Gets stronger later in the game",job_dps:"Steady damage in long fights",job_dive:"Dives the backline",job_def:"Flexible pick for this lane",advSearch:"Search a hero to {0}…",skipBan:"Skip this ban",skipAll:"Skip all bans",clearSlot:"Clear slot",cancel:"Cancel",choosingFor:"Choosing: {0}",slotHint:"Tap any slot on the board to fill or change it.",
 dupNote:"In ranked, both teams can ban the same hero.",guideTitle:"Hero guide",guideFor:"Guide for {0}",chooseHero:"Choose a hero",buildT:"Build",emblemT:"Emblem",spellT:"Battle spell",
 src_r:"Researched build from 2026 guides",src_g:"Standard build for this role. Adjust it to the enemy team.",beatenBy:"Heroes that beat {0}",byLane:"Counters to {0} in every lane",noneLane:"No strong counter in this lane",goodInto:"good pick",strongVs:"{0} is strong against",
 measured:"ranked data",kit:"skill matchup",howTo:"How to play",inDraft:"taken",top5Title:"Top 5 heroes for Patch 2.2.23",top5Note:"One hero per lane, picked from MPL Season 18 pick/ban data, ranked results and the new patch changes.",
@@ -810,7 +876,7 @@ footer:`Suggestions look at how strong a hero is, which lane is free, who beats 
 Data: <a href="https://mlbbhub.com/patch-notes/original/2.2.23" target="_blank" rel="noopener">Patch 2.2.23 notes</a> · <a href="https://mlbbhub.com/tier-list" target="_blank" rel="noopener">ranked tier list (11 Nov 2026)</a> · MPL S18 stats and drafts for <a href="https://mlbbhub.com/mpl/my/stats" target="_blank" rel="noopener">MY</a>, <a href="https://mlbbhub.com/mpl/ph/stats" target="_blank" rel="noopener">PH</a> and <a href="https://mlbbhub.com/mpl/id/stats" target="_blank" rel="noopener">ID</a> (11–12 Nov 2026). Fan-made, not affiliated with Moonton.`,
 copyright:"© 2026 Mican. All rights reserved."
 },ms:{
-skipped:"Dilangkau",teamTitle:"Pasukan cadangan untuk Patch 2.2.23",teamNote:"Dibina untuk war bersama, hampir sama dengan pasukan MPL yang menang. Ban Freya, Valentina dan Alice untuk lindunginya.",ifBanned:"Kalau di-ban:",refresh:"Tukar",style_cc:"Kunci musuh",style_heal:"Tahan lama",style_dive:"Serbu",style_aoe:"War pasukan",style_early:"Awal game",style_late:"Late game",style_poke:"Poke",style_def:"Seimbang",lineupN:"Lineup {0}",genNote:"Lineup baru dengan hero meta semasa sahaja untuk Patch 2.2.23 (tier teratas dalam ranked atau kerap dipilih atau di-ban dalam MPL). Ada tank, stun, hero untuk mulakan war dan kedua-dua jenis damage. Ban {0} untuk lindunginya.",metaTier:"{0}-tier dalam ranked",metaPro:"MPL S18: {0} pick + ban",backToRec:"Tunjuk pasukan cadangan",job_tank:"Tank. Mulakan war dan lindungi pasukan",job_heal:"Healer. Pastikan pasukan terus hidup",job_eng:"Mulakan war dan kunci musuh",job_peel:"Lindungi carry anda",job_control:"Kawal kawasan. Perangkap musuh dan halang mereka lari",job_poke:"Serang dari jauh sebelum war",job_burst:"Burst. Bunuh sasaran penting dengan cepat",job_late:"Carry. Jadi lebih kuat di late game",job_dps:"Damage berterusan dalam war panjang",job_dive:"Serbu hero belakang musuh",job_def:"Pilihan fleksibel untuk lane ini",advSearch:"Cari hero untuk {0}…",skipBan:"Langkau ban ini",skipAll:"Langkau semua ban",clearSlot:"Kosongkan slot",cancel:"Batal",choosingFor:"Memilih: {0}",slotHint:"Tekan mana-mana slot di papan untuk isi atau tukar.",
+skipped:"Dilangkau",unusualLane:"Lane luar biasa: {0}",tab_best:"Terbaik",tab_counter:"Counter",tab_counter_ban:"Kalahkan pasukan anda",tab_meta:"Meta",tab_lanes:"Lane kosong",tab_lanes_ban:"Lane kosong musuh",anyLane:"Semua lane",youOpen:"kosong",enemyOpen:"musuh kosong",noCounterYet:"Pick counter keluar selepas musuh pilih. Buat masa ini tunjuk pilihan terbaik.",noThreatYet:"Hero yang kalahkan pasukan anda keluar selepas anda pilih. Buat masa ini tunjuk pilihan terbaik.",allLanesFilled:"Semua lane sudah diisi.",laneTip:"Tekan untuk tukar lane",enemyLane:"{0} musuh",suggType:"Jenis cadangan",laneFilter:"Lane",selecting:"Sedang pilih hero…",banning:"Sedang pilih ban…",timerOff:"Sorok pemasa",timerOn:"Tunjuk pemasa",teamTitle:"Pasukan cadangan untuk Patch 2.2.23",teamNote:"Dibina untuk war bersama, hampir sama dengan pasukan MPL yang menang. Ban Freya, Valentina dan Alice untuk lindunginya.",ifBanned:"Kalau di-ban:",refresh:"Tukar",style_cc:"Kunci musuh",style_heal:"Tahan lama",style_dive:"Serbu",style_aoe:"War pasukan",style_early:"Awal game",style_late:"Late game",style_poke:"Poke",style_def:"Seimbang",lineupN:"Lineup {0}",genNote:"Lineup baru dengan hero meta semasa sahaja untuk Patch 2.2.23 (tier teratas dalam ranked atau kerap dipilih atau di-ban dalam MPL). Ada tank, stun, hero untuk mulakan war dan kedua-dua jenis damage. Ban {0} untuk lindunginya.",metaTier:"{0}-tier dalam ranked",metaPro:"MPL S18: {0} pick + ban",backToRec:"Tunjuk pasukan cadangan",job_tank:"Tank. Mulakan war dan lindungi pasukan",job_heal:"Healer. Pastikan pasukan terus hidup",job_eng:"Mulakan war dan kunci musuh",job_peel:"Lindungi carry anda",job_control:"Kawal kawasan. Perangkap musuh dan halang mereka lari",job_poke:"Serang dari jauh sebelum war",job_burst:"Burst. Bunuh sasaran penting dengan cepat",job_late:"Carry. Jadi lebih kuat di late game",job_dps:"Damage berterusan dalam war panjang",job_dive:"Serbu hero belakang musuh",job_def:"Pilihan fleksibel untuk lane ini",advSearch:"Cari hero untuk {0}…",skipBan:"Langkau ban ini",skipAll:"Langkau semua ban",clearSlot:"Kosongkan slot",cancel:"Batal",choosingFor:"Memilih: {0}",slotHint:"Tekan mana-mana slot di papan untuk isi atau tukar.",
 dupNote:"Dalam ranked, kedua-dua pasukan boleh ban hero yang sama.",guideTitle:"Panduan hero",guideFor:"Panduan untuk {0}",chooseHero:"Pilih hero",buildT:"Build",emblemT:"Emblem",spellT:"Battle spell",
 src_r:"Build hasil kajian dari panduan 2026",src_g:"Build biasa untuk role ini. Ubah ikut pasukan musuh.",beatenBy:"Hero yang kalahkan {0}",byLane:"Counter untuk {0} di setiap lane",noneLane:"Tiada counter kuat di lane ini",goodInto:"pilihan baik",strongVs:"{0} kuat melawan",
 measured:"data ranked",kit:"lawan skill",howTo:"Cara main",inDraft:"dah diambil",top5Title:"Top 5 hero untuk Patch 2.2.23",top5Note:"Satu hero untuk setiap lane, dipilih dari data pick/ban MPL Season 18, keputusan ranked dan perubahan patch baru.",
@@ -861,12 +927,16 @@ function applyStatic(){
 }
 
 // ---------- engine ----------
-function assign(list){
+function laneOpts(h){const ov=state.laneOv&&state.laneOv[h.n];if(ov)return[[ov,0]];return LANES.map(ln=>{const k=h.lanes.indexOf(ln);return[ln,k>=0?k:6]})}
+function assign(list){ // any hero may play any lane (unusual lanes just cost more); a lane the user set for a hero always wins
  let best=null,bestCost=1e9;const used={},cur=[];
  (function rec(i,cost){if(cost>=bestCost)return;if(i===list.length){bestCost=cost;best=cur.slice();return}
-  list[i].lanes.forEach((ln,k)=>{if(used[ln])return;used[ln]=1;cur[i]=ln;rec(i+1,cost+k);used[ln]=0})})(0,0);
+  for(const [ln,c] of laneOpts(list[i])){if(used[ln])continue;used[ln]=1;cur[i]=ln;rec(i+1,cost+c);used[ln]=0}})(0,0);
  return best;
 }
+const usualLane=(h,ln)=>h.lanes.includes(ln)||(state.laneOv&&state.laneOv[h.n]===ln);
+function openLanes(list){const a=assign(list)||[];return LANES.filter(ln=>!a.includes(ln))}
+function laneFit(h,ln){if(state.laneOv&&state.laneOv[h.n]===ln)return 2;const k=h.lanes.indexOf(ln);return k===0?2:k>0?1:-3}
 function counterScore(a,b){ // how hard a punishes b
  let s=0;
  if(HARD_SET[a.n+">"+b.n])s+=4;
@@ -904,19 +974,18 @@ const names=a=>a.slice(0,2).map(h=>h.n).join(", ");
 
 function scorePick(h,side,d){
  const mine=d.picks[side].map(n=>BY[n]),opp=d.picks[side==="B"?"R":"B"].map(n=>BY[n]);
- const R=[];let s=metaPts(h);
+ const R=[];let s=metaPts(h);const parts={meta:s,counter:0,lane:0};
  if(h.tier==="S")R.push([t("sTier"),1]);
  if(isPro()&&PRO[h.n]){const pr=PRO[h.n];R.push([t("usedPro",pr[0]+pr[1])+(pr[0]>=20?t("winsPct",Math.round(pr[2]/pr[0]*100)):""),1])}
  if(PATCH[h.n]==="buff")R.push([t("buffed"),1]);
  if(PATCH[h.n]==="nerf")R.push([t("nerfed"),-1]);
- const a=assign([...mine,h]);
- if(!a){s-=isPro()?8:25;R.push([t(isPro()?"oddLane":"noLane"),-1])}
- else{const myLane=a[a.length-1];R.push([LANE_NAME[myLane],0]);
-  if(mine.length<2&&h.lanes.length>1){s+=1.2;R.push([t("manyLanes"),1])}}
+ const a=assign([...mine,h]);const myLane=a[a.length-1];
+ if(usualLane(h,myLane)){R.push([LANE_NAME[myLane],0])}else{const pen=isPro()?2:3;s-=pen;parts.lane=-pen;R.push([t("unusualLane",LANE_NAME[myLane]),-1])}
+ if(mine.length<2&&h.lanes.length>1){s+=1.2;parts.lane+=1.2;R.push([t("manyLanes"),1])}
  const beat=opp.filter(e=>counterScore(h,e)>=1.5).sort((x,y)=>counterScore(h,y)-counterScore(h,x));
- s+=opp.reduce((t,e)=>t+counterScore(h,e),0)*1.5;if(beat.length)R.push([t("beats",names(beat)),1]);
+ const cplus=opp.reduce((t,e)=>t+counterScore(h,e),0)*1.5;s+=cplus;if(beat.length)R.push([t("beats",names(beat)),1]);
  const lose=opp.filter(e=>counterScore(e,h)>=1.5);
- s-=opp.reduce((t,e)=>t+counterScore(e,h),0)*1.4;if(lose.length)R.push([t("losesTo",names(lose)),-1]);
+ const cminus=opp.reduce((t,e)=>t+counterScore(e,h),0)*1.4;s-=cminus;parts.counter=cplus-cminus;if(lose.length)R.push([t("losesTo",names(lose)),-1]);
  const syn=mine.filter(m=>synergy(h,m)>=1);s+=mine.reduce((t,m)=>t+synergy(h,m),0)*1.2;
  const proSyn=syn.filter(m=>PAIR_SET[h.n+"|"+m.n]===2);
  if(proSyn.length)R.push([t("prosPair",names(proSyn)),1]);else if(syn.length)R.push([t("worksWith",names(syn)),1]);
@@ -937,11 +1006,11 @@ function scorePick(h,side,d){
   const threats=HEROES.filter(x=>!d.used.has(x.n)&&x!==h&&counterScore(x,h)>=3);
   if(threats.length>=2){s-=Math.min(3,threats.length*.6)*(5-opp.length)/5;R.push([t("easyCounter",names(threats)),-1])}
  }
- return{h,s,R};
+ return{h,s,R,parts,lane:myLane};
 }
 function scoreBan(h,side,d){
  const enemy=side==="B"?"R":"B";const mine=d.picks[side].map(n=>BY[n]),opp=d.picks[enemy].map(n=>BY[n]);
- const R=[];let s=TIER_PTS[h.tier];
+ const R=[];let s=TIER_PTS[h.tier];const parts={meta:0,counter:0,lane:0};
  if(isPro()){const pr=PRO[h.n];s=s*.4+(pr?pr[1]/PRO._maxB*7+pr[0]/PRO._maxP*2:0);if(pr&&pr[1]/PRO._maxB>=.35)R.push([t("bannedPro",pr[1]),1]);
   if(d.bans[side].length===0){let fb=0;for(const lg of PRO._lgs){const f=FIRSTBAN[lg][side][h.n];if(f)fb=Math.max(fb,f)}if(fb){s+=fb/8;R.push([t("firstBan",fb),1])}}}
  else{s+=(BANRATE[h.n]||0)/9;if((BANRATE[h.n]||0)>=30)R.push([t("bannedRanked",Math.round(BANRATE[h.n])),1])}
@@ -949,13 +1018,15 @@ function scoreBan(h,side,d){
  if(PATCH[h.n]==="buff"){s+=isPro()&&PRO[h.n]?1.5:.6;R.push([t("buffed"),1])}
  if(PATCH[h.n]==="nerf"){s-=1.2;R.push([t("nerfed"),-1])}
  if(PATCH[h.n]==="rework")R.push([t("rework"),0]);
- const hurt=mine.filter(m=>counterScore(h,m)>=1.5);s+=mine.reduce((t,m)=>t+counterScore(h,m),0)*1.6;
+ parts.meta=s;
+ const hurt=mine.filter(m=>counterScore(h,m)>=1.5);const thr=mine.reduce((t,m)=>t+counterScore(h,m),0)*1.6;s+=thr;parts.counter=thr;
  if(hurt.length)R.push([t("beatsYour",names(hurt)),1]);
- if(opp.length){
-  if(!assign([...opp,h])){s*=.45;R.push([t("enemyNoLane"),-1])}
-  else{const syn=opp.filter(o=>synergy(h,o)>=1);s+=opp.reduce((t,o)=>t+synergy(h,o),0)*.8;if(syn.length)R.push([t("worksEnemy",names(syn)),1])}
+ let elane=null;
+ if(opp.length){const open=openLanes(opp);elane=h.lanes.find(l=>open.includes(l))||null;
+  if(!elane){s*=.6;parts.lane=-1;R.push([t("enemyNoLane"),-1])}
+  else{R.push([t("enemyLane",LANE_NAME[elane]),0]);const syn=opp.filter(o=>synergy(h,o)>=1);s+=opp.reduce((t,o)=>t+synergy(h,o),0)*.8;if(syn.length)R.push([t("worksEnemy",names(syn)),1])}
  }
- return{h,s,R};
+ return{h,s,R,parts,lane:elane};
 }
 function ranked(d){
  if(!d.cur)return[];
@@ -1018,16 +1089,25 @@ const tierTag=h=>`<span class="tier t${h.tier}" title="${h.tier}-tier">${h.tier}
 const patchTag=h=>PATCH[h.n]?`<span class="pf ${PATCH[h.n]}">${t("pf_"+PATCH[h.n])}</span>`:"";
 const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
 
+function renderBans(side,d){
+ const el=$("bans"+side);let h="";
+ for(let i=0;i<5;i++){const k="b"+side+i,off=i>=d.maxBans[side],n=d.banSlots[side][i],sk=state.skip[k];
+  if(off){h+=`<span class="bc off" aria-hidden="true"></span>`;continue}
+  h+=`<button class="bc ${n?"filled":""} ${sk?"skipped":""} ${k===d.curKey?"cur":""}" data-k="${k}" aria-label="${esc(slotName(k))}${n?": "+esc(n):""}" title="${esc(n||slotName(k))}">${n?mono(BY[n]):sk?"–":'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M6.5 17.5l11-11"/></svg>'}</button>`}
+ el.innerHTML=h;
+}
 function renderTeam(side,d){
- const el=$("team"+side);const label=t(side==="B"?"blueSide":"redSide");
+ const el=$("team"+side);const label=t(side==="B"?"blueSide":"redSide");const R=side==="R";
  const active=d.cur&&d.cur[1]===side;el.classList.toggle("active",!!active);
+ renderBans(side,d);
  const filled=d.pickSlots[side].map(n=>n?BY[n]:null);const comp=filled.filter(Boolean);const la=assign(comp)||[];const laneOf={};comp.forEach((h,i)=>laneOf[h.n]=la[i]);
- let bans="";for(let i=0;i<5;i++){const k="b"+side+i,off=i>=d.maxBans[side],n=d.banSlots[side][i],sk=state.skip[k];
-  bans+=off?`<div class="ban off">–</div>`:`<button class="ban ${n?"filled":""} ${sk?"skipped":""} ${k===d.curKey?"cur":""}" data-k="${k}" aria-label="${esc(label)} ${t("ban")} ${i+1}">${n?esc(n):sk?t("skipped"):t("ban")}</button>`}
- let picks="";for(let i=0;i<5;i++){const k="p"+side+i,h=filled[i];
-  if(h)picks+=`<div class="pick ${k===d.curKey?"cur":""}" data-k="${k}" role="button" tabindex="0" aria-label="${t("pickN",i+1)}: ${esc(h.n)}">${mono(h)}<div style="min-width:0"><div class="nm">${esc(h.n)}</div><div class="sub">${h.roles.map(r=>ROLE_NAME[r]).join(" / ")}</div></div><span class="pr"><span class="lane">${laneOf[h.n]?LANE_NAME[laneOf[h.n]]:"?"}</span><button class="info" data-g="${esc(h.n)}" aria-label="${esc(t("guideFor",h.n))}" title="${esc(t("guideFor",h.n))}">i</button></span></div>`;
-  else picks+=`<div class="pick empty ${k===d.curKey?"cur":""}" data-k="${k}" role="button" tabindex="0" aria-label="${esc(label)} ${t("pickN",i+1)}"><span class="mono" style="background:var(--line)" aria-hidden="true"></span><div class="sub">${t("pickN",i+1)}</div></div>`}
- el.innerHTML=`<h2><span>${label}</span><span style="font-size:12px">${comp.length}/5</span></h2><div class="bans">${bans}</div><div class="picks">${picks}</div>`;
+ let picks="";for(let i=0;i<5;i++){const k="p"+side+i,h=filled[i],cur=k===d.curKey;
+  if(h){const txt=`<div class="txt"><div class="nm">${esc(h.n)}</div><div class="sub">${h.roles.map(r=>ROLE_NAME[r]).join(" / ")}</div></div>`;
+   const side2=`<span class="pr"><button class="lane lbtn ${state.laneOv&&state.laneOv[h.n]?"set":""}" data-lane="${esc(h.n)}" title="${esc(t("laneTip"))}" aria-label="${esc(t("laneTip"))}: ${laneOf[h.n]?LANE_NAME[laneOf[h.n]]:"?"}">${laneOf[h.n]?LANE_NAME[laneOf[h.n]]:"?"}</button><button class="info" data-g="${esc(h.n)}" aria-label="${esc(t("guideFor",h.n))}" title="${esc(t("guideFor",h.n))}">i</button></span>`;
+   picks+=`<div class="pick ${cur?"cur":""}" data-k="${k}" role="button" tabindex="0" aria-label="${t("pickN",i+1)}: ${esc(h.n)}">${R?side2+txt+mono(h):mono(h)+txt+side2}</div>`}
+  else{const ph=`<span class="mono ph" aria-hidden="true"></span>`,txt=`<div class="txt"><div class="sub">${cur?t(d.cur[0]==="p"?"selecting":"banning"):t("pickN",i+1)}</div></div>`;
+   picks+=`<div class="pick empty ${cur?"cur":""}" data-k="${k}" role="button" tabindex="0" aria-label="${esc(label)} ${t("pickN",i+1)}">${R?"<span></span>"+txt+ph:ph+txt+"<span></span>"}</div>`}}
+ el.innerHTML=`<h2><span>${label}</span><span style="font-size:12px">${comp.length}/5</span></h2><div class="picks">${picks}</div>`;
 }
 let lastRanked=[];
 function slotName(k){return t(k[1]==="B"?"Blue":"Red")+" · "+(k[0]==="b"?t("ban")+" "+(+k.slice(2)+1):t("pickN",+k.slice(2)+1))}
@@ -1044,7 +1124,21 @@ function renderAdvisor(d){
  const anyBanLeft=d.keys.some(k=>k[0]==="b"&&!state.slots[k]&&!state.skip[k]);
  if(!d.cur){el.innerHTML=`<h3>${t("draftDone")}</h3><div class="done-box"><div>${t("doneMsg")}</div><div class="ctl"><button class="btn primary" id="again">${t("newDraft")}</button></div><div class="hint">${t("slotHint")}</div></div>`;$("again").onclick=reset;return}
  const side=d.cur[1],isBan=d.cur[0]==="b",who=t(side==="B"?"Blue":"Red");
- const top=lastRanked.slice(0,7);const max=Math.max(1,top[0]?top[0].s:1);
+ const tab=state.advTab||"best",lf=state.advLane||"";
+ const mySide=d.picks[side].map(n=>BY[n]),enSide=d.picks[side==="B"?"R":"B"].map(n=>BY[n]);
+ const open=isBan?openLanes(enSide):openLanes(mySide);
+ const forLane=(r,ln)=>{const taken=!open.includes(ln);return r.s-(r.parts?r.parts.lane:0)+laneFit(r.h,ln)*1.5-(taken&&!isBan?6:0)};
+ const withLane=(r,ln)=>{if(!ln)return r;const R=r.R.filter(x=>!LANES.some(l=>x[0]===LANE_NAME[l])&&!String(x[0]).startsWith(t("unusualLane","").trim()));
+  if(!usualLane(r.h,ln))R.unshift([t("unusualLane",LANE_NAME[ln]),-1]);else R.unshift([LANE_NAME[ln],0]);return{...r,s:forLane(r,ln),R}};
+ let list=lastRanked.map(r=>withLane(r,lf)),groups=null,note="";
+ if(tab==="counter"){const f=list.filter(r=>r.parts&&r.parts.counter>0.5);if(f.length)list=f.sort((a,b)=>b.parts.counter-a.parts.counter||b.s-a.s);else note=t(isBan?"noThreatYet":"noCounterYet")}
+ else if(tab==="meta"){list=list.slice().sort((a,b)=>(b.parts?b.parts.meta:0)-(a.parts?a.parts.meta:0)||b.s-a.s)}
+ else if(tab==="lanes"){groups=(lf?[lf]:open).map(ln=>({ln,items:lastRanked.map(r=>withLane(r,ln)).sort((a,b)=>b.s-a.s).slice(0,lf?6:2)}));if(!groups.length)note=t("allLanesFilled")}
+ else list=list.slice().sort((a,b)=>b.s-a.s);
+ const top=list.slice(0,7);const max=Math.max(1,...(groups?groups.flatMap(g=>g.items.map(r=>r.s)):top.map(r=>r.s)));
+ const card=r=>{const pct=Math.round(Math.max(0,r.s)/max*100);return `<button class="sg" data-n="${esc(r.h.n)}" aria-label="${t(isBan?"ban":"pick")} ${esc(r.h.n)}">${mono(r.h)}<div style="min-width:0"><div class="nm">${esc(r.h.n)} ${tierTag(r.h)} ${patchTag(r.h)}</div><div class="chips">${r.R.slice(0,4).map(([tx,v])=>`<span class="chip ${v>0?"pos":v<0?"neg":""}">${esc(tx)}</span>`).join("")}</div></div><div class="score">${pct}</div></button>`};
+ const tabs=["best","counter","meta","lanes"].map(k=>`<button class="tab ${tab===k?"on":""}" data-tab="${k}" aria-pressed="${tab===k}">${t("tab_"+k+(isBan&&k!=="best"&&k!=="meta"?"_ban":""))}</button>`).join("");
+ const lanes=`<button class="lchip ${!lf?"on":""}" data-lf="">${t("anyLane")}</button>`+LANES.map(ln=>`<button class="lchip ${lf===ln?"on":""} ${open.includes(ln)?"open":""}" data-lf="${ln}" title="${open.includes(ln)?esc(t(isBan?"enemyOpen":"youOpen")):""}">${LANE_NAME[ln]}</button>`).join("");
  const ctl=[];
  if(isBan&&!d.editing)ctl.push(`<button class="btn" id="skipOne">${t("skipBan")}</button>`);
  if(anyBanLeft)ctl.push(`<button class="btn" id="skipAll">${t("skipAll")}</button>`);
@@ -1054,11 +1148,14 @@ function renderAdvisor(d){
   <div class="choosing ${side}">${t("choosingFor",slotName(d.curKey))}${d.editing?" ("+esc(state.slots[d.curKey])+")":""}</div>
   <div class="ctl">${ctl.join("")}</div>
   <div class="advs"><input id="advq" type="search" autocomplete="off" placeholder="${esc(t("advSearch",t(isBan?"ban":"pick").toLowerCase()))}" aria-label="${esc(t("advSearch",t(isBan?"ban":"pick").toLowerCase()))}" value="${esc(advQ)}"><div id="advres" class="advres" role="list"></div></div>
-  <div class="sugg">${top.map(r=>{
-   const pct=Math.round(Math.max(0,r.s)/max*100);
-   return `<button class="sg" data-n="${esc(r.h.n)}" aria-label="${t(isBan?"ban":"pick")} ${esc(r.h.n)}">${mono(r.h)}<div style="min-width:0"><div class="nm">${esc(r.h.n)} ${tierTag(r.h)} ${patchTag(r.h)}</div><div class="chips">${r.R.slice(0,4).map(([tx,v])=>`<span class="chip ${v>0?"pos":v<0?"neg":""}">${esc(tx)}</span>`).join("")}</div></div><div class="score">${pct}</div></button>`}).join("")}</div>
+  <div class="tabs" role="group" aria-label="${esc(t("suggType"))}">${tabs}</div>
+  <div class="lchips" role="group" aria-label="${esc(t("laneFilter"))}">${lanes}</div>
+  ${note?`<div class="hint">${esc(note)}</div>`:""}
+  <div class="sugg">${groups?groups.map(g=>`<div class="lgh">${LANE_NAME[g.ln]}${open.includes(g.ln)?` <span class="chip">${t(isBan?"enemyOpen":"youOpen")}</span>`:""}</div>${g.items.map(card).join("")}`).join(""):top.map(card).join("")}</div>
   <div class="hint">${t("tapHint")} ${t("slotHint")}${rankedFmt()&&isBan?" "+t("dupNote"):""}</div>`;
  el.querySelectorAll(".sg").forEach(b=>b.onclick=()=>act(b.dataset.n));
+ el.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{state.advTab=b.dataset.tab;save();renderAdvisor(derive())});
+ el.querySelectorAll("[data-lf]").forEach(b=>b.onclick=()=>{state.advLane=b.dataset.lf;save();renderAdvisor(derive())});
  const q=$("advq");renderAdvRes(d);
  q.oninput=()=>{advQ=q.value;renderAdvRes(derive())};
  q.onkeydown=e=>{if(e.key==="Enter"){const first=$("advres").querySelector("button");if(first){e.preventDefault();act(first.dataset.n)}}else if(e.key==="Escape"){advQ="";q.value="";renderAdvRes(derive())}};
@@ -1110,13 +1207,20 @@ function renderPool(d){
  const whoUsed=n=>d.picks.B.includes(n)||d.bans.B.includes(n)?"B":"R";
  $("grid").innerHTML=list.map(h=>{const u=d.used.has(h.n);return`<button class="hero ${u?whoUsed(h.n)+"-used":""}" data-n="${esc(h.n)}" ${!d.cur||d.blocked(h.n)?"disabled":""} title="${esc(h.n)} · ${h.roles.map(r=>ROLE_NAME[r]).join("/")} · ${h.lanes.map(l=>LANE_NAME[l]).join("/")}">${mono(h)}<span style="min-width:0"><span class="nm" style="display:block">${esc(h.n)}</span><span class="meta">${tierTag(h)}${patchTag(h)}</span></span></button>`}).join("")||`<div style="color:var(--muted)">${t("noMatch")}</div>`;
 }
+let timerKey=null,timerLeft=30,timerId=null;
+function tickTimer(){const el=$("timer");if(!el)return;if(!state.timerOn||!timerKey){el.hidden=true;return}el.hidden=false;
+ el.textContent="00:"+String(Math.max(0,timerLeft)).padStart(2,"0");el.classList.toggle("over",timerLeft<=0);el.classList.toggle("low",timerLeft>0&&timerLeft<=10)}
 function renderPhase(d){
  const keys=d.keys;
- if(d.cur){const side=d.cur[1];$("turn").className="turn "+side;
-  $("turn").textContent=slotName(d.curKey);
+ if(d.cur){const side=d.cur[1];$("turn").className="turn "+side;$("turn").textContent=slotName(d.curKey);
+  $("dstatus").textContent=t(d.cur[0]==="b"?"banning":"selecting");
   $("turnHint").textContent=t("hint_"+state.fmt)+(rankedFmt()?" "+t("dupNote"):"")}
- else{$("turn").className="turn";$("turn").textContent=t("draftDone");$("turnHint").textContent=""}
+ else{$("turn").className="turn";$("turn").textContent=t("draftDone");$("dstatus").textContent="";$("turnHint").textContent=""}
  $("steps").innerHTML=keys.map(k=>{const done=state.slots[k]||state.skip[k];return`<button class="step ${k[1]} ${k[0]==="b"?"sban":""} ${done?"done":""} ${state.skip[k]?"sk":""} ${k===d.curKey?"cur":""}" data-k="${k}" title="${esc(slotName(k))}" aria-label="${esc(slotName(k))}"></button>`}).join("");
+ if(d.curKey!==timerKey){timerKey=d.curKey;timerLeft=30}
+ if(!timerId)timerId=setInterval(()=>{if(timerKey&&state.timerOn&&timerLeft>0){timerLeft--;tickTimer()}},1000);
+ const tb=$("tToggle");tb.textContent=t(state.timerOn?"timerOff":"timerOn");tb.onclick=()=>{state.timerOn=!state.timerOn;timerLeft=30;save();renderPhase(derive())};
+ tickTimer();
 }
 
 function renderPro(){
@@ -1263,12 +1367,19 @@ function skipBan(all){const d=derive();
  if(!ks.length)return;state.hist.push({multi:ks.map(k=>({k,prev:null,sk:false}))});ks.forEach(k=>state.skip[k]=1);state.sel=null;save();render()}
 function clearSlot(){const k=state.sel;if(!k||!state.slots[k])return;state.hist.push({k,prev:state.slots[k],sk:false});delete state.slots[k];save();render()}
 function undo(){const h=state.hist.pop();if(!h)return;(h.multi||[h]).forEach(e=>{if(e.prev)state.slots[e.k]=e.prev;else delete state.slots[e.k];if(e.sk)state.skip[e.k]=1;else delete state.skip[e.k]});state.sel=null;save();render()}
-function reset(){state.slots={};state.skip={};state.hist=[];state.sel=null;save();render()}
+function reset(){state.slots={};state.skip={};state.hist=[];state.sel=null;state.laneOv={};save();render()}
+function cycleLane(n){const d=derive();const side=d.pickSlots.B.includes(n)?"B":"R";const list=d.pickSlots[side].filter(Boolean).map(x=>BY[x]);
+ const a=assign(list)||[];const cur=a[list.findIndex(h=>h.n===n)];state.laneOv=state.laneOv||{};
+ const next=LANES[(LANES.indexOf(cur)+1)%LANES.length];state.laneOv[n]=next;
+ // if a teammate already had that lane set by hand, give them this hero's old lane
+ for(const h of list)if(h.n!==n&&state.laneOv[h.n]===next)state.laneOv[h.n]=cur;
+ save();render()}
 function selectSlot(k){if(!k)return;if(state.sel===k){state.sel=null}else{state.sel=k;if(state.skip[k])delete state.skip[k]}save();render()}
 
 $("grid").addEventListener("click",e=>{const b=e.target.closest(".hero");if(b&&!b.disabled)act(b.dataset.n)});
-document.addEventListener("click",e=>{const g=e.target.closest("[data-g]");if(g){e.preventDefault();openGuide(g.dataset.g);return}
- const k=e.target.closest("[data-k]");if(k&&(k.closest(".board")||k.closest("#steps")))selectSlot(k.dataset.k)});
+document.addEventListener("click",e=>{const lb=e.target.closest("[data-lane]");if(lb){e.preventDefault();cycleLane(lb.dataset.lane);return}
+ const g=e.target.closest("[data-g]");if(g){e.preventDefault();openGuide(g.dataset.g);return}
+ const k=e.target.closest("[data-k]");if(k&&(k.closest(".board")||k.closest(".dbar")))selectSlot(k.dataset.k)});
 document.addEventListener("keydown",e=>{const k=e.target.closest&&e.target.closest(".pick[data-k]");if(k&&(e.key==="Enter"||e.key===" ")){e.preventDefault();selectSlot(k.dataset.k)}});
 $("undo").onclick=undo;
 $("reset").onclick=reset;
