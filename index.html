@@ -1228,7 +1228,7 @@ function badge(h){
 }
 // Optional pictures: if images/heroes/<name>.png or images/items/<name>.png exist in the repo they show over the badge; otherwise the badge stays.
 const slug=n=>n.toLowerCase().replace(/'/g,"").replace(/\./g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
-const mono=h=>`<span class="mono badge" title="${esc(h.n)} · ${ROLE_NAME[h.roles[0]]}">${badge(h)}<img class="face" src="images/heroes/${slug(h.n)}.png" alt="" loading="lazy" onerror="this.remove()"></span>`;
+const mono=h=>`<span class="mono badge" title="${esc(h.n)} · ${ROLE_NAME[h.roles[0]]}">${badge(h)}<img class="face" src="images/heroes/${slug(h.n)}.png" alt="" loading="lazy" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='${slug(h.n)}.png'}else this.remove()"></span>`;
 const tierTag=h=>`<span class="tier t${h.tier}" title="${h.tier}-tier">${h.tier}</span>`;
 const patchTag=h=>PATCH[h.n]?`<span class="pf ${PATCH[h.n]}">${t("pf_"+PATCH[h.n])}</span>`:"";
 const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
