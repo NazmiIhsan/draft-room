@@ -365,6 +365,51 @@ header.top{justify-content:space-between}
   .board{gap:8px}
 }
 @media (prefers-reduced-motion:no-preference){.sg,.hero{transition:border-color .12s}}
+
+/* ---------- phone layout ---------- */
+@media (max-width:600px){
+ header.top{flex-wrap:nowrap;gap:10px}
+ .brand{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0}
+ .brand h1{font-size:18px}
+ .patch{font-size:10.5px;padding:2px 6px}
+ .toolbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:end}
+ .toolbar .fld{min-width:0}
+ .toolbar select{width:100%;padding:8px 6px;font-size:13.5px}
+ .toolbar .tbtns{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ .toolbar .tbtns .btn{min-height:42px}
+ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:16;background:var(--bg)}
+ .dbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:15;padding:8px 10px;gap:6px;box-shadow:0 6px 14px -8px rgba(0,0,0,.55)}
+ .dfoot{display:none}
+ .dmid .turn{font-size:15px}
+ .dstatus{font-size:11.5px}
+ .dbans{gap:3px}
+ .bc{width:min(30px,calc((100vw - 64px) / 10.6));height:auto;aspect-ratio:1;border-width:1.5px}
+ .board{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+ .board .team{order:1}
+ .board .advisor{order:3;grid-column:1 / -1}
+ .team h2{padding:7px 9px;font-size:13px}
+ .team .picks{padding:6px;gap:4px}
+ .team .pick,.team.R .pick{min-height:42px;padding:3px 5px}
+ .team .pick>.mono{width:34px;height:34px}
+ .team .pick,.team .pick.empty{grid-template-columns:34px minmax(0,1fr)}
+ .team.R .pick,.team.R .pick.empty{grid-template-columns:minmax(0,1fr) 34px}
+ .advisor{padding:10px}
+ .tabs{overflow-x:auto;scrollbar-width:none}
+ .tabs::-webkit-scrollbar,.lchips::-webkit-scrollbar{display:none}
+ .tab{flex:0 0 auto;white-space:nowrap;padding:9px 12px}
+ .lchips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+ .lchip{flex:none;padding:6px 12px}
+ .sugg:not(.grp) .sg:nth-of-type(n+6){display:none}
+ .sg{grid-template-columns:34px minmax(0,1fr) 38px;padding:6px 8px;gap:8px}
+ .sg .mono{width:34px;height:34px}
+ .sg .chips .chip:nth-child(n+3){display:none}
+ .sg .score{font-size:15px}
+ .filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ .filters input{grid-column:1 / -1}
+ .filters select{min-width:0;width:100%;font-size:13px;padding:7px 4px}
+ .grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
+ .hero{min-height:44px}
+}
 </style>
 <style>html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -1249,7 +1294,7 @@ function renderAdvisor(d){
   <div class="tabs" role="group" aria-label="${esc(t("suggType"))}">${tabs}</div>
   <div class="lchips" role="group" aria-label="${esc(t("laneFilter"))}">${lanes}</div>
   ${note?`<div class="hint">${esc(note)}</div>`:""}
-  <div class="sugg">${groups?groups.map(g=>`<div class="lgh">${LANE_NAME[g.ln]}${open.includes(g.ln)?` <span class="chip">${t(isBan?"enemyOpen":"youOpen")}</span>`:""}</div>${g.items.map(card).join("")}`).join(""):top.map(card).join("")}</div>
+  <div class="sugg ${groups?"grp":""}">${groups?groups.map(g=>`<div class="lgh">${LANE_NAME[g.ln]}${open.includes(g.ln)?` <span class="chip">${t(isBan?"enemyOpen":"youOpen")}</span>`:""}</div>${g.items.map(card).join("")}`).join(""):top.map(card).join("")}</div>
   <div class="hint">${t("tapHint")}</div>`;
  el.querySelectorAll(".sg").forEach(b=>b.onclick=()=>act(b.dataset.n));
  el.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{state.advTab=b.dataset.tab;save();renderAdvisor(derive())});
