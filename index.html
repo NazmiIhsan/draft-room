@@ -169,6 +169,13 @@ button.step{border:0;padding:0;cursor:pointer}
 .ctl{display:flex;flex-wrap:wrap;gap:6px}
 .ctl .btn{padding:5px 9px;font-size:13px}
 .ctl:empty{display:none}
+.advs{display:grid;gap:6px}
+.advs input{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%}
+.advres{display:flex;flex-wrap:wrap;gap:5px}
+.advres:empty{display:none}
+.ar{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:3px 8px 3px 3px;font:600 13px var(--display)}
+.ar:hover,.ar:focus-visible{border-color:var(--gold)}
+.ar .mono{width:24px;height:24px}
 .hint{font-size:12.5px;color:var(--muted)}
 .ghead{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
@@ -726,7 +733,7 @@ function derive(){
 
 // ---------- language ----------
 const I18N={en:{
-skipped:"Skipped",skipBan:"Skip this ban",skipAll:"Skip all bans",clearSlot:"Clear slot",cancel:"Cancel",choosingFor:"Choosing: {0}",slotHint:"Tap any slot on the board to fill or change it.",
+skipped:"Skipped",advSearch:"Search a hero to {0}…",skipBan:"Skip this ban",skipAll:"Skip all bans",clearSlot:"Clear slot",cancel:"Cancel",choosingFor:"Choosing: {0}",slotHint:"Tap any slot on the board to fill or change it.",
 dupNote:"In ranked, both teams can ban the same hero.",guideTitle:"Hero guide",guideFor:"Guide for {0}",chooseHero:"Choose a hero",buildT:"Build",emblemT:"Emblem",spellT:"Battle spell",
 src_r:"Researched build from 2026 guides",src_g:"Standard build for this role. Adjust it to the enemy team.",beatenBy:"Heroes that beat {0}",strongVs:"{0} is strong against",
 measured:"ranked data",kit:"skill matchup",howTo:"How to play",inDraft:"taken",top5Title:"Top 5 heroes for Patch 2.2.23",top5Note:"One hero per lane, picked from MPL Season 18 pick/ban data, ranked results and the new patch changes.",
@@ -768,7 +775,7 @@ footer:`Suggestions look at how strong a hero is, which lane is free, who beats 
 Data: <a href="https://mlbbhub.com/patch-notes/original/2.2.23" target="_blank" rel="noopener">Patch 2.2.23 notes</a> · <a href="https://mlbbhub.com/tier-list" target="_blank" rel="noopener">ranked tier list (11 Nov 2026)</a> · MPL S18 stats and drafts for <a href="https://mlbbhub.com/mpl/my/stats" target="_blank" rel="noopener">MY</a>, <a href="https://mlbbhub.com/mpl/ph/stats" target="_blank" rel="noopener">PH</a> and <a href="https://mlbbhub.com/mpl/id/stats" target="_blank" rel="noopener">ID</a> (11–12 Nov 2026). Fan-made, not affiliated with Moonton.`,
 copyright:"© 2026 Mican. All rights reserved."
 },ms:{
-skipped:"Dilangkau",skipBan:"Langkau ban ini",skipAll:"Langkau semua ban",clearSlot:"Kosongkan slot",cancel:"Batal",choosingFor:"Memilih: {0}",slotHint:"Tekan mana-mana slot di papan untuk isi atau tukar.",
+skipped:"Dilangkau",advSearch:"Cari hero untuk {0}…",skipBan:"Langkau ban ini",skipAll:"Langkau semua ban",clearSlot:"Kosongkan slot",cancel:"Batal",choosingFor:"Memilih: {0}",slotHint:"Tekan mana-mana slot di papan untuk isi atau tukar.",
 dupNote:"Dalam ranked, kedua-dua pasukan boleh ban hero yang sama.",guideTitle:"Panduan hero",guideFor:"Panduan untuk {0}",chooseHero:"Pilih hero",buildT:"Build",emblemT:"Emblem",spellT:"Battle spell",
 src_r:"Build hasil kajian dari panduan 2026",src_g:"Build biasa untuk role ini. Ubah ikut pasukan musuh.",beatenBy:"Hero yang kalahkan {0}",strongVs:"{0} kuat melawan",
 measured:"data ranked",kit:"lawan skill",howTo:"Cara main",inDraft:"dah diambil",top5Title:"Top 5 hero untuk Patch 2.2.23",top5Note:"Satu hero untuk setiap lane, dipilih dari data pick/ban MPL Season 18, keputusan ranked dan perubahan patch baru.",
@@ -987,6 +994,14 @@ function renderTeam(side,d){
 }
 let lastRanked=[];
 function slotName(k){return t(k[1]==="B"?"Blue":"Red")+" · "+(k[0]==="b"?t("ban")+" "+(+k.slice(2)+1):t("pickN",+k.slice(2)+1))}
+let advQ="",advFocus=false;
+function renderAdvRes(d){
+ const box=$("advres");if(!box)return;const q=advQ.trim().toLowerCase();
+ if(!q){box.innerHTML="";return}
+ const m=HEROES.filter(h=>h.n.toLowerCase().includes(q)&&!d.blocked(h.n)).sort((a,b)=>(a.n.toLowerCase().startsWith(q)?0:1)-(b.n.toLowerCase().startsWith(q)?0:1)||a.n.localeCompare(b.n)).slice(0,8);
+ box.innerHTML=m.length?m.map(h=>`<button class="ar" data-n="${esc(h.n)}" role="listitem">${mono(h)}<span>${esc(h.n)}</span>${tierTag(h)}</button>`).join(""):`<div class="hint">${t("noMatch")}</div>`;
+ box.querySelectorAll(".ar").forEach(b=>b.onclick=()=>act(b.dataset.n));
+}
 function renderAdvisor(d){
  const el=$("advisor");
  const anyBanLeft=d.keys.some(k=>k[0]==="b"&&!state.slots[k]&&!state.skip[k]);
@@ -1001,11 +1016,16 @@ function renderAdvisor(d){
  el.innerHTML=`<h3>${t(isBan?"suggBan":"suggPick",who)}</h3>
   <div class="choosing ${side}">${t("choosingFor",slotName(d.curKey))}${d.editing?" ("+esc(state.slots[d.curKey])+")":""}</div>
   <div class="ctl">${ctl.join("")}</div>
+  <div class="advs"><input id="advq" type="search" autocomplete="off" placeholder="${esc(t("advSearch",t(isBan?"ban":"pick").toLowerCase()))}" aria-label="${esc(t("advSearch",t(isBan?"ban":"pick").toLowerCase()))}" value="${esc(advQ)}"><div id="advres" class="advres" role="list"></div></div>
   <div class="sugg">${top.map(r=>{
    const pct=Math.round(Math.max(0,r.s)/max*100);
    return `<button class="sg" data-n="${esc(r.h.n)}" aria-label="${t(isBan?"ban":"pick")} ${esc(r.h.n)}">${mono(r.h)}<div style="min-width:0"><div class="nm">${esc(r.h.n)} ${tierTag(r.h)} ${patchTag(r.h)}</div><div class="chips">${r.R.slice(0,4).map(([tx,v])=>`<span class="chip ${v>0?"pos":v<0?"neg":""}">${esc(tx)}</span>`).join("")}</div></div><div class="score">${pct}</div></button>`}).join("")}</div>
   <div class="hint">${t("tapHint")} ${t("slotHint")}${rankedFmt()&&isBan?" "+t("dupNote"):""}</div>`;
  el.querySelectorAll(".sg").forEach(b=>b.onclick=()=>act(b.dataset.n));
+ const q=$("advq");renderAdvRes(d);
+ q.oninput=()=>{advQ=q.value;renderAdvRes(derive())};
+ q.onkeydown=e=>{if(e.key==="Enter"){const first=$("advres").querySelector("button");if(first){e.preventDefault();act(first.dataset.n)}}else if(e.key==="Escape"){advQ="";q.value="";renderAdvRes(derive())}};
+ if(advFocus){q.focus();advFocus=false}
  const on=(id,f)=>{const b=$(id);if(b)b.onclick=f};
  on("skipOne",()=>skipBan(false));on("skipAll",()=>skipBan(true));on("clearSlot",clearSlot);on("cancelSel",()=>{state.sel=null;save();render()});
 }
@@ -1126,7 +1146,7 @@ function render(){
  $("fmt").value=state.fmt;$("meta").value=state.meta;
  $("undo").disabled=!state.hist.length;
 }
-function act(n){const d=derive();if(!d.curKey||d.blocked(n)||!BY[n])return;const k=d.curKey;
+function act(n){const d=derive();if(!d.curKey||d.blocked(n)||!BY[n])return;const k=d.curKey;if(document.activeElement&&document.activeElement.id==="advq")advFocus=true;advQ="";
  state.hist.push({k,prev:state.slots[k]||null,sk:!!state.skip[k]});state.slots[k]=n;delete state.skip[k];state.sel=null;if(k[0]==="p")state.guide=n;save();render()}
 function skipBan(all){const d=derive();
  const ks=all?d.keys.filter(k=>k[0]==="b"&&!state.slots[k]&&!state.skip[k]):(d.curKey&&d.curKey[0]==="b"&&!state.slots[d.curKey]?[d.curKey]:[]);
