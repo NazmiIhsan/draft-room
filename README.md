@@ -50,6 +50,8 @@ The app shows original badges by default. If you add your own pictures, they sho
 
 - Hero pictures: `images/heroes/<name>.png`
 - Item pictures: `images/items/<name>.png`
+- Emblem and talent pictures: `images/emblems/<name>.png`
+- Battle spell pictures: `images/spells/<name>.png`
 
 Names are lowercase with dashes. Any missing picture just falls back to the badge. Note: official MLBB artwork belongs to Moonton. Adding it to a public site is your own choice and risk.
 
@@ -58,3 +60,9 @@ Hero file names:
 
 Item file names (items used in the builds):
 `antique-cuirass.png`, `arcane-boots.png`, `athenas-shield.png`, `berserkers-fury.png`, `blade-of-despair.png`, `blade-of-the-heptaseas.png`, `blood-wings.png`, `clock-of-destiny.png`, `concentrated-energy.png`, `corrosion-scythe.png`, `demon-hunter-sword.png`, `divine-glaive.png`, `dominance-ice.png`, `enchanted-talisman.png`, `endless-battle.png`, `feather-of-heaven.png`, `flask-of-the-oasis.png`, `fleeting-time.png`, `genius-wand.png`, `glowing-wand.png`, `golden-staff.png`, `haass-claws.png`, `holy-crystal.png`, `hunter-strike.png`, `ice-queen-wand.png`, `immortality.png`, `lightning-truncheon.png`, `malefic-gun.png`, `malefic-roar.png`, `oracle.png`, `queens-wings.png`, `radiant-armor.png`, `rose-gold-meteor.png`, `swift-boots.png`, `thunder-belt.png`, `tough-boots.png`, `war-axe.png`, `wind-of-nature.png`, `windtalker.png`, `winter-crown.png`
+
+Emblem file names (in `images/emblems/`):
+`agility.png`, `assassin.png`, `bargain-hunter.png`, `brave-smite.png`, `concussive-blast.png`, `fatal.png`, `festival-of-blood.png`, `fighter.png`, `firmness.png`, `focusing-mark.png`, `impure-rage.png`, `inspire.png`, `killing-spree.png`, `lethal-ignition.png`, `mage.png`, `marksman.png`, `pull-yourself-together.png`, `quantum-charge.png`, `rupture.png`, `seasoned-hunter.png`, `support.png`, `swift.png`, `tank.png`, `tenacity.png`, `thrill.png`, `unbending-will.png`, `vitality.png`, `war-cry.png`, `weakness-finder.png`, `weapons-master.png`
+
+Battle spell file names (in `images/spells/`):
+`flicker.png`, `ice-retribution.png`, `inspire.png`

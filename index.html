@@ -154,6 +154,8 @@ details summary{cursor:pointer;font:700 13px var(--display);text-transform:upper
 .mono.badge .face{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit}
 .items li{display:flex;align-items:center;gap:6px}
 .ii{width:22px;height:22px;border-radius:4px;flex:none}
+.pl{display:inline-flex;align-items:center;gap:4px;vertical-align:middle}
+.pl .ii{width:18px;height:18px}
 .rF{background:#b5532a}.rT{background:#3e6b8c}.rA{background:#7a3a8c}.rM{background:#5b4fc4}.rK{background:#b8862a}.rS{background:#2e8a6e}
 
 
@@ -1343,7 +1345,9 @@ function renderPro(){
  </div>`;
 }
 function itemList(b){return`<ol class="items">${b.i.map(x=>`<li><img class="ii" src="images/items/${slug(x)}.png" alt="" loading="lazy" onerror="this.remove()">${esc(x)}</li>`).join("")}</ol>`}
-function emblemLine(b){return`<b>${esc(b.e[0])}</b> · ${b.e.slice(1).map(esc).join(" · ")}`}
+const pic=(dir,name)=>`<img class="ii" src="images/${dir}/${slug(name)}.png" alt="" loading="lazy" onerror="this.remove()">`;
+function emblemLine(b){return`<span class="pl">${pic("emblems",b.e[0])}<b>${esc(b.e[0])}</b></span> · ${b.e.slice(1).map(x=>`<span class="pl">${pic("emblems",x)}${esc(x)}</span>`).join(" · ")}`}
+const spellTag=sp=>`<span class="pl">${pic("spells",sp)}<b>${esc(sp)}</b></span>`;
 function counterRows(map,eng,d){
  const rows=Object.entries(map||{}).map(([n,pp])=>({n,pp})).filter(r=>BY[r.n]);
  for(const [x,v] of eng){if(rows.length>=6)break;if(!rows.some(r=>r.n===x.n))rows.push({n:x.n,pp:null})}
@@ -1375,7 +1379,7 @@ function renderGuide(d){
  <div class="gcols">
   <div class="gbox"><h4>${t("buildT")}</h4>${itemList(b)}
    <div class="kv"><span>${t("emblemT")}</span><span>${emblemLine(b)}</span></div>
-   <div class="kv"><span>${t("spellT")}</span><span><b>${esc(b.s)}</b></span></div>
+   <div class="kv"><span>${t("spellT")}</span><span>${spellTag(b.s)}</span></div>
    <div class="src ${b.src}">${t("src_"+b.src)}</div></div>
   <div class="gbox"><h4>${t("byLane",esc(n))}</h4><div class="lanec">${laneCounters(h,d)}</div>
    <h4 style="margin-top:10px">${t("strongVs",esc(n))}</h4><div class="clist">${counterRows(CB[n],strong,d)}</div>
@@ -1449,7 +1453,7 @@ function renderTop5(){
   <div class="gtop">${mono(h)}<div><div class="gname">${esc(x.n)} ${tierTag(h)} ${patchTag(h)}</div><div class="sub">${LANE_NAME[x.lane]}</div></div></div>
   <p><b>${t("whyMeta")}:</b> ${esc(x.why[state.lang])}</p>
   <div class="mini">${b.i.map(esc).join(" → ")}</div>
-  <div class="mini">${emblemLine(b)} · <b>${esc(b.s)}</b></div>
+  <div class="mini">${emblemLine(b)} · ${spellTag(b.s)}</div>
   <ul class="tips">${x.tips[state.lang].slice(0,2).map(z=>`<li>${esc(z)}</li>`).join("")}</ul>
   <button class="btn" data-g="${esc(x.n)}">${t("openGuide")}</button></article>`}).join("")}</div>`;
 }
