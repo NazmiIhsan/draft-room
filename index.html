@@ -210,6 +210,7 @@ button.step{border:0;padding:0;cursor:pointer}
 .tmh{display:flex;gap:8px;align-items:center;background:none;border:0;padding:0;text-align:left;min-width:0}
 .tmh .mono{width:34px;height:34px;flex:none}
 .tmh .sub{display:block}
+.tmh .why{display:block;font-size:11.5px;color:var(--good)}
 .alt{font-size:12.5px;color:var(--muted);text-align:right}
 .altb{background:none;border:0;padding:0;color:var(--fg);font:inherit;text-decoration:underline;text-underline-offset:2px}
 @media (max-width:560px){.tm5 li{grid-template-columns:48px minmax(0,1fr)}.alt{grid-column:2;text-align:left}}
@@ -753,7 +754,7 @@ function derive(){
 
 // ---------- language ----------
 const I18N={en:{
-skipped:"Skipped",teamTitle:"Recommended team for Patch 2.2.23",teamNote:"Built to fight together, close to what MPL teams won with. Ban Freya, Valentina and Alice to protect it.",ifBanned:"If banned:",refresh:"Refresh",lineupN:"Lineup {0}",genNote:"A new lineup built by the advisor: it has a tank, stuns, someone to start fights and both damage types. Ban {0} to protect it.",backToRec:"Show the recommended team",job_tank:"Tank. Starts fights and protects the team",job_heal:"Healer. Keeps the team alive",job_eng:"Starts fights and locks enemies down",job_peel:"Protects your carries",job_control:"Area control. Traps enemies and stops escapes",job_poke:"Hits from long range before fights",job_burst:"Burst. Kills key targets fast",job_late:"Carry. Gets stronger later in the game",job_dps:"Steady damage in long fights",job_dive:"Dives the backline",job_def:"Flexible pick for this lane",advSearch:"Search a hero to {0}…",skipBan:"Skip this ban",skipAll:"Skip all bans",clearSlot:"Clear slot",cancel:"Cancel",choosingFor:"Choosing: {0}",slotHint:"Tap any slot on the board to fill or change it.",
+skipped:"Skipped",teamTitle:"Recommended team for Patch 2.2.23",teamNote:"Built to fight together, close to what MPL teams won with. Ban Freya, Valentina and Alice to protect it.",ifBanned:"If banned:",refresh:"Refresh",lineupN:"Lineup {0}",genNote:"A new lineup using only current-meta heroes for Patch 2.2.23 (top tier in ranked or often picked or banned in MPL). It has a tank, stuns, someone to start fights and both damage types. Ban {0} to protect it.",metaTier:"{0}-tier in ranked",metaPro:"MPL S18: {0} picks + bans",backToRec:"Show the recommended team",job_tank:"Tank. Starts fights and protects the team",job_heal:"Healer. Keeps the team alive",job_eng:"Starts fights and locks enemies down",job_peel:"Protects your carries",job_control:"Area control. Traps enemies and stops escapes",job_poke:"Hits from long range before fights",job_burst:"Burst. Kills key targets fast",job_late:"Carry. Gets stronger later in the game",job_dps:"Steady damage in long fights",job_dive:"Dives the backline",job_def:"Flexible pick for this lane",advSearch:"Search a hero to {0}…",skipBan:"Skip this ban",skipAll:"Skip all bans",clearSlot:"Clear slot",cancel:"Cancel",choosingFor:"Choosing: {0}",slotHint:"Tap any slot on the board to fill or change it.",
 dupNote:"In ranked, both teams can ban the same hero.",guideTitle:"Hero guide",guideFor:"Guide for {0}",chooseHero:"Choose a hero",buildT:"Build",emblemT:"Emblem",spellT:"Battle spell",
 src_r:"Researched build from 2026 guides",src_g:"Standard build for this role. Adjust it to the enemy team.",beatenBy:"Heroes that beat {0}",strongVs:"{0} is strong against",
 measured:"ranked data",kit:"skill matchup",howTo:"How to play",inDraft:"taken",top5Title:"Top 5 heroes for Patch 2.2.23",top5Note:"One hero per lane, picked from MPL Season 18 pick/ban data, ranked results and the new patch changes.",
@@ -795,7 +796,7 @@ footer:`Suggestions look at how strong a hero is, which lane is free, who beats 
 Data: <a href="https://mlbbhub.com/patch-notes/original/2.2.23" target="_blank" rel="noopener">Patch 2.2.23 notes</a> · <a href="https://mlbbhub.com/tier-list" target="_blank" rel="noopener">ranked tier list (11 Nov 2026)</a> · MPL S18 stats and drafts for <a href="https://mlbbhub.com/mpl/my/stats" target="_blank" rel="noopener">MY</a>, <a href="https://mlbbhub.com/mpl/ph/stats" target="_blank" rel="noopener">PH</a> and <a href="https://mlbbhub.com/mpl/id/stats" target="_blank" rel="noopener">ID</a> (11–12 Nov 2026). Fan-made, not affiliated with Moonton.`,
 copyright:"© 2026 Mican. All rights reserved."
 },ms:{
-skipped:"Dilangkau",teamTitle:"Pasukan cadangan untuk Patch 2.2.23",teamNote:"Dibina untuk war bersama, hampir sama dengan pasukan MPL yang menang. Ban Freya, Valentina dan Alice untuk lindunginya.",ifBanned:"Kalau di-ban:",refresh:"Tukar",lineupN:"Lineup {0}",genNote:"Lineup baru dibina oleh penasihat: ada tank, stun, hero untuk mulakan war dan kedua-dua jenis damage. Ban {0} untuk lindunginya.",backToRec:"Tunjuk pasukan cadangan",job_tank:"Tank. Mulakan war dan lindungi pasukan",job_heal:"Healer. Pastikan pasukan terus hidup",job_eng:"Mulakan war dan kunci musuh",job_peel:"Lindungi carry anda",job_control:"Kawal kawasan. Perangkap musuh dan halang mereka lari",job_poke:"Serang dari jauh sebelum war",job_burst:"Burst. Bunuh sasaran penting dengan cepat",job_late:"Carry. Jadi lebih kuat di late game",job_dps:"Damage berterusan dalam war panjang",job_dive:"Serbu hero belakang musuh",job_def:"Pilihan fleksibel untuk lane ini",advSearch:"Cari hero untuk {0}…",skipBan:"Langkau ban ini",skipAll:"Langkau semua ban",clearSlot:"Kosongkan slot",cancel:"Batal",choosingFor:"Memilih: {0}",slotHint:"Tekan mana-mana slot di papan untuk isi atau tukar.",
+skipped:"Dilangkau",teamTitle:"Pasukan cadangan untuk Patch 2.2.23",teamNote:"Dibina untuk war bersama, hampir sama dengan pasukan MPL yang menang. Ban Freya, Valentina dan Alice untuk lindunginya.",ifBanned:"Kalau di-ban:",refresh:"Tukar",lineupN:"Lineup {0}",genNote:"Lineup baru dengan hero meta semasa sahaja untuk Patch 2.2.23 (tier teratas dalam ranked atau kerap dipilih atau di-ban dalam MPL). Ada tank, stun, hero untuk mulakan war dan kedua-dua jenis damage. Ban {0} untuk lindunginya.",metaTier:"{0}-tier dalam ranked",metaPro:"MPL S18: {0} pick + ban",backToRec:"Tunjuk pasukan cadangan",job_tank:"Tank. Mulakan war dan lindungi pasukan",job_heal:"Healer. Pastikan pasukan terus hidup",job_eng:"Mulakan war dan kunci musuh",job_peel:"Lindungi carry anda",job_control:"Kawal kawasan. Perangkap musuh dan halang mereka lari",job_poke:"Serang dari jauh sebelum war",job_burst:"Burst. Bunuh sasaran penting dengan cepat",job_late:"Carry. Jadi lebih kuat di late game",job_dps:"Damage berterusan dalam war panjang",job_dive:"Serbu hero belakang musuh",job_def:"Pilihan fleksibel untuk lane ini",advSearch:"Cari hero untuk {0}…",skipBan:"Langkau ban ini",skipAll:"Langkau semua ban",clearSlot:"Kosongkan slot",cancel:"Batal",choosingFor:"Memilih: {0}",slotHint:"Tekan mana-mana slot di papan untuk isi atau tukar.",
 dupNote:"Dalam ranked, kedua-dua pasukan boleh ban hero yang sama.",guideTitle:"Panduan hero",guideFor:"Panduan untuk {0}",chooseHero:"Pilih hero",buildT:"Build",emblemT:"Emblem",spellT:"Battle spell",
 src_r:"Build hasil kajian dari panduan 2026",src_g:"Build biasa untuk role ini. Ubah ikut pasukan musuh.",beatenBy:"Hero yang kalahkan {0}",strongVs:"{0} kuat melawan",
 measured:"data ranked",kit:"lawan skill",howTo:"Cara main",inDraft:"dah diambil",top5Title:"Top 5 hero untuk Patch 2.2.23",top5Note:"Satu hero untuk setiap lane, dipilih dari data pick/ban MPL Season 18, keputusan ranked dan perubahan patch baru.",
@@ -1149,6 +1150,10 @@ function renderGuide(d){
  </div>`;
  $("gsel").onchange=e=>{state.guide=e.target.value;save();renderGuide(derive())};
 }
+// Current-meta pool (Patch 2.2.23): S/A tier in ranked, or 60+ picks+bans across MPL MY/PH/ID Season 18; untested reworks left out
+const PRO_PB={};for(const lg in PRO_LEAGUE)for(const n in PRO_LEAGUE[lg]){const v=PRO_LEAGUE[lg][n];PRO_PB[n]=(PRO_PB[n]||0)+v[0]+v[1]}
+const isMeta=h=>PATCH[h.n]!=="rework"&&(h.tier==="S"||h.tier==="A"||(PRO_PB[h.n]||0)>=60);
+function metaWhy(h){const a=[];if(h.tier==="S"||h.tier==="A")a.push(t("metaTier",h.tier));if((PRO_PB[h.n]||0)>=60)a.push(t("metaPro",PRO_PB[h.n]));if(PATCH[h.n]==="buff")a.push(t("buffed"));return a.join(" · ")}
 function jobFor(h,lane){const g=k=>h.tags.has(k);
  if(lane==="r"&&g("front"))return"job_tank";if(g("heal"))return"job_heal";if(g("eng")&&(g("cc")||g("suppress")))return"job_eng";if(g("peel"))return"job_peel";
  if(g("zone")||(g("aoe")&&g("cc")))return"job_control";if(g("poke"))return"job_poke";if(g("dash")&&g("burst"))return"job_dive";if(g("burst"))return"job_burst";if(g("late"))return"job_late";if(g("dps"))return"job_dps";if(g("front"))return"job_tank";return"job_def"}
@@ -1159,7 +1164,7 @@ function genTeam(recent){
  for(let tries=0;tries<25;tries++){
   const names=[],lanes={};
   for(const ln of order){
-   const cands=HEROES.filter(h=>h.lanes.includes(ln)&&!names.includes(h.n)).map(h=>({h,s:slotScore(h,ln,names)-(recent.includes(h.n)?4:0)})).sort((a,b)=>b.s-a.s).slice(0,10);
+   const cands=HEROES.filter(h=>isMeta(h)&&h.lanes.includes(ln)&&!names.includes(h.n)).map(h=>({h,s:slotScore(h,ln,names)-(recent.includes(h.n)?4:0)})).sort((a,b)=>b.s-a.s).slice(0,10);
    const min=Math.min(...cands.map(c=>c.s));let tot=0;cands.forEach(c=>{c.w=Math.pow(c.s-min+1,1.1);tot+=c.w});
    let r=Math.random()*tot,pick=cands[0];for(const c of cands){r-=c.w;if(r<=0){pick=c;break}}
    names.push(pick.h.n);lanes[pick.h.n]=ln}
@@ -1173,7 +1178,7 @@ function genTeam(recent){
 function teamExtras(names,lanes){
  const hs=names.map(n=>BY[n]);
  const alts={};names.forEach(n=>{const ln=lanes[n],rest=names.filter(x=>x!==n);
-  alts[n]=HEROES.filter(h=>h.lanes.includes(ln)&&!names.includes(h.n)).map(h=>({n:h.n,s:slotScore(h,ln,rest)})).sort((a,b)=>b.s-a.s).slice(0,2).map(x=>x.n)});
+  alts[n]=HEROES.filter(h=>isMeta(h)&&h.lanes.includes(ln)&&!names.includes(h.n)).map(h=>({n:h.n,s:slotScore(h,ln,rest)})).sort((a,b)=>b.s-a.s).slice(0,2).map(x=>x.n)});
  const bans=HEROES.filter(h=>!names.includes(h.n)).map(h=>({n:h.n,s:hs.reduce((t,m)=>t+counterScore(h,m),0)+metaPts(h)*.25})).sort((a,b)=>b.s-a.s).slice(0,3).map(x=>x.n);
  return{alts,bans};
 }
@@ -1181,11 +1186,11 @@ function renderTeam5(){
  let rows,note,title=t("teamTitle");
  const gen=state.team5&&state.team5.names&&state.team5.names.every(n=>BY[n])?state.team5:null;
  if(gen){const ex=teamExtras(gen.names,gen.lanes);const ord=["r","e","j","m","g"];
-  rows=gen.names.slice().sort((a,b)=>ord.indexOf(gen.lanes[a])-ord.indexOf(gen.lanes[b])).map(n=>({n,lane:gen.lanes[n],job:t(jobFor(BY[n],gen.lanes[n])),alt:ex.alts[n]}));
+  rows=gen.names.slice().sort((a,b)=>ord.indexOf(gen.lanes[a])-ord.indexOf(gen.lanes[b])).map(n=>({n,lane:gen.lanes[n],job:t(jobFor(BY[n],gen.lanes[n])),why:metaWhy(BY[n]),alt:ex.alts[n]}));
   note=t("genNote",ex.bans.join(", "));title+=" · "+t("lineupN",gen.no||2)}
- else{rows=TEAM5.map(x=>({n:x.n,lane:x.lane,job:x.job[state.lang],alt:x.alt}));note=t("teamNote")}
+ else{rows=TEAM5.map(x=>({n:x.n,lane:x.lane,job:x.job[state.lang],why:metaWhy(BY[x.n]),alt:x.alt}));note=t("teamNote")}
  $("team5").innerHTML=`<div class="ghead"><h3>${esc(title)}</h3><div class="ctl"><button class="btn" id="t5ref">↻ ${t("refresh")}</button>${gen?`<button class="btn" id="t5rec">${t("backToRec")}</button>`:""}</div></div><div class="hint">${esc(note)}</div>
- <ul class="tm5">${rows.map(x=>{const h=BY[x.n];return`<li><span class="tl">${LANE_NAME[x.lane]}</span><button class="tmh" data-g="${esc(x.n)}">${mono(h)}<span><b>${esc(x.n)}</b> ${tierTag(h)}<span class="sub">${esc(x.job)}</span></span></button><span class="alt">${t("ifBanned")} ${x.alt.map(a=>`<button class="altb" data-g="${esc(a)}">${esc(a)}</button>`).join(", ")}</span></li>`}).join("")}</ul>`;
+ <ul class="tm5">${rows.map(x=>{const h=BY[x.n];return`<li><span class="tl">${LANE_NAME[x.lane]}</span><button class="tmh" data-g="${esc(x.n)}">${mono(h)}<span><b>${esc(x.n)}</b> ${tierTag(h)}<span class="sub">${esc(x.job)}</span>${x.why?`<span class="why">${esc(x.why)}</span>`:""}</span></button><span class="alt">${t("ifBanned")} ${x.alt.map(a=>`<button class="altb" data-g="${esc(a)}">${esc(a)}</button>`).join(", ")}</span></li>`}).join("")}</ul>`;
  $("t5ref").onclick=()=>{const recent=(state.t5recent||[]).slice(-12);let g,k=0;do{g=genTeam(recent);k++}while(k<5&&state.team5&&g.names.slice().sort().join()===state.team5.names.slice().sort().join());
   g.no=((state.team5&&state.team5.no)||1)+1;state.team5=g;state.t5recent=[...recent,...g.names].slice(-12);save();renderTeam5()};
  const rb=$("t5rec");if(rb)rb.onclick=()=>{state.team5=null;save();renderTeam5()};
