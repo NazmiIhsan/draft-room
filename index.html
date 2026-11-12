@@ -1445,8 +1445,8 @@ function renderPro(){
   </ul>
  </div>`;
 }
-function itemList(b){return`<ol class="items">${b.i.map(x=>`<li><img class="ii" src="images/items/${slug(x)}.png" alt="" loading="lazy" onerror="this.remove()">${esc(x)}</li>`).join("")}</ol>`}
-const pic=(dir,name)=>`<img class="ii" src="images/${dir}/${slug(name)}.png" alt="" loading="lazy" onerror="this.remove()">`;
+function itemList(b){return`<ol class="items">${b.i.map(x=>`<li><img class="ii" src="images/items/${slug(x)}.png" alt="" loading="lazy" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='${slug(x)}.png'}else this.remove()">${esc(x)}</li>`).join("")}</ol>`}
+const pic=(dir,name)=>`<img class="ii" src="images/${dir}/${slug(name)}.png" alt="" loading="lazy" onerror="if(!this.dataset.r){this.dataset.r=1;this.src='${dir==="spells"?"spell-":""}${slug(name)}.png'}else this.remove()">`;
 function emblemLine(b){return`<span class="pl">${pic("emblems",b.e[0])}<b>${esc(b.e[0])}</b></span> · ${b.e.slice(1).map(x=>`<span class="pl">${pic("emblems",x)}${esc(x)}</span>`).join(" · ")}`}
 const spellTag=sp=>`<span class="pl">${pic("spells",sp)}<b>${esc(sp)}</b></span>`;
 function counterRows(map,eng,d){
