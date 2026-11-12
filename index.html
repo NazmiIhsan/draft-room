@@ -1418,12 +1418,20 @@ async function profLogin(){const vc=$("pVc").value.trim();if(!vc){prof.err=t("pN
 const listOf=x=>Array.isArray(x)?x:(x&&Array.isArray(x.result)?x.result:(findKey(x,"result")||findKey(x,"list")||[]));
 async function papiPages(path,max){let out=[],cur="";for(let i=0;i<max;i++){const j=unwrap(await papi(path+(cur?"&last_cursor="+encodeURIComponent(cur):"")));out=out.concat(listOf(j));
  const pi=findKey(j,"pageInfo");if(!pi||!pi.hasNext||!pi.nextCursor)break;cur=pi.nextCursor}return out}
+function extractSids(x){ // season ids in any shape: [42,41], ["42"], [{sid:42}], {sids:[...]}, {list:[{season_id:..}]}, "42,41"
+ const out=[];const add=v=>{const n=+v;if(isFinite(n)&&n>0&&n<1e6&&!out.includes(n))out.push(n)};
+ const walk=(o,d)=>{if(o==null||d>5)return;if(typeof o==="number"||(typeof o==="string"&&/^\d+$/.test(o))){add(o);return}
+  if(typeof o==="string"&&/^\d+(,\d+)+$/.test(o)){o.split(",").forEach(add);return}
+  if(Array.isArray(o)){o.forEach(v=>{if(v&&typeof v==="object"){const k=v.sid??v.season_id??v.seasonId??v.id??v.season;if(k!=null)add(k);else walk(v,d+1)}else walk(v,d+1)});return}
+  if(typeof o==="object"){for(const k of ["sids","seasons","list","result","data","records"])if(k in o)walk(o[k],d+1)}};
+ walk(x,0);return out.sort((a,b)=>b-a)}
 async function profLoad(){prof.busy=true;prof.step="loading";renderProfile();const lang=state.lang==="ms"?"ms":"en";
  try{prof.info=unwrap(await papi("/info?lang="+lang))}catch(e){if(e.status===401){profLogout(true);prof.err=t("pExpired");prof.busy=false;renderProfile();return}prof.err=t("pLoadFail",e.message)}
  prof.fails={};
  try{prof.stats=unwrap(await papi("/stats?lang="+lang))}catch(e){prof.stats=null;prof.fails.stats=e.message}
- try{const se=unwrap(await papi("/season?lang="+lang));let sids=findKey(se,"sids")||(Array.isArray(se)?se:[]);prof.sids=(sids||[]).map(x=>typeof x==="object"?(x.sid??x.id):x).filter(x=>x!=null)}catch(e){prof.sids=[];prof.fails.season=e.message}
- if(!prof.sids.length&&prof.stats){const s2=findKey(prof.stats,"sids");if(Array.isArray(s2))prof.sids=s2}
+ try{const se=unwrap(await papi("/season?lang="+lang));prof.rawSeason=se;prof.sids=extractSids(se)}catch(e){prof.sids=[];prof.fails.season=e.message}
+ if(!prof.sids.length&&prof.stats)prof.sids=extractSids(findKey(prof.stats,"sids")||[]);
+ if(!prof.sids.length){prof.sids=[42,41];prof.guessedSid=true}
  if(prof.sid==null||!prof.sids.includes(prof.sid))prof.sid=prof.sids[0]??null;
  await profLoadSeason(lang)}
 async function profLoadSeason(lang){lang=lang||(state.lang==="ms"?"ms":"en");prof.busy=true;renderProfile();
@@ -1432,7 +1440,8 @@ async function profLoadSeason(lang){lang=lang||(state.lang==="ms"?"ms":"en");pro
   try{prof.matches=await papiPages("/matches?"+q+"&limit=20",3)}catch(e){prof.matches=null;prof.fails.matches=e.message}
   try{prof.heroes=await papiPages("/heroes/frequent?"+q+"&limit=20",2)}catch(e){prof.heroes=null;prof.fails.heroes=e.message}
   try{const f=unwrap(await papi("/friends?"+q));prof.friends=listOf(f).length?listOf(f):(findKey(f,"fs")||[])}catch(e){prof.friends=null;prof.fails.friends=e.message}}
- else prof.fails.season=prof.fails.season||"no season list";
+
+ if(prof.guessedSid&&(!prof.matches||!prof.matches.length)&&!prof.fails.matches)prof.fails.matches="no matches returned for season "+sid;
  prof.step="done";prof.busy=false;renderProfile()}
 async function profLogout(silent){try{if(prof.jwt&&!silent)await papi("/auth/logout",{method:"POST"})}catch(e){}
  prof.jwt=null;prof.info=prof.stats=prof.matches=null;prof.step="ids";try{sessionStorage.removeItem("mlbbJwt")}catch(e){}if(!silent)renderProfile()}
@@ -1494,7 +1503,7 @@ function renderProfile(){
   ${N?`<h4>${t("pRecent")}</h4><ul class="pm">${ms.slice(0,15).map(m=>{const h=heroName(m),w=won(m),l=LANE_ID[num(m.lid)];
     return`<li class="${w?"w":"l"}"><span class="pr2">${w?t("pWin"):t("pLoss")}</span>${BY[h]?mono(BY[h]):"<span></span>"}<span class="cn">${esc(String(h))}${l?` <span class="sub">${LANE_NAME[l]}</span>`:""}${num(m.mvp)===1?` <span class="chip pos">MVP</span>`:""}</span><span class="kda">${num(m.k??m.kill)}/${num(m.d??m.death)}/${num(m.a??m.assist)}${m.s!=null?` · ${(num(m.s)/100).toFixed(1)}`:""}${m.ts?` · ${ago(m.ts)}`:""}</span></li>`}).join("")}</ul>`:`<div class="hint">${t("pNoMatches")}</div>`}
   ${Object.keys(prof.fails||{}).length?`<div class="perr">${t("pPartial")}<br>${Object.entries(prof.fails).map(([k,v])=>esc(k+": "+v)).join("<br>")}</div>`:""}
-  <details class="praw"><summary>${t("pRaw")}</summary><pre>${esc(JSON.stringify({fails:prof.fails,info:prof.info,stats:prof.stats,sids:prof.sids,matches:(prof.matches||[]).slice(0,2),heroes:(prof.heroes||[]).slice(0,2),friends:(prof.friends||[]).slice(0,2)},null,1)).slice(0,8000)}</pre></details>`}
+  <details class="praw"><summary>${t("pRaw")}</summary><pre>${esc(JSON.stringify({fails:prof.fails,rawSeason:prof.rawSeason,info:prof.info,stats:prof.stats,sids:prof.sids,matches:(prof.matches||[]).slice(0,2),heroes:(prof.heroes||[]).slice(0,2),friends:(prof.friends||[]).slice(0,2)},null,1)).slice(0,8000)}</pre></details>`}
  el.innerHTML=`<h3>${t("pTitle")}</h3>${notice}${prof.err?`<div class="perr" role="alert">${esc(prof.err)}</div>`:""}${body}`;
  const on=(id,f)=>{const b=$(id);if(b)b.onclick=f};on("pSend",profSendCode);on("pLogin",profLogin);on("pBack",()=>{prof.step="ids";prof.err="";renderProfile()});on("pOut",()=>profLogout(false));
  const ss=$("pSid");if(ss)ss.onchange=e=>{prof.sid=isNaN(+e.target.value)?e.target.value:+e.target.value;profLoadSeason()};
