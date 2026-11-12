@@ -356,9 +356,9 @@ button.step{border:0;padding:0;cursor:pointer}
 
   <section class="dbar">
     <div class="dbans B" id="bansB"></div>
-    <div class="dmid" aria-live="polite"><div class="turn" id="turn"></div><div class="dstatus" id="dstatus"></div><div class="timer" id="timer" role="timer"></div></div>
+    <div class="dmid" aria-live="polite"><div class="turn" id="turn"></div><div class="dstatus" id="dstatus"></div></div>
     <div class="dbans R" id="bansR"></div>
-    <div class="dfoot"><div class="steps" id="steps"></div><div class="dhint"><span class="hint" id="turnHint"></span><button class="tbtn" id="tToggle"></button></div></div>
+    <div class="dfoot"><div class="steps" id="steps"></div><div class="dhint"><span class="hint" id="turnHint"></span></div></div>
   </section>
 
   <section class="board">
@@ -1243,9 +1243,6 @@ function renderPool(d){
  const whoUsed=n=>d.picks.B.includes(n)||d.bans.B.includes(n)?"B":"R";
  $("grid").innerHTML=list.map(h=>{const u=d.used.has(h.n);return`<button class="hero ${u?whoUsed(h.n)+"-used":""}" data-n="${esc(h.n)}" ${!d.cur||d.blocked(h.n)?"disabled":""} title="${esc(h.n)} · ${h.roles.map(r=>ROLE_NAME[r]).join("/")} · ${h.lanes.map(l=>LANE_NAME[l]).join("/")}">${mono(h)}<span style="min-width:0"><span class="nm" style="display:block">${esc(h.n)}</span><span class="meta">${tierTag(h)}${patchTag(h)}</span></span></button>`}).join("")||`<div style="color:var(--muted)">${t("noMatch")}</div>`;
 }
-let timerKey=null,timerLeft=30,timerId=null;
-function tickTimer(){const el=$("timer");if(!el)return;if(!state.timerOn||!timerKey){el.hidden=true;return}el.hidden=false;
- el.textContent="00:"+String(Math.max(0,timerLeft)).padStart(2,"0");el.classList.toggle("over",timerLeft<=0);el.classList.toggle("low",timerLeft>0&&timerLeft<=10)}
 function renderPhase(d){
  const keys=d.keys;
  if(d.cur){const side=d.cur[1];$("turn").className="turn "+side;$("turn").textContent=slotName(d.curKey);
@@ -1253,10 +1250,6 @@ function renderPhase(d){
   $("turnHint").textContent=t("hint_"+state.fmt)+(rankedFmt()?" "+t("dupNote"):"")}
  else{$("turn").className="turn";$("turn").textContent=t("draftDone");$("dstatus").textContent="";$("turnHint").textContent=""}
  $("steps").innerHTML=keys.map(k=>{const done=state.slots[k]||state.skip[k];return`<button class="step ${k[1]} ${k[0]==="b"?"sban":""} ${done?"done":""} ${state.skip[k]?"sk":""} ${k===d.curKey?"cur":""}" data-k="${k}" title="${esc(slotName(k))}" aria-label="${esc(slotName(k))}"></button>`}).join("");
- if(d.curKey!==timerKey){timerKey=d.curKey;timerLeft=30}
- if(!timerId)timerId=setInterval(()=>{if(timerKey&&state.timerOn&&timerLeft>0){timerLeft--;tickTimer()}},1000);
- const tb=$("tToggle");tb.textContent=t(state.timerOn?"timerOff":"timerOn");tb.onclick=()=>{state.timerOn=!state.timerOn;timerLeft=30;save();renderPhase(derive())};
- tickTimer();
 }
 
 function renderPro(){
