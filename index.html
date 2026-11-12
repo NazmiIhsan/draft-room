@@ -304,6 +304,41 @@ button.step{border:0;padding:0;cursor:pointer}
  .team .pick .nm{font-size:13px}
 }
 
+
+/* app shell: tabs, toolbar, toast, first-visit tips */
+header.top{justify-content:space-between}
+.nav{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:-4px}
+.nav a{display:flex;align-items:center;gap:7px;padding:10px 14px;color:var(--muted);text-decoration:none;font:600 14px var(--display);text-transform:uppercase;letter-spacing:.05em;border-bottom:3px solid transparent;margin-bottom:-1px}
+.nav a svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav a[aria-current="page"]{color:var(--fg);border-bottom-color:var(--gold)}
+.nav a:hover{color:var(--fg)}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end}
+.fld{display:grid;gap:3px;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.fld select{text-transform:none;letter-spacing:0;font-size:14px;color:var(--fg);min-height:40px}
+.tbtns{display:flex;gap:8px;margin-left:auto}
+.tbtns .btn{display:inline-flex;align-items:center;gap:6px;min-height:40px}
+.tbtns .btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#reset.arm{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.ph3{margin:0;font:700 13px var(--display);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.onb-in{background:var(--panel);border:1px solid var(--gold);border-radius:10px;padding:12px 14px;display:grid;gap:8px}
+.onb-in h3{margin:0;font:700 15px var(--display);text-transform:uppercase;letter-spacing:.06em}
+.onb-in ol{margin:0;padding-left:20px;display:grid;gap:4px}
+.onb-in .btn{justify-self:start}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--fg);color:var(--bg);border-radius:10px;padding:10px 12px 10px 16px;display:flex;gap:14px;align-items:center;box-shadow:0 6px 24px rgba(0,0,0,.25);max-width:calc(100% - 32px);font-weight:600}
+.toast button{background:transparent;border:1px solid color-mix(in srgb,var(--bg) 40%,transparent);color:var(--bg);border-radius:6px;padding:4px 10px;font:700 13px var(--display);text-transform:uppercase}
+.sg,.hero,.lc,.crow,.ar,.lchip,.tab{min-height:40px}
+@media (max-width:760px){
+ .nav{position:fixed;left:0;right:0;bottom:0;z-index:20;margin:0;border:0;border-top:1px solid var(--line);background:var(--panel);justify-content:space-around;gap:0;
+  padding:4px max(16px,env(safe-area-inset-right,0px)) calc(4px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+ .nav a{flex-direction:column;gap:2px;padding:6px 4px;font-size:11px;border-bottom:0;border-top:3px solid transparent;margin:0;flex:1;justify-content:center}
+ .nav a[aria-current="page"]{border-top-color:var(--gold)}
+ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+ .toast{bottom:calc(78px + env(safe-area-inset-bottom,0px))}
+ .toolbar .fld{flex:1 1 140px}
+ .tbtns{margin-left:0;width:100%}
+ .tbtns .btn{flex:1;justify-content:center}
+}
 @media (max-width:980px){
   .board{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .advisor{grid-column:1 / -1;order:-1}
@@ -331,45 +366,54 @@ button.step{border:0;padding:0;cursor:pointer}
       <h1>MLBB Draft Room</h1>
       <span class="patch" id="patchTag">Patch 2.2.23 · S42</span>
     </div>
-    <div class="controls">
-      <div class="seg" role="group" aria-label="Language"><button id="lEN" aria-pressed="true">EN</button><button id="lMS" aria-pressed="false">BM</button></div>
-      <label for="fmt" data-i="format">Format</label>
+    <div class="seg" role="group" aria-label="Language"><button id="lEN" aria-pressed="true">EN</button><button id="lMS" aria-pressed="false">BM</button></div>
+  </header>
+
+  <nav class="nav" aria-label="Sections">
+    <a href="#draft" data-nav="draft"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="7" height="16" rx="1.5"/><rect x="14" y="4" width="7" height="16" rx="1.5"/></svg><span data-i="nav_draft">Draft</span></a>
+    <a href="#heroes" data-nav="heroes"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span data-i="nav_heroes">Heroes</span></a>
+    <a href="#lineups" data-nav="lineups"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="9" r="3"/><circle cx="17" cy="9" r="3"/><path d="M2 20c.8-3 2.8-5 5-5s4.2 2 5 5M12 20c.8-3 2.8-5 5-5s4.2 2 5 5"/></svg><span data-i="nav_lineups">Lineups</span></a>
+    <a href="#meta" data-nav="meta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span data-i="nav_meta">Meta</span></a>
+  </nav>
+
+  <section class="toolbar" data-view="draft">
+    <label class="fld"><span data-i="format">Format</span>
       <select id="fmt">
         <option value="tour" data-i="fmt_tour">Tournament (2 ban phases)</option>
         <option value="r10" data-i="fmt_r10">Ranked · 10 bans</option>
         <option value="r6" data-i="fmt_r6">Ranked · 6 bans</option>
-      </select>
-      <label for="meta" data-i="meta">Meta</label>
+      </select></label>
+    <label class="fld"><span data-i="meta">Meta</span>
       <select id="meta">
         <option value="ranked" data-i="meta_ranked">Ranked (all servers)</option>
         <option value="proAll" data-i="meta_proAll">Pro · all MPL</option>
         <option value="proMY">Pro · MPL MY</option>
         <option value="proPH">Pro · MPL PH</option>
         <option value="proID">Pro · MPL ID</option>
-      </select>
-      <button class="btn" id="undo" data-i="undo">Undo</button>
-      <button class="btn" id="reset" data-i="reset">Reset</button>
+      </select></label>
+    <div class="tbtns">
+      <button class="btn" id="undo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg><span data-i="undo">Undo</span></button>
+      <button class="btn" id="reset"><span id="resetLbl" data-i="reset">Reset</span></button>
     </div>
-  </header>
+  </section>
 
-  <section class="section" id="team5"></section>
+  <section class="onb" id="onb" data-view="draft" hidden></section>
 
-  <section class="dbar">
+  <section class="dbar" data-view="draft">
     <div class="dbans B" id="bansB"></div>
     <div class="dmid" aria-live="polite"><div class="turn" id="turn"></div><div class="dstatus" id="dstatus"></div></div>
     <div class="dbans R" id="bansR"></div>
     <div class="dfoot"><div class="steps" id="steps"></div><div class="dhint"><span class="hint" id="turnHint"></span></div></div>
   </section>
 
-  <section class="board">
+  <section class="board" data-view="draft">
     <div class="team B" id="teamB"></div>
     <div class="advisor" id="advisor"></div>
     <div class="team R" id="teamR"></div>
   </section>
 
-  <section class="analysis" id="analysis"></section>
-
-  <section class="pool">
+  <section class="pool" data-view="draft">
+    <h3 class="ph3" data-i="allHeroes">All heroes</h3>
     <div class="filters">
       <input id="q" type="search" placeholder="Search hero…" aria-label="Search hero" data-iph="search">
       <select id="fRole" aria-label="Role">
@@ -385,19 +429,25 @@ button.step{border:0;padding:0;cursor:pointer}
     <div class="grid" id="grid"></div>
   </section>
 
-  <section class="section" id="guide"></section>
+  <section class="analysis" id="analysis" data-view="draft"></section>
 
-  <section class="section" id="top5"></section>
 
-  <section class="section" id="proNotes"></section>
+  <section class="section" id="guide" data-view="heroes"></section>
 
-  <section class="section">
-    <details>
+  <section class="section" id="team5" data-view="lineups"></section>
+
+  <section class="section" id="top5" data-view="lineups"></section>
+
+  <section class="section" id="proNotes" data-view="meta"></section>
+
+  <section class="section" data-view="meta">
+    <details open>
       <summary data-i="patchSum">What changed in Patch 2.2.23</summary>
       <div class="patchbox" style="margin-top:10px" data-i="patchBody"></div>
     </details>
   </section>
 
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
   <footer><div data-i="footer"></div><div style="margin-top:8px;font:600 13px var(--display);letter-spacing:.04em;color:var(--fg)" data-i="copyright">© 2026 Mican. All rights reserved.</div></footer>
 </div>
 
@@ -845,7 +895,7 @@ function derive(){
 
 // ---------- language ----------
 const I18N={en:{
-skipped:"Skipped",winTitle:"Chance to win from this draft",wStrength:"Hero strength this patch",wCounters:"Counters",wSynergy:"Synergy",wBalance:"Team balance",wLanes:"Lane matchups",wSide:"Side advantage (pro data)",winNote:"An estimate from the draft only, kept between 30% and 70%. How you play matters more.",unusualLane:"Unusual lane: {0}",tab_best:"Best",tab_counter:"Counters",tab_counter_ban:"Beats your team",tab_meta:"Meta",tab_lanes:"Open lanes",tab_lanes_ban:"Enemy open lanes",anyLane:"Any lane",youOpen:"open",enemyOpen:"enemy open",noCounterYet:"Counter picks show up once the enemy has picked. Showing the best options for now.",noThreatYet:"Heroes that beat your team show up once you have picked. Showing the best options for now.",allLanesFilled:"All lanes are filled.",laneTip:"Tap to change lane",enemyLane:"Enemy {0}",suggType:"Suggestion type",laneFilter:"Lane",selecting:"Selecting hero…",banning:"Choosing a ban…",timerOff:"Hide timer",timerOn:"Show timer",teamTitle:"Recommended team for Patch 2.2.23",teamNote:"Built to fight together, close to what MPL teams won with. Ban Freya, Valentina and Alice to protect it.",ifBanned:"If banned:",refresh:"Refresh",style_cc:"Lockdown",style_heal:"Sustain",style_dive:"Dive",style_aoe:"Teamfight",style_early:"Early game",style_late:"Late game",style_poke:"Poke",style_def:"Balanced",lineupN:"Lineup {0}",genNote:"A new lineup using only current-meta heroes for Patch 2.2.23 (top tier in ranked or often picked or banned in MPL). It has a tank, stuns, someone to start fights and both damage types. Ban {0} to protect it.",metaTier:"{0}-tier in ranked",metaPro:"MPL S18: {0} picks + bans",backToRec:"Show the recommended team",job_tank:"Tank. Starts fights and protects the team",job_heal:"Healer. Keeps the team alive",job_eng:"Starts fights and locks enemies down",job_peel:"Protects your carries",job_control:"Area control. Traps enemies and stops escapes",job_poke:"Hits from long range before fights",job_burst:"Burst. Kills key targets fast",job_late:"Carry. Gets stronger later in the game",job_dps:"Steady damage in long fights",job_dive:"Dives the backline",job_def:"Flexible pick for this lane",advSearch:"Search a hero to {0}…",skipBan:"Skip this ban",skipAll:"Skip all bans",clearSlot:"Clear slot",cancel:"Cancel",choosingFor:"Choosing: {0}",slotHint:"Tap any slot on the board to fill or change it.",
+skipped:"Skipped",nav_draft:"Draft",nav_heroes:"Heroes",nav_lineups:"Lineups",nav_meta:"Meta",allHeroes:"All heroes",toastBan:"{0} banned for {1}",toastPick:"{0} picked for {1}",resetConfirm:"Tap again to reset",resetDone:"Draft cleared",onbTitle:"How it works",onb1:"Choose the format and meta above.",onb2:"Tap a suggested hero, or search, to ban or pick for the glowing slot.",onb3:"Tap any slot to change it. Tap ⓘ on a picked hero to see its build and counters.",gotIt:"Got it",winTitle:"Chance to win from this draft",wStrength:"Hero strength this patch",wCounters:"Counters",wSynergy:"Synergy",wBalance:"Team balance",wLanes:"Lane matchups",wSide:"Side advantage (pro data)",winNote:"An estimate from the draft only, kept between 30% and 70%. How you play matters more.",unusualLane:"Unusual lane: {0}",tab_best:"Best",tab_counter:"Counters",tab_counter_ban:"Beats your team",tab_meta:"Meta",tab_lanes:"Open lanes",tab_lanes_ban:"Enemy open lanes",anyLane:"Any lane",youOpen:"open",enemyOpen:"enemy open",noCounterYet:"Counter picks show up once the enemy has picked. Showing the best options for now.",noThreatYet:"Heroes that beat your team show up once you have picked. Showing the best options for now.",allLanesFilled:"All lanes are filled.",laneTip:"Tap to change lane",enemyLane:"Enemy {0}",suggType:"Suggestion type",laneFilter:"Lane",selecting:"Selecting hero…",banning:"Choosing a ban…",timerOff:"Hide timer",timerOn:"Show timer",teamTitle:"Recommended team for Patch 2.2.23",teamNote:"Built to fight together, close to what MPL teams won with. Ban Freya, Valentina and Alice to protect it.",ifBanned:"If banned:",refresh:"Refresh",style_cc:"Lockdown",style_heal:"Sustain",style_dive:"Dive",style_aoe:"Teamfight",style_early:"Early game",style_late:"Late game",style_poke:"Poke",style_def:"Balanced",lineupN:"Lineup {0}",genNote:"A new lineup using only current-meta heroes for Patch 2.2.23 (top tier in ranked or often picked or banned in MPL). It has a tank, stuns, someone to start fights and both damage types. Ban {0} to protect it.",metaTier:"{0}-tier in ranked",metaPro:"MPL S18: {0} picks + bans",backToRec:"Show the recommended team",job_tank:"Tank. Starts fights and protects the team",job_heal:"Healer. Keeps the team alive",job_eng:"Starts fights and locks enemies down",job_peel:"Protects your carries",job_control:"Area control. Traps enemies and stops escapes",job_poke:"Hits from long range before fights",job_burst:"Burst. Kills key targets fast",job_late:"Carry. Gets stronger later in the game",job_dps:"Steady damage in long fights",job_dive:"Dives the backline",job_def:"Flexible pick for this lane",advSearch:"Search a hero to {0}…",skipBan:"Skip this ban",skipAll:"Skip all bans",clearSlot:"Clear slot",cancel:"Cancel",choosingFor:"Choosing: {0}",slotHint:"Tap any slot on the board to fill or change it.",
 dupNote:"In ranked, both teams can ban the same hero.",guideTitle:"Hero guide",guideFor:"Guide for {0}",chooseHero:"Choose a hero",buildT:"Build",emblemT:"Emblem",spellT:"Battle spell",
 src_r:"Researched build from 2026 guides",src_g:"Standard build for this role. Adjust it to the enemy team.",beatenBy:"Heroes that beat {0}",byLane:"Counters to {0} in every lane",noneLane:"No strong counter in this lane",goodInto:"good pick",strongVs:"{0} is strong against",
 measured:"ranked data",kit:"skill matchup",howTo:"How to play",inDraft:"taken",top5Title:"Top 5 heroes for Patch 2.2.23",top5Note:"One hero per lane, picked from MPL Season 18 pick/ban data, ranked results and the new patch changes.",
@@ -855,7 +905,7 @@ search:"Search hero…",allRoles:"All roles",allLanes:"All lanes",sortTier:"Sort
 hint_tour:"Like MPL: each team bans 3, then picks 3. Then each team bans 2 more and picks the last 2.",hint_r10:"Mythic and up: each team bans 5, then teams take turns picking.",hint_r6:"Epic to Legend: each team bans 3, then teams take turns picking.",
 Blue:"Blue",Red:"Red",blueSide:"Blue side",redSide:"Red side",ban:"Ban",pick:"Pick",pickN:"Pick {0}",turn:"{0} · {1} {2} of {3}",
 draftDone:"Draft complete",doneMsg:"Both teams are ready. See who wins each lane and what items to buy below.",newDraft:"Start a new draft",
-suggBan:"Ban suggestions for {0}",suggPick:"Pick suggestions for {0}",tapHint:"Tap a hero to choose it. The number shows how good it is compared to the top choice.",
+suggBan:"Ban suggestions for {0}",suggPick:"Pick suggestions for {0}",tapHint:"Tap a hero to lock it in. The number compares it with the top choice.",
 sTier:"S-tier",usedPro:"Used {0}× in pro",winsPct:" · wins {0}%",buffed:"Made stronger in new patch",nerfed:"Made weaker in new patch",oddLane:"Odd lane (pros only)",noLane:"No lane left",manyLanes:"Plays many lanes",
 beats:"Beats {0}",losesTo:"Loses to {0}",prosPair:"Pros pair it with {0}",worksWith:"Works well with {0}",addTank:"Adds a tank",addStuns:"Adds stuns",startFights:"Can start fights",addMagic:"Adds magic damage",addPhys:"Adds physical damage",
 tooMagic:"Too much magic",tooPhys:"Too much physical",protects:"Protects your carry",easyCounter:"Easy to counter: {0}",bannedPro:"Banned {0}× in pro",firstBan:"Pros ban it first {0}% of the time",
@@ -887,7 +937,7 @@ footer:`Suggestions look at how strong a hero is, which lane is free, who beats 
 Data: <a href="https://mlbbhub.com/patch-notes/original/2.2.23" target="_blank" rel="noopener">Patch 2.2.23 notes</a> · <a href="https://mlbbhub.com/tier-list" target="_blank" rel="noopener">ranked tier list (11 Nov 2026)</a> · MPL S18 stats and drafts for <a href="https://mlbbhub.com/mpl/my/stats" target="_blank" rel="noopener">MY</a>, <a href="https://mlbbhub.com/mpl/ph/stats" target="_blank" rel="noopener">PH</a> and <a href="https://mlbbhub.com/mpl/id/stats" target="_blank" rel="noopener">ID</a> (11–12 Nov 2026). Fan-made, not affiliated with Moonton.`,
 copyright:"© 2026 Mican. All rights reserved."
 },ms:{
-skipped:"Dilangkau",winTitle:"Peluang menang dari draf ini",wStrength:"Kekuatan hero patch ini",wCounters:"Counter",wSynergy:"Keserasian",wBalance:"Keseimbangan pasukan",wLanes:"Lawan setiap lane",wSide:"Kelebihan pihak (data pro)",winNote:"Anggaran dari draf sahaja, antara 30% hingga 70%. Cara anda main lebih penting.",unusualLane:"Lane luar biasa: {0}",tab_best:"Terbaik",tab_counter:"Counter",tab_counter_ban:"Kalahkan pasukan anda",tab_meta:"Meta",tab_lanes:"Lane kosong",tab_lanes_ban:"Lane kosong musuh",anyLane:"Semua lane",youOpen:"kosong",enemyOpen:"musuh kosong",noCounterYet:"Pick counter keluar selepas musuh pilih. Buat masa ini tunjuk pilihan terbaik.",noThreatYet:"Hero yang kalahkan pasukan anda keluar selepas anda pilih. Buat masa ini tunjuk pilihan terbaik.",allLanesFilled:"Semua lane sudah diisi.",laneTip:"Tekan untuk tukar lane",enemyLane:"{0} musuh",suggType:"Jenis cadangan",laneFilter:"Lane",selecting:"Sedang pilih hero…",banning:"Sedang pilih ban…",timerOff:"Sorok pemasa",timerOn:"Tunjuk pemasa",teamTitle:"Pasukan cadangan untuk Patch 2.2.23",teamNote:"Dibina untuk war bersama, hampir sama dengan pasukan MPL yang menang. Ban Freya, Valentina dan Alice untuk lindunginya.",ifBanned:"Kalau di-ban:",refresh:"Tukar",style_cc:"Kunci musuh",style_heal:"Tahan lama",style_dive:"Serbu",style_aoe:"War pasukan",style_early:"Awal game",style_late:"Late game",style_poke:"Poke",style_def:"Seimbang",lineupN:"Lineup {0}",genNote:"Lineup baru dengan hero meta semasa sahaja untuk Patch 2.2.23 (tier teratas dalam ranked atau kerap dipilih atau di-ban dalam MPL). Ada tank, stun, hero untuk mulakan war dan kedua-dua jenis damage. Ban {0} untuk lindunginya.",metaTier:"{0}-tier dalam ranked",metaPro:"MPL S18: {0} pick + ban",backToRec:"Tunjuk pasukan cadangan",job_tank:"Tank. Mulakan war dan lindungi pasukan",job_heal:"Healer. Pastikan pasukan terus hidup",job_eng:"Mulakan war dan kunci musuh",job_peel:"Lindungi carry anda",job_control:"Kawal kawasan. Perangkap musuh dan halang mereka lari",job_poke:"Serang dari jauh sebelum war",job_burst:"Burst. Bunuh sasaran penting dengan cepat",job_late:"Carry. Jadi lebih kuat di late game",job_dps:"Damage berterusan dalam war panjang",job_dive:"Serbu hero belakang musuh",job_def:"Pilihan fleksibel untuk lane ini",advSearch:"Cari hero untuk {0}…",skipBan:"Langkau ban ini",skipAll:"Langkau semua ban",clearSlot:"Kosongkan slot",cancel:"Batal",choosingFor:"Memilih: {0}",slotHint:"Tekan mana-mana slot di papan untuk isi atau tukar.",
+skipped:"Dilangkau",nav_draft:"Draf",nav_heroes:"Hero",nav_lineups:"Lineup",nav_meta:"Meta",allHeroes:"Semua hero",toastBan:"{0} di-ban untuk {1}",toastPick:"{0} dipilih untuk {1}",resetConfirm:"Tekan lagi untuk reset",resetDone:"Draf dikosongkan",onbTitle:"Cara guna",onb1:"Pilih format dan meta di atas.",onb2:"Tekan hero cadangan, atau cari, untuk ban atau pilih bagi slot yang bercahaya.",onb3:"Tekan mana-mana slot untuk tukar. Tekan ⓘ pada hero untuk lihat build dan counter.",gotIt:"Faham",winTitle:"Peluang menang dari draf ini",wStrength:"Kekuatan hero patch ini",wCounters:"Counter",wSynergy:"Keserasian",wBalance:"Keseimbangan pasukan",wLanes:"Lawan setiap lane",wSide:"Kelebihan pihak (data pro)",winNote:"Anggaran dari draf sahaja, antara 30% hingga 70%. Cara anda main lebih penting.",unusualLane:"Lane luar biasa: {0}",tab_best:"Terbaik",tab_counter:"Counter",tab_counter_ban:"Kalahkan pasukan anda",tab_meta:"Meta",tab_lanes:"Lane kosong",tab_lanes_ban:"Lane kosong musuh",anyLane:"Semua lane",youOpen:"kosong",enemyOpen:"musuh kosong",noCounterYet:"Pick counter keluar selepas musuh pilih. Buat masa ini tunjuk pilihan terbaik.",noThreatYet:"Hero yang kalahkan pasukan anda keluar selepas anda pilih. Buat masa ini tunjuk pilihan terbaik.",allLanesFilled:"Semua lane sudah diisi.",laneTip:"Tekan untuk tukar lane",enemyLane:"{0} musuh",suggType:"Jenis cadangan",laneFilter:"Lane",selecting:"Sedang pilih hero…",banning:"Sedang pilih ban…",timerOff:"Sorok pemasa",timerOn:"Tunjuk pemasa",teamTitle:"Pasukan cadangan untuk Patch 2.2.23",teamNote:"Dibina untuk war bersama, hampir sama dengan pasukan MPL yang menang. Ban Freya, Valentina dan Alice untuk lindunginya.",ifBanned:"Kalau di-ban:",refresh:"Tukar",style_cc:"Kunci musuh",style_heal:"Tahan lama",style_dive:"Serbu",style_aoe:"War pasukan",style_early:"Awal game",style_late:"Late game",style_poke:"Poke",style_def:"Seimbang",lineupN:"Lineup {0}",genNote:"Lineup baru dengan hero meta semasa sahaja untuk Patch 2.2.23 (tier teratas dalam ranked atau kerap dipilih atau di-ban dalam MPL). Ada tank, stun, hero untuk mulakan war dan kedua-dua jenis damage. Ban {0} untuk lindunginya.",metaTier:"{0}-tier dalam ranked",metaPro:"MPL S18: {0} pick + ban",backToRec:"Tunjuk pasukan cadangan",job_tank:"Tank. Mulakan war dan lindungi pasukan",job_heal:"Healer. Pastikan pasukan terus hidup",job_eng:"Mulakan war dan kunci musuh",job_peel:"Lindungi carry anda",job_control:"Kawal kawasan. Perangkap musuh dan halang mereka lari",job_poke:"Serang dari jauh sebelum war",job_burst:"Burst. Bunuh sasaran penting dengan cepat",job_late:"Carry. Jadi lebih kuat di late game",job_dps:"Damage berterusan dalam war panjang",job_dive:"Serbu hero belakang musuh",job_def:"Pilihan fleksibel untuk lane ini",advSearch:"Cari hero untuk {0}…",skipBan:"Langkau ban ini",skipAll:"Langkau semua ban",clearSlot:"Kosongkan slot",cancel:"Batal",choosingFor:"Memilih: {0}",slotHint:"Tekan mana-mana slot di papan untuk isi atau tukar.",
 dupNote:"Dalam ranked, kedua-dua pasukan boleh ban hero yang sama.",guideTitle:"Panduan hero",guideFor:"Panduan untuk {0}",chooseHero:"Pilih hero",buildT:"Build",emblemT:"Emblem",spellT:"Battle spell",
 src_r:"Build hasil kajian dari panduan 2026",src_g:"Build biasa untuk role ini. Ubah ikut pasukan musuh.",beatenBy:"Hero yang kalahkan {0}",byLane:"Counter untuk {0} di setiap lane",noneLane:"Tiada counter kuat di lane ini",goodInto:"pilihan baik",strongVs:"{0} kuat melawan",
 measured:"data ranked",kit:"lawan skill",howTo:"Cara main",inDraft:"dah diambil",top5Title:"Top 5 hero untuk Patch 2.2.23",top5Note:"Satu hero untuk setiap lane, dipilih dari data pick/ban MPL Season 18, keputusan ranked dan perubahan patch baru.",
@@ -897,7 +947,7 @@ search:"Cari hero…",allRoles:"Semua role",allLanes:"Semua lane",sortTier:"Susu
 hint_tour:"Macam MPL: setiap pasukan ban 3, kemudian pilih 3. Lepas tu setiap pasukan ban 2 lagi dan pilih 2 terakhir.",hint_r10:"Mythic ke atas: setiap pasukan ban 5, kemudian bergilir pilih hero.",hint_r6:"Epic hingga Legend: setiap pasukan ban 3, kemudian bergilir pilih hero.",
 Blue:"Biru",Red:"Merah",blueSide:"Pihak Biru",redSide:"Pihak Merah",ban:"Ban",pick:"Pilih",pickN:"Pilihan {0}",turn:"{0} · {1} {2} daripada {3}",
 draftDone:"Draf selesai",doneMsg:"Kedua-dua pasukan dah siap. Tengok siapa menang setiap lane dan item apa nak beli di bawah.",newDraft:"Mula draf baru",
-suggBan:"Cadangan ban untuk {0}",suggPick:"Cadangan pilihan untuk {0}",tapHint:"Tekan hero untuk pilih. Nombor itu tunjuk sebaik mana hero tu berbanding pilihan teratas.",
+suggBan:"Cadangan ban untuk {0}",suggPick:"Cadangan pilihan untuk {0}",tapHint:"Tekan hero untuk kunci. Nombor itu bandingkan dengan pilihan teratas.",
 sTier:"S-tier",usedPro:"Diguna {0}× oleh pro",winsPct:" · menang {0}%",buffed:"Lebih kuat dalam patch baru",nerfed:"Lebih lemah dalam patch baru",oddLane:"Lane luar biasa (pro sahaja)",noLane:"Tiada lane kosong",manyLanes:"Boleh main banyak lane",
 beats:"Kalahkan {0}",losesTo:"Kalah dengan {0}",prosPair:"Pro selalu gandingkan dengan {0}",worksWith:"Serasi dengan {0}",addTank:"Tambah tank",addStuns:"Tambah stun",startFights:"Boleh mulakan war",addMagic:"Tambah magic damage",addPhys:"Tambah physical damage",
 tooMagic:"Terlalu banyak magic",tooPhys:"Terlalu banyak physical",protects:"Lindungi carry anda",easyCounter:"Senang di-counter: {0}",bannedPro:"Di-ban {0}× oleh pro",firstBan:"Pro ban hero ini dulu dalam {0}% game",
@@ -1172,7 +1222,7 @@ function renderAdvisor(d){
  else if(tab==="lanes"){groups=(lf?[lf]:open).map(ln=>({ln,items:lastRanked.map(r=>withLane(r,ln)).sort((a,b)=>b.s-a.s).slice(0,lf?6:2)}));if(!groups.length)note=t("allLanesFilled")}
  else list=list.slice().sort((a,b)=>b.s-a.s);
  const top=list.slice(0,7);const max=Math.max(1,...(groups?groups.flatMap(g=>g.items.map(r=>r.s)):top.map(r=>r.s)));
- const card=r=>{const pct=Math.round(Math.max(0,r.s)/max*100);return `<button class="sg" data-n="${esc(r.h.n)}" aria-label="${t(isBan?"ban":"pick")} ${esc(r.h.n)}">${mono(r.h)}<div style="min-width:0"><div class="nm">${esc(r.h.n)} ${tierTag(r.h)} ${patchTag(r.h)}</div><div class="chips">${r.R.slice(0,4).map(([tx,v])=>`<span class="chip ${v>0?"pos":v<0?"neg":""}">${esc(tx)}</span>`).join("")}</div></div><div class="score">${pct}</div></button>`};
+ const card=r=>{const pct=Math.round(Math.max(0,r.s)/max*100);return `<button class="sg" data-n="${esc(r.h.n)}" aria-label="${t(isBan?"ban":"pick")} ${esc(r.h.n)}">${mono(r.h)}<div style="min-width:0"><div class="nm">${esc(r.h.n)} ${tierTag(r.h)} ${patchTag(r.h)}</div><div class="chips">${r.R.slice(0,3).map(([tx,v])=>`<span class="chip ${v>0?"pos":v<0?"neg":""}">${esc(tx)}</span>`).join("")}</div></div><div class="score">${pct}</div></button>`};
  const tabs=["best","counter","meta","lanes"].map(k=>`<button class="tab ${tab===k?"on":""}" data-tab="${k}" aria-pressed="${tab===k}">${t("tab_"+k+(isBan&&k!=="best"&&k!=="meta"?"_ban":""))}</button>`).join("");
  const lanes=`<button class="lchip ${!lf?"on":""}" data-lf="">${t("anyLane")}</button>`+LANES.map(ln=>`<button class="lchip ${lf===ln?"on":""} ${open.includes(ln)?"open":""}" data-lf="${ln}" title="${open.includes(ln)?esc(t(isBan?"enemyOpen":"youOpen")):""}">${LANE_NAME[ln]}</button>`).join("");
  const ctl=[];
@@ -1188,7 +1238,7 @@ function renderAdvisor(d){
   <div class="lchips" role="group" aria-label="${esc(t("laneFilter"))}">${lanes}</div>
   ${note?`<div class="hint">${esc(note)}</div>`:""}
   <div class="sugg">${groups?groups.map(g=>`<div class="lgh">${LANE_NAME[g.ln]}${open.includes(g.ln)?` <span class="chip">${t(isBan?"enemyOpen":"youOpen")}</span>`:""}</div>${g.items.map(card).join("")}`).join(""):top.map(card).join("")}</div>
-  <div class="hint">${t("tapHint")} ${t("slotHint")}${rankedFmt()&&isBan?" "+t("dupNote"):""}</div>`;
+  <div class="hint">${t("tapHint")}</div>`;
  el.querySelectorAll(".sg").forEach(b=>b.onclick=()=>act(b.dataset.n));
  el.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{state.advTab=b.dataset.tab;save();renderAdvisor(derive())});
  el.querySelectorAll("[data-lf]").forEach(b=>b.onclick=()=>{state.advLane=b.dataset.lf;save();renderAdvisor(derive())});
@@ -1382,14 +1432,25 @@ function renderTop5(){
   <ul class="tips">${x.tips[state.lang].slice(0,2).map(z=>`<li>${esc(z)}</li>`).join("")}</ul>
   <button class="btn" data-g="${esc(x.n)}">${t("openGuide")}</button></article>`}).join("")}</div>`;
 }
-function openGuide(n){if(!BY[n])return;state.guide=n;save();renderGuide(derive());const g=$("guide");if(g.scrollIntoView)g.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"})}
+const VIEWS=["draft","heroes","lineups","meta"];
+function route(){const v=VIEWS.includes(location.hash.slice(1))?location.hash.slice(1):"draft";
+ document.querySelectorAll("section[data-view]").forEach(el=>{if(el.id==="onb")el.hidden=v!=="draft"||!!state.onbDone;else el.hidden=el.dataset.view!==v});
+ document.querySelectorAll("[data-nav]").forEach(a=>{if(a.dataset.nav===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+ document.body.dataset.page=v}
+function goView(v){if(location.hash!=="#"+v)location.hash=v;else route();try{window.scrollTo({top:0})}catch(e){}}
+function openGuide(n){if(!BY[n])return;state.guide=n;save();renderGuide(derive());goView("heroes")}
+let toastT=null;
+function toast(msg,canUndo){const el=$("toast");el.innerHTML=`<span>${esc(msg)}</span>${canUndo?`<button id="tUndo">${t("undo")}</button>`:""}`;el.hidden=false;
+ const u=$("tUndo");if(u)u.onclick=()=>{undo();el.hidden=true};clearTimeout(toastT);toastT=setTimeout(()=>{el.hidden=true},3500)}
+function renderOnb(){const el=$("onb");el.innerHTML=`<div class="onb-in"><h3>${t("onbTitle")}</h3><ol><li>${t("onb1")}</li><li>${t("onb2")}</li><li>${t("onb3")}</li></ol><button class="btn primary" id="onbOk">${t("gotIt")}</button></div>`;
+ $("onbOk").onclick=()=>{state.onbDone=true;save();route()}}
 function render(){
- applyStatic();buildPro();const d=derive();lastRanked=ranked(d);
+ applyStatic();renderOnb();route();buildPro();const d=derive();lastRanked=ranked(d);
  renderPhase(d);renderTeam("B",d);renderTeam("R",d);renderAdvisor(d);renderAnalysis(d);renderPool(d);renderGuide(d);renderTeam5();renderTop5();renderPro();
  $("fmt").value=state.fmt;$("meta").value=state.meta;
  $("undo").disabled=!state.hist.length;
 }
-function act(n){const d=derive();if(!d.curKey||d.blocked(n)||!BY[n])return;const k=d.curKey;if(document.activeElement&&document.activeElement.id==="advq")advFocus=true;advQ="";
+function act(n){const d=derive();if(!d.curKey||d.blocked(n)||!BY[n])return;const k=d.curKey;setTimeout(()=>toast(t(k[0]==="b"?"toastBan":"toastPick",n,t(k[1]==="B"?"Blue":"Red")),true),0);if(document.activeElement&&document.activeElement.id==="advq")advFocus=true;advQ="";
  state.hist.push({k,prev:state.slots[k]||null,sk:!!state.skip[k]});state.slots[k]=n;delete state.skip[k];state.sel=null;if(k[0]==="p")state.guide=n;save();render()}
 function skipBan(all){const d=derive();
  const ks=all?d.keys.filter(k=>k[0]==="b"&&!state.slots[k]&&!state.skip[k]):(d.curKey&&d.curKey[0]==="b"&&!state.slots[d.curKey]?[d.curKey]:[]);
@@ -1411,7 +1472,10 @@ document.addEventListener("click",e=>{const lb=e.target.closest("[data-lane]");i
  const k=e.target.closest("[data-k]");if(k&&(k.closest(".board")||k.closest(".dbar")))selectSlot(k.dataset.k)});
 document.addEventListener("keydown",e=>{const k=e.target.closest&&e.target.closest(".pick[data-k]");if(k&&(e.key==="Enter"||e.key===" ")){e.preventDefault();selectSlot(k.dataset.k)}});
 $("undo").onclick=undo;
-$("reset").onclick=reset;
+let resetArm=null;
+$("reset").onclick=()=>{if(resetArm){clearTimeout(resetArm);resetArm=null;$("reset").classList.remove("arm");$("resetLbl").textContent=t("reset");reset();toast(t("resetDone"),false);return}
+ $("reset").classList.add("arm");$("resetLbl").textContent=t("resetConfirm");resetArm=setTimeout(()=>{resetArm=null;$("reset").classList.remove("arm");$("resetLbl").textContent=t("reset")},3000)};
+addEventListener("hashchange",route);
 $("fmt").onchange=e=>{state.fmt=e.target.value;state.slots={};state.skip={};state.hist=[];state.sel=null;save();render()};
 $("meta").onchange=e=>{state.meta=e.target.value;save();render()};
 $("lEN").onclick=()=>{state.lang="en";save();render()};
