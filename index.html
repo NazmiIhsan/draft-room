@@ -174,6 +174,30 @@ button.step{border:0;padding:0;cursor:pointer}
 .ctl{display:flex;flex-wrap:wrap;gap:6px}
 .ctl .btn{padding:5px 9px;font-size:13px}
 .ctl:empty{display:none}
+.pnote{font-size:12.5px;color:var(--muted);background:var(--panel2);border-left:3px solid var(--warn);padding:8px 10px;border-radius:6px}
+.perr{font-size:13px;color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--panel));padding:8px 10px;border-radius:6px}
+.pform{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}
+.pform .fld{display:grid;gap:3px;font-size:12px;color:var(--muted)}
+.pform input{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:9px 10px;width:150px;font-size:15px;color:var(--fg)}
+.pcard{display:flex;align-items:center;gap:12px}
+.pcard .btn{margin-left:auto}
+.pav{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}
+.pname{font:700 20px var(--display)}
+.pstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}
+.pstats div{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;display:grid}
+.pstats b{font:700 20px var(--display);font-variant-numeric:tabular-nums}
+.pstats span{font-size:12px;color:var(--muted)}
+#profile h4{margin:6px 0 0;font:700 12px var(--display);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.ptop{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px}
+.pm{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.pm li{display:grid;grid-template-columns:54px 28px minmax(0,1fr) auto;gap:8px;align-items:center;background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--bad);border-radius:6px;padding:4px 8px;font-size:13.5px}
+.pm li.w{border-left-color:var(--good)}
+.pm .mono{width:28px;height:28px}
+.pr2{font:600 12px var(--display);text-transform:uppercase}
+.pm li.w .pr2{color:var(--good)} .pm li.l .pr2{color:var(--bad)}
+.kda{font-variant-numeric:tabular-nums;color:var(--muted)}
+.praw summary{cursor:pointer;font-size:12px;color:var(--muted)}
+.praw pre{font-size:11px;overflow:auto;max-height:240px;background:var(--panel2);padding:8px;border-radius:6px}
 .advrow{display:flex;gap:6px}
 .advrow input{flex:1;min-width:0}
 .mic{flex:none;width:44px;height:40px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);display:grid;place-items:center;padding:0;color:var(--fg)}
@@ -455,6 +479,7 @@ header.top{justify-content:space-between}
     <a href="#draft" data-nav="draft"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="7" height="16" rx="1.5"/><rect x="14" y="4" width="7" height="16" rx="1.5"/></svg><span data-i="nav_draft">Draft</span></a>
     <a href="#heroes" data-nav="heroes"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span data-i="nav_heroes">Heroes</span></a>
     <a href="#lineups" data-nav="lineups"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="9" r="3"/><circle cx="17" cy="9" r="3"/><path d="M2 20c.8-3 2.8-5 5-5s4.2 2 5 5M12 20c.8-3 2.8-5 5-5s4.2 2 5 5"/></svg><span data-i="nav_lineups">Lineups</span></a>
+    <a href="#profile" data-nav="profile"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M5.5 16.5c.7-1.6 2-2.5 3.5-2.5s2.8.9 3.5 2.5M14 10h4M14 13h4"/></svg><span data-i="nav_profile">Profile</span></a>
     <a href="#meta" data-nav="meta"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span data-i="nav_meta">Meta</span></a>
   </nav>
 
@@ -520,6 +545,8 @@ header.top{justify-content:space-between}
   <section class="section" id="team5" data-view="lineups"></section>
 
   <section class="section" id="top5" data-view="lineups"></section>
+
+  <section class="section" id="profile" data-view="profile"></section>
 
   <section class="section" id="proNotes" data-view="meta"></section>
 
@@ -978,7 +1005,7 @@ function derive(){
 
 // ---------- language ----------
 const I18N={en:{
-skipped:"Skipped",micStart:"Pick or ban by voice",micStop:"Stop listening",micHint:"Listening… say a hero name like \"Fanny\", or add the side and slot: \"red pick Ling\", \"blue ban 2 Fanny\". Say \"red pick 3\" to jump to a slot. You can also say \"skip\" or \"undo\".",vSlot:"Choosing {0}. Say a hero name.",micListening:"Listening. Say a hero name.",micDenied:"Microphone blocked. Allow it in your browser settings to use voice.",micNo:"Voice isn't supported in this browser. Try Chrome or Safari.",vNoHero:"Didn't catch a hero name in \"{0}\". Try again.",vTaken:"{0} is already taken.",vUndo:"Undone.",vSkip:"Ban skipped.",vSkipAll:"All bans skipped.",reportTitle:"Draft report",powerTitle:"Who is stronger when",ph_early:"Early game",ph_mid:"Mid game",ph_late:"Late game",powerNote:"Plan your game around the phases where your team is stronger.",
+skipped:"Skipped",nav_profile:"Profile",pTitle:"Your player profile",pNotice:"This uses Rone Arena, an unofficial community service that isn't run by Moonton. MLBB sends a code to your in-game mail, and you type it here to prove the account is yours, so it only works for your own account. Your login stays in this browser tab and is cleared when you close it or log out.",pRid:"User ID",pZid:"Zone ID",pSend:"Send code to my game",pIdsHelp:"Find these in MLBB: tap your avatar (top left). The number in brackets is the Zone ID.",pBadIds:"Check your User ID and Zone ID. Use numbers only.",pSendFail:"Couldn't send the code: {0}",pCodeSent:"A code was sent to the in-game mail of ID {0} ({1}). It works for 5 minutes.",pCode:"Verification code",pLogin:"Log in",pBack:"Change ID",pNeedCode:"Type the code from your in-game mail.",pNoToken:"The service didn't return a login.",pLoginFail:"Couldn't log in: {0}",pLoading:"Loading your profile…",pExpired:"Your login expired. Send a new code.",pLoadFail:"Couldn't load your profile: {0}",pWorking:"Please wait…",pLogout:"Log out",pLevel:"Level",pRank:"Rank",pBest:"Best rank",pMatches:"Matches",pWinRate:"Win rate",pTopHeroes:"Most played in your last {0} matches",pRecent:"Recent matches",pWin:"Win",pLoss:"Loss",pNoMatches:"No recent matches to show. Your match history may be hidden in-game.",pRaw:"Show raw data (for troubleshooting)",pPoolAdd:"Use these as my hero pool",pPoolUpd:"Update my hero pool",pPoolHelp:"Your hero pool gets a boost in draft suggestions, marked \"Your hero\".",pPoolSaved:"Saved {0} heroes to your hero pool.",yourHero:"Your hero",micStart:"Pick or ban by voice",micStop:"Stop listening",micHint:"Listening… say a hero name like \"Fanny\", or add the side and slot: \"red pick Ling\", \"blue ban 2 Fanny\". Say \"red pick 3\" to jump to a slot. You can also say \"skip\" or \"undo\".",vSlot:"Choosing {0}. Say a hero name.",micListening:"Listening. Say a hero name.",micDenied:"Microphone blocked. Allow it in your browser settings to use voice.",micNo:"Voice isn't supported in this browser. Try Chrome or Safari.",vNoHero:"Didn't catch a hero name in \"{0}\". Try again.",vTaken:"{0} is already taken.",vUndo:"Undone.",vSkip:"Ban skipped.",vSkipAll:"All bans skipped.",reportTitle:"Draft report",powerTitle:"Who is stronger when",ph_early:"Early game",ph_mid:"Mid game",ph_late:"Late game",powerNote:"Plan your game around the phases where your team is stronger.",
 ct_engage:"Engage teamfight",ct_poke:"Poke and siege",ct_pick:"Pick-off",ct_protect:"Protect the carry",ct_split:"Split push",
 ctPlan_engage:"Group up and force 5v5 fights at Turtle and Lord.",ctPlan_poke:"Chip enemies down from range, then take towers and objectives.",ctPlan_pick:"Catch one enemy out of position, then take objectives 5v4.",ctPlan_protect:"Keep your carry alive and win longer games.",ctPlan_split:"Push side lanes to pull enemies apart, then strike.",
 ckFront:"Frontline",ckEngage:"Can start fights",ckPeel:"Protects the carry",ckDamage:"Mixed damage",ckWave:"Wave clear",ckObj:"Turtle and Lord control",ckTower:"Tower pushing",ckStrong:"strong draft",ckOk:"decent draft",ckWeak:"has gaps",
@@ -1024,7 +1051,7 @@ footer:`Suggestions look at how strong a hero is, which lane is free, who beats 
 Data: <a href="https://mlbbhub.com/patch-notes/original/2.2.23" target="_blank" rel="noopener">Patch 2.2.23 notes</a> · <a href="https://mlbbhub.com/tier-list" target="_blank" rel="noopener">ranked tier list (11 Nov 2026)</a> · MPL S18 stats and drafts for <a href="https://mlbbhub.com/mpl/my/stats" target="_blank" rel="noopener">MY</a>, <a href="https://mlbbhub.com/mpl/ph/stats" target="_blank" rel="noopener">PH</a> and <a href="https://mlbbhub.com/mpl/id/stats" target="_blank" rel="noopener">ID</a> (11–12 Nov 2026). Fan-made, not affiliated with Moonton.`,
 copyright:"© 2026 Mican. All rights reserved."
 },ms:{
-skipped:"Dilangkau",micStart:"Pilih atau ban dengan suara",micStop:"Berhenti mendengar",micHint:"Sedang mendengar… sebut nama hero seperti \"Fanny\", atau tambah pihak dan slot: \"merah pilih Ling\", \"biru ban dua Fanny\". Sebut \"merah pilih tiga\" untuk ke slot itu. Boleh juga sebut \"langkau\" atau \"batal\".",vSlot:"Memilih {0}. Sebut nama hero.",micListening:"Sedang mendengar. Sebut nama hero.",micDenied:"Mikrofon disekat. Benarkan dalam tetapan pelayar untuk guna suara.",micNo:"Suara tidak disokong dalam pelayar ini. Cuba Chrome atau Safari.",vNoHero:"Tak dapat tangkap nama hero dalam \"{0}\". Cuba lagi.",vTaken:"{0} sudah diambil.",vUndo:"Dibatalkan.",vSkip:"Ban dilangkau.",vSkipAll:"Semua ban dilangkau.",reportTitle:"Laporan draf",powerTitle:"Siapa lebih kuat bila",ph_early:"Awal game",ph_mid:"Pertengahan game",ph_late:"Late game",powerNote:"Rancang game ikut fasa di mana pasukan anda lebih kuat.",
+skipped:"Dilangkau",nav_profile:"Profil",pTitle:"Profil pemain anda",pNotice:"Ini guna Rone Arena, perkhidmatan komuniti tidak rasmi yang bukan dikendalikan oleh Moonton. MLBB hantar kod ke mel dalam game anda, dan anda taip di sini untuk buktikan akaun itu milik anda, jadi ia hanya untuk akaun anda sendiri. Log masuk anda kekal dalam tab pelayar ini dan dipadam bila anda tutup atau log keluar.",pRid:"User ID",pZid:"Zone ID",pSend:"Hantar kod ke game saya",pIdsHelp:"Cari dalam MLBB: tekan avatar anda (atas kiri). Nombor dalam kurungan ialah Zone ID.",pBadIds:"Semak User ID dan Zone ID anda. Guna nombor sahaja.",pSendFail:"Tak dapat hantar kod: {0}",pCodeSent:"Kod dihantar ke mel dalam game untuk ID {0} ({1}). Sah selama 5 minit.",pCode:"Kod pengesahan",pLogin:"Log masuk",pBack:"Tukar ID",pNeedCode:"Taip kod dari mel dalam game anda.",pNoToken:"Perkhidmatan itu tidak pulangkan log masuk.",pLoginFail:"Tak dapat log masuk: {0}",pLoading:"Memuatkan profil anda…",pExpired:"Log masuk anda tamat. Hantar kod baru.",pLoadFail:"Tak dapat muatkan profil: {0}",pWorking:"Sila tunggu…",pLogout:"Log keluar",pLevel:"Level",pRank:"Rank",pBest:"Rank terbaik",pMatches:"Perlawanan",pWinRate:"Kadar menang",pTopHeroes:"Paling banyak dimain dalam {0} perlawanan terakhir",pRecent:"Perlawanan terkini",pWin:"Menang",pLoss:"Kalah",pNoMatches:"Tiada perlawanan terkini. Sejarah perlawanan anda mungkin disorok dalam game.",pRaw:"Tunjuk data mentah (untuk semakan)",pPoolAdd:"Guna ini sebagai hero pool saya",pPoolUpd:"Kemas kini hero pool saya",pPoolHelp:"Hero pool anda dapat tambahan dalam cadangan draf, ditanda \"Hero anda\".",pPoolSaved:"{0} hero disimpan ke hero pool anda.",yourHero:"Hero anda",micStart:"Pilih atau ban dengan suara",micStop:"Berhenti mendengar",micHint:"Sedang mendengar… sebut nama hero seperti \"Fanny\", atau tambah pihak dan slot: \"merah pilih Ling\", \"biru ban dua Fanny\". Sebut \"merah pilih tiga\" untuk ke slot itu. Boleh juga sebut \"langkau\" atau \"batal\".",vSlot:"Memilih {0}. Sebut nama hero.",micListening:"Sedang mendengar. Sebut nama hero.",micDenied:"Mikrofon disekat. Benarkan dalam tetapan pelayar untuk guna suara.",micNo:"Suara tidak disokong dalam pelayar ini. Cuba Chrome atau Safari.",vNoHero:"Tak dapat tangkap nama hero dalam \"{0}\". Cuba lagi.",vTaken:"{0} sudah diambil.",vUndo:"Dibatalkan.",vSkip:"Ban dilangkau.",vSkipAll:"Semua ban dilangkau.",reportTitle:"Laporan draf",powerTitle:"Siapa lebih kuat bila",ph_early:"Awal game",ph_mid:"Pertengahan game",ph_late:"Late game",powerNote:"Rancang game ikut fasa di mana pasukan anda lebih kuat.",
 ct_engage:"War pasukan (engage)",ct_poke:"Poke dan kepung",ct_pick:"Tangkap musuh (pick-off)",ct_protect:"Lindungi carry",ct_split:"Split push",
 ctPlan_engage:"Berkumpul dan paksa war 5v5 di Turtle dan Lord.",ctPlan_poke:"Lemahkan musuh dari jauh, kemudian ambil turret dan objektif.",ctPlan_pick:"Tangkap seorang musuh yang tersasar, kemudian ambil objektif 5v4.",ctPlan_protect:"Pastikan carry hidup dan menang game yang panjang.",ctPlan_split:"Tolak lane tepi untuk pecahkan musuh, kemudian serang.",
 ckFront:"Ada tank",ckEngage:"Boleh mulakan war",ckPeel:"Lindungi carry",ckDamage:"Damage bercampur",ckWave:"Bersihkan wave",ckObj:"Kawal Turtle dan Lord",ckTower:"Tolak turret",ckStrong:"draf kuat",ckOk:"draf boleh tahan",ckWeak:"ada kelemahan",
@@ -1158,6 +1185,7 @@ function scorePick(h,side,d){
   const threats=HEROES.filter(x=>!d.used.has(x.n)&&x!==h&&counterScore(x,h)>=3);
   if(threats.length>=2){s-=Math.min(3,threats.length*.6)*(5-opp.length)/5;R.push([t("easyCounter",names(threats)),-1])}
  }
+ if(state.myHeroes&&state.myHeroes.includes(h.n)&&side===(state.mySide||side)){s+=2;R.unshift([t("yourHero"),1])}
  return{h,s,R,parts,lane:myLane};
 }
 function scoreBan(h,side,d){
@@ -1346,6 +1374,74 @@ function toggleVoice(){
  rec.onend=()=>{if(voiceOn){try{rec.start()}catch(e){}}};
  try{rec.start();voiceOn=true;toast(t("micListening"),false)}catch(e){toast(t("micNo"),false)}
  renderAdvisor(derive());
+}
+
+// ---------- player profile (unofficial Rone Arena API; your own account only, via in-game verification code) ----------
+const PAPI="https://arena.rone.dev/api/user";
+let prof={step:"ids",rid:"",zid:"",jwt:null,info:null,stats:null,matches:null,err:"",busy:false,raw:null};
+try{const j=sessionStorage.getItem("mlbbJwt");if(j){const o=JSON.parse(j);prof.jwt=o.jwt;prof.rid=o.rid;prof.zid=o.zid;prof.step="loading"}}catch(e){}
+try{const ids=JSON.parse(localStorage.getItem("mlbbIds")||"null");if(ids&&!prof.rid){prof.rid=ids.rid||"";prof.zid=ids.zid||""}}catch(e){}
+const findKey=(o,k,d=0)=>{if(!o||typeof o!=="object"||d>5)return undefined;if(k in o)return o[k];for(const v of Object.values(o)){const r=findKey(v,k,d+1);if(r!==undefined)return r}return undefined};
+const unwrap=j=>j&&typeof j==="object"&&"data" in j&&j.data!=null?j.data:j;
+async function papi(path,opt={}){const r=await fetch(PAPI+path,{...opt,headers:{"Content-Type":"application/json",...(prof.jwt?{Authorization:"Bearer "+prof.jwt}:{}),...(opt.headers||{})}});
+ let j=null;try{j=await r.json()}catch(e){}if(!r.ok||(j&&j.status==="error")){const m=(j&&(j.message||j.msg))||("HTTP "+r.status);const e=new Error(m);e.status=r.status;throw e}return j}
+async function profSendCode(){const rid=$("pRid").value.trim(),zid=$("pZid").value.trim();
+ if(!/^\d{4,12}$/.test(rid)||!/^\d{2,6}$/.test(zid)){prof.err=t("pBadIds");renderProfile();return}
+ prof.rid=rid;prof.zid=zid;try{localStorage.setItem("mlbbIds",JSON.stringify({rid,zid}))}catch(e){}
+ prof.busy=true;prof.err="";renderProfile();
+ try{await papi("/auth/send-vc",{method:"POST",body:JSON.stringify({role_id:rid,zone_id:zid})});prof.step="code"}catch(e){prof.err=t("pSendFail",e.message)}
+ prof.busy=false;renderProfile()}
+async function profLogin(){const vc=$("pVc").value.trim();if(!vc){prof.err=t("pNeedCode");renderProfile();return}
+ prof.busy=true;prof.err="";renderProfile();
+ try{const j=await papi("/auth/login",{method:"POST",body:JSON.stringify({role_id:prof.rid,zone_id:prof.zid,vc})});
+  const jwt=findKey(j,"jwt")||findKey(j,"token");if(!jwt)throw new Error(t("pNoToken"));prof.jwt=jwt;
+  try{sessionStorage.setItem("mlbbJwt",JSON.stringify({jwt,rid:prof.rid,zid:prof.zid}))}catch(e){}
+  await profLoad()}catch(e){prof.err=t("pLoginFail",e.message);prof.busy=false;renderProfile()}}
+async function profLoad(){prof.busy=true;prof.step="loading";renderProfile();const lang=state.lang==="ms"?"ms":"en";
+ try{prof.info=unwrap(await papi("/info?lang="+lang))}catch(e){if(e.status===401){profLogout(true);prof.err=t("pExpired");renderProfile();return}prof.err=t("pLoadFail",e.message)}
+ try{prof.stats=unwrap(await papi("/stats?lang="+lang))}catch(e){prof.stats=null}
+ try{const se=unwrap(await papi("/season?lang="+lang));const sids=findKey(se,"sids")||(Array.isArray(se)?se:[]);const sid=Array.isArray(sids)&&sids.length?(sids[0].sid??sids[0].id??sids[0]):null;
+  if(sid!=null){const m=unwrap(await papi("/matches?sid="+encodeURIComponent(sid)+"&limit=20&lang="+lang));prof.matches=Array.isArray(m)?m:(findKey(m,"list")||findKey(m,"matches")||findKey(m,"data")||[])}}catch(e){prof.matches=null}
+ prof.step="done";prof.busy=false;renderProfile()}
+async function profLogout(silent){try{if(prof.jwt&&!silent)await papi("/auth/logout",{method:"POST"})}catch(e){}
+ prof.jwt=null;prof.info=prof.stats=prof.matches=null;prof.step="ids";try{sessionStorage.removeItem("mlbbJwt")}catch(e){}if(!silent)renderProfile()}
+const pick=(o,...ks)=>{for(const k of ks){const v=findKey(o,k);if(v!==undefined&&v!==null&&v!=="")return v}return undefined};
+function heroFromMatch(m){const v=pick(m,"hero_name","heroname","hero","heroName");if(typeof v==="string"&&BY[v])return v;if(typeof v==="string"){const mm=matchHero(v);return mm?mm.h.n:v}if(v&&typeof v==="object")return pick(v,"name")||"?";return v!=null?"#"+v:"?"}
+function renderProfile(){
+ const el=$("profile");if(!el)return;const busy=prof.busy?"disabled":"";
+ const notice=`<div class="pnote">${t("pNotice")}</div>`;
+ let body="";
+ if(prof.step==="ids"||(!prof.jwt&&prof.step!=="code")){
+  body=`<div class="pform"><label class="fld"><span>${t("pRid")}</span><input id="pRid" inputmode="numeric" autocomplete="off" value="${esc(prof.rid)}" placeholder="12345678"></label>
+   <label class="fld"><span>${t("pZid")}</span><input id="pZid" inputmode="numeric" autocomplete="off" value="${esc(prof.zid)}" placeholder="1234"></label>
+   <button class="btn primary" id="pSend" ${busy}>${prof.busy?t("pWorking"):t("pSend")}</button></div><div class="hint">${t("pIdsHelp")}</div>`}
+ else if(prof.step==="code"){
+  body=`<div class="hint">${t("pCodeSent",prof.rid,prof.zid)}</div><div class="pform"><label class="fld"><span>${t("pCode")}</span><input id="pVc" inputmode="numeric" autocomplete="one-time-code" placeholder="123456"></label>
+   <button class="btn primary" id="pLogin" ${busy}>${prof.busy?t("pWorking"):t("pLogin")}</button><button class="btn" id="pBack">${t("pBack")}</button></div>`}
+ else if(prof.step==="loading"){body=`<div class="hint">${t("pLoading")}</div>`}
+ else{
+  const i=prof.info||{},st=prof.stats||{};const name=pick(i,"name","nickname","roleName")||"—",lvl=pick(i,"level"),rank=pick(i,"rank_level","rank"),best=pick(i,"history_rank_level","max_rank"),ctry=pick(i,"reg_country","country"),av=pick(i,"avatar");
+  const wins=+pick(st,"wc","win_count","wins")||0,total=+pick(st,"tc","total_count","matches")||0,mvp=pick(st,"mvpc","mvp_count");
+  const ms=Array.isArray(prof.matches)?prof.matches:[];const cnt={};ms.forEach(m=>{const h=heroFromMatch(m);cnt[h]=(cnt[h]||0)+1});
+  const top=Object.entries(cnt).filter(([h])=>BY[h]).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  body=`<div class="pcard">${av&&/^https:\/\//.test(av)?`<img class="pav" src="${esc(av)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:""}
+   <div><div class="pname">${esc(String(name))}</div><div class="sub">ID ${esc(prof.rid)} (${esc(prof.zid)})${ctry?" · "+esc(String(ctry)):""}</div></div>
+   <button class="btn" id="pOut">${t("pLogout")}</button></div>
+  <div class="pstats">
+   ${lvl!==undefined?`<div><b>${esc(String(lvl))}</b><span>${t("pLevel")}</span></div>`:""}
+   ${rank!==undefined?`<div><b>${esc(String(rank))}</b><span>${t("pRank")}</span></div>`:""}
+   ${best!==undefined?`<div><b>${esc(String(best))}</b><span>${t("pBest")}</span></div>`:""}
+   ${total?`<div><b>${total}</b><span>${t("pMatches")}</span></div><div><b>${Math.round(wins/total*1000)/10}%</b><span>${t("pWinRate")}</span></div>`:""}
+   ${mvp!==undefined?`<div><b>${esc(String(mvp))}</b><span>MVP</span></div>`:""}</div>
+  ${top.length?`<h4>${t("pTopHeroes",ms.length)}</h4><div class="ptop">${top.map(([h,c])=>`<button class="lc" data-g="${esc(h)}">${mono(BY[h])}<span class="cn">${esc(h)}</span><span class="cv">${c}×</span></button>`).join("")}</div>
+   <div class="ctl"><button class="btn" id="pPool">${t(state.myHeroes&&state.myHeroes.length?"pPoolUpd":"pPoolAdd")}</button></div><div class="hint">${t("pPoolHelp")}</div>`:""}
+  ${ms.length?`<h4>${t("pRecent")}</h4><ul class="pm">${ms.slice(0,10).map(m=>{const h=heroFromMatch(m),k=pick(m,"kill","kills","k"),dd=pick(m,"death","deaths","d"),a=pick(m,"assist","assists","a"),res=pick(m,"result","is_win","win");const win=res===1||res===true||/win|victory|menang/i.test(String(res));
+    return`<li class="${win?"w":"l"}"><span class="pr2">${win?t("pWin"):t("pLoss")}</span>${BY[h]?mono(BY[h]):""}<span class="cn">${esc(String(h))}</span><span class="kda">${[k,dd,a].every(x=>x!==undefined)?esc(k+"/"+dd+"/"+a):""}</span></li>`}).join("")}</ul>`:`<div class="hint">${t("pNoMatches")}</div>`}
+  <details class="praw"><summary>${t("pRaw")}</summary><pre>${esc(JSON.stringify({info:prof.info,stats:prof.stats,matches:(prof.matches||[]).slice(0,3)},null,1)).slice(0,6000)}</pre></details>`}
+ el.innerHTML=`<h3>${t("pTitle")}</h3>${notice}${prof.err?`<div class="perr" role="alert">${esc(prof.err)}</div>`:""}${body}`;
+ const on=(id,f)=>{const b=$(id);if(b)b.onclick=f};on("pSend",profSendCode);on("pLogin",profLogin);on("pBack",()=>{prof.step="ids";prof.err="";renderProfile()});on("pOut",()=>profLogout(false));
+ on("pPool",()=>{const ms=Array.isArray(prof.matches)?prof.matches:[];const cnt={};ms.forEach(m=>{const h=heroFromMatch(m);if(BY[h])cnt[h]=(cnt[h]||0)+1});state.myHeroes=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,8).map(x=>x[0]);save();toast(t("pPoolSaved",state.myHeroes.length),false);render()});
+ const k=$("pVc");if(k)k.onkeydown=e=>{if(e.key==="Enter")profLogin()};const r=$("pZid");if(r)r.onkeydown=e=>{if(e.key==="Enter")profSendCode()};
 }
 function renderAdvisor(d){
  const el=$("advisor");
@@ -1618,7 +1714,7 @@ function renderTop5(){
   <ul class="tips">${x.tips[state.lang].slice(0,2).map(z=>`<li>${esc(z)}</li>`).join("")}</ul>
   <button class="btn" data-g="${esc(x.n)}">${t("openGuide")}</button></article>`}).join("")}</div>`;
 }
-const VIEWS=["draft","heroes","lineups","meta"];
+const VIEWS=["draft","heroes","lineups","profile","meta"];
 function route(){const v=VIEWS.includes(location.hash.slice(1))?location.hash.slice(1):"draft";
  document.querySelectorAll("section[data-view]").forEach(el=>{if(el.id==="onb")el.hidden=v!=="draft"||!!state.onbDone;else el.hidden=el.dataset.view!==v});
  document.querySelectorAll("[data-nav]").forEach(a=>{if(a.dataset.nav===v)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
@@ -1632,7 +1728,7 @@ function renderOnb(){const el=$("onb");el.innerHTML=`<div class="onb-in"><h3>${t
  $("onbOk").onclick=()=>{state.onbDone=true;save();route()}}
 function render(){
  applyStatic();renderOnb();route();buildPro();const d=derive();lastRanked=ranked(d);
- renderPhase(d);renderTeam("B",d);renderTeam("R",d);renderAdvisor(d);renderAnalysis(d);renderPool(d);renderGuide(d);renderTeam5();renderTop5();renderPro();
+ renderPhase(d);renderTeam("B",d);renderTeam("R",d);renderAdvisor(d);renderAnalysis(d);renderPool(d);renderGuide(d);renderTeam5();renderTop5();renderProfile();renderPro();
  $("fmt").value=state.fmt;$("meta").value=state.meta;
  $("undo").disabled=!state.hist.length;
 }
@@ -1669,6 +1765,7 @@ $("lMS").onclick=()=>{state.lang="ms";save();render()};
 ["q","fRole","fLane","fSort"].forEach(id=>$(id).addEventListener("input",()=>{poolPage=1;renderPool(derive())}));
 document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key==="z"&&!["INPUT","SELECT"].includes(document.activeElement.tagName)){e.preventDefault();undo()}});
 render();
+if(prof.jwt)profLoad();
 if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
 </script>
 </body>
