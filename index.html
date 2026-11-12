@@ -978,7 +978,7 @@ function derive(){
 
 // ---------- language ----------
 const I18N={en:{
-skipped:"Skipped",micStart:"Pick or ban by voice",micStop:"Stop listening",micHint:"Listening… say a hero name, like \"Fanny\" or \"ban Ling\". You can also say \"skip\" or \"undo\".",micListening:"Listening. Say a hero name.",micDenied:"Microphone blocked. Allow it in your browser settings to use voice.",micNo:"Voice isn't supported in this browser. Try Chrome or Safari.",vNoHero:"Didn't catch a hero name in \"{0}\". Try again.",vTaken:"{0} is already taken.",vUndo:"Undone.",vSkip:"Ban skipped.",vSkipAll:"All bans skipped.",reportTitle:"Draft report",powerTitle:"Who is stronger when",ph_early:"Early game",ph_mid:"Mid game",ph_late:"Late game",powerNote:"Plan your game around the phases where your team is stronger.",
+skipped:"Skipped",micStart:"Pick or ban by voice",micStop:"Stop listening",micHint:"Listening… say a hero name like \"Fanny\", or add the side and slot: \"red pick Ling\", \"blue ban 2 Fanny\". Say \"red pick 3\" to jump to a slot. You can also say \"skip\" or \"undo\".",vSlot:"Choosing {0}. Say a hero name.",micListening:"Listening. Say a hero name.",micDenied:"Microphone blocked. Allow it in your browser settings to use voice.",micNo:"Voice isn't supported in this browser. Try Chrome or Safari.",vNoHero:"Didn't catch a hero name in \"{0}\". Try again.",vTaken:"{0} is already taken.",vUndo:"Undone.",vSkip:"Ban skipped.",vSkipAll:"All bans skipped.",reportTitle:"Draft report",powerTitle:"Who is stronger when",ph_early:"Early game",ph_mid:"Mid game",ph_late:"Late game",powerNote:"Plan your game around the phases where your team is stronger.",
 ct_engage:"Engage teamfight",ct_poke:"Poke and siege",ct_pick:"Pick-off",ct_protect:"Protect the carry",ct_split:"Split push",
 ctPlan_engage:"Group up and force 5v5 fights at Turtle and Lord.",ctPlan_poke:"Chip enemies down from range, then take towers and objectives.",ctPlan_pick:"Catch one enemy out of position, then take objectives 5v4.",ctPlan_protect:"Keep your carry alive and win longer games.",ctPlan_split:"Push side lanes to pull enemies apart, then strike.",
 ckFront:"Frontline",ckEngage:"Can start fights",ckPeel:"Protects the carry",ckDamage:"Mixed damage",ckWave:"Wave clear",ckObj:"Turtle and Lord control",ckTower:"Tower pushing",ckStrong:"strong draft",ckOk:"decent draft",ckWeak:"has gaps",
@@ -1024,7 +1024,7 @@ footer:`Suggestions look at how strong a hero is, which lane is free, who beats 
 Data: <a href="https://mlbbhub.com/patch-notes/original/2.2.23" target="_blank" rel="noopener">Patch 2.2.23 notes</a> · <a href="https://mlbbhub.com/tier-list" target="_blank" rel="noopener">ranked tier list (11 Nov 2026)</a> · MPL S18 stats and drafts for <a href="https://mlbbhub.com/mpl/my/stats" target="_blank" rel="noopener">MY</a>, <a href="https://mlbbhub.com/mpl/ph/stats" target="_blank" rel="noopener">PH</a> and <a href="https://mlbbhub.com/mpl/id/stats" target="_blank" rel="noopener">ID</a> (11–12 Nov 2026). Fan-made, not affiliated with Moonton.`,
 copyright:"© 2026 Mican. All rights reserved."
 },ms:{
-skipped:"Dilangkau",micStart:"Pilih atau ban dengan suara",micStop:"Berhenti mendengar",micHint:"Sedang mendengar… sebut nama hero, contoh \"Fanny\" atau \"ban Ling\". Boleh juga sebut \"langkau\" atau \"batal\".",micListening:"Sedang mendengar. Sebut nama hero.",micDenied:"Mikrofon disekat. Benarkan dalam tetapan pelayar untuk guna suara.",micNo:"Suara tidak disokong dalam pelayar ini. Cuba Chrome atau Safari.",vNoHero:"Tak dapat tangkap nama hero dalam \"{0}\". Cuba lagi.",vTaken:"{0} sudah diambil.",vUndo:"Dibatalkan.",vSkip:"Ban dilangkau.",vSkipAll:"Semua ban dilangkau.",reportTitle:"Laporan draf",powerTitle:"Siapa lebih kuat bila",ph_early:"Awal game",ph_mid:"Pertengahan game",ph_late:"Late game",powerNote:"Rancang game ikut fasa di mana pasukan anda lebih kuat.",
+skipped:"Dilangkau",micStart:"Pilih atau ban dengan suara",micStop:"Berhenti mendengar",micHint:"Sedang mendengar… sebut nama hero seperti \"Fanny\", atau tambah pihak dan slot: \"merah pilih Ling\", \"biru ban dua Fanny\". Sebut \"merah pilih tiga\" untuk ke slot itu. Boleh juga sebut \"langkau\" atau \"batal\".",vSlot:"Memilih {0}. Sebut nama hero.",micListening:"Sedang mendengar. Sebut nama hero.",micDenied:"Mikrofon disekat. Benarkan dalam tetapan pelayar untuk guna suara.",micNo:"Suara tidak disokong dalam pelayar ini. Cuba Chrome atau Safari.",vNoHero:"Tak dapat tangkap nama hero dalam \"{0}\". Cuba lagi.",vTaken:"{0} sudah diambil.",vUndo:"Dibatalkan.",vSkip:"Ban dilangkau.",vSkipAll:"Semua ban dilangkau.",reportTitle:"Laporan draf",powerTitle:"Siapa lebih kuat bila",ph_early:"Awal game",ph_mid:"Pertengahan game",ph_late:"Late game",powerNote:"Rancang game ikut fasa di mana pasukan anda lebih kuat.",
 ct_engage:"War pasukan (engage)",ct_poke:"Poke dan kepung",ct_pick:"Tangkap musuh (pick-off)",ct_protect:"Lindungi carry",ct_split:"Split push",
 ctPlan_engage:"Berkumpul dan paksa war 5v5 di Turtle dan Lord.",ctPlan_poke:"Lemahkan musuh dari jauh, kemudian ambil turret dan objektif.",ctPlan_pick:"Tangkap seorang musuh yang tersasar, kemudian ambil objektif 5v4.",ctPlan_protect:"Pastikan carry hidup dan menang game yang panjang.",ctPlan_split:"Tolak lane tepi untuk pecahkan musuh, kemudian serang.",
 ckFront:"Ada tank",ckEngage:"Boleh mulakan war",ckPeel:"Lindungi carry",ckDamage:"Damage bercampur",ckWave:"Bersihkan wave",ckObj:"Kawal Turtle dan Lord",ckTower:"Tolak turret",ckStrong:"draf kuat",ckOk:"draf boleh tahan",ckWeak:"ada kelemahan",
@@ -1315,12 +1315,23 @@ function matchHero(text){const tx=vnorm(text).replace(/\b(ban|pick|pilih|choose|
   const cands=[tx,tx.replace(/ /g,"")];for(let i=0;i<words.length;i++){cands.push(words[i]);if(i+1<words.length)cands.push(words[i]+words[i+1],words[i]+" "+words[i+1])}
   for(const c of cands){const sc=1-lev(c,hc)/Math.max(c.length,hc.length);if(!best||sc>best.s)best={h,s:sc}}}
  return best&&best.s>=.6?best:null}
+const VNUM={one:1,won:1,first:1,satu:1,two:2,to:2,too:2,second:2,dua:2,three:3,third:3,tiga:3,four:4,fourth:4,empat:4,five:5,fifth:5,lima:5};
+function parseTarget(text){ // "red pick 3", "blue ban", "biru pilih dua" -> slot key like pR2 / bB0
+ const x=vnorm(text);const side=/\b(blue|biru)\b/.test(x)?"B":/\b(red|merah|read)\b/.test(x)?"R":null;if(!side)return null;
+ const d=derive();let type=/\bban\b/.test(x)?"b":/\b(pick|pilih|choose)\b/.test(x)?"p":(d.cur?d.cur[0]:"p");
+ const m=x.match(/\b(?:ban|pick|pilih|choose|slot)\s+(?:number\s+|nombor\s+)?([1-5]|one|won|two|to|too|three|four|five|first|second|third|fourth|fifth|satu|dua|tiga|empat|lima)\b/);
+ const keys=d.keys.filter(k=>k[0]===type&&k[1]===side);if(!keys.length)return null;
+ if(m){const n=/^[1-5]$/.test(m[1])?+m[1]:VNUM[m[1]];const k=type+side+(n-1);return keys.includes(k)?k:null}
+ return keys.find(k=>!state.slots[k]&&!state.skip[k])||keys.find(k=>!state.slots[k])||null}
 function handleVoice(alts){
  const all=alts.map(a=>vnorm(a));const first=all[0]||"";
  if(/\b(undo|batal|cancel)\b/.test(first)){undo();toast(t("vUndo"),false);return}
  if(/\b(skip all|langkau semua)\b/.test(first)){skipBan(true);toast(t("vSkipAll"),false);return}
  if(/\b(skip|langkau)\b/.test(first)){skipBan(false);toast(t("vSkip"),false);return}
- let best=null;for(const a of alts){const m=matchHero(a);if(m&&(!best||m.s>best.s))best=m}
+ let target=null;for(const a of alts){target=parseTarget(a);if(target)break}
+ let best=null;for(const a of alts){const m=matchHero(a.replace(/\b(one|two|three|four|five|satu|dua|tiga|empat|lima|[1-5]|number|nombor|slot|read)\b/gi," "));if(m&&(!best||m.s>best.s))best=m}
+ if(target){state.sel=target;delete state.skip[target];save();
+  if(!best){render();toast(t("vSlot",slotName(target)),false);return}}
  if(!best){toast(t("vNoHero",alts[0]||""),false);return}
  const d=derive();if(!d.curKey){toast(t("draftDone"),false);return}
  if(d.blocked(best.h.n)){toast(t("vTaken",best.h.n),false);return}
