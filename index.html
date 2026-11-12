@@ -151,6 +151,9 @@ details summary{cursor:pointer;font:700 13px var(--display);text-transform:upper
 .hero .mono b{font-size:8.5px}
 .mono.badge{display:block;padding:0}
 .mono.badge svg{width:100%;height:100%;display:block}
+.mono.badge .face{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.items li{display:flex;align-items:center;gap:6px}
+.ii{width:22px;height:22px;border-radius:4px;flex:none}
 .rF{background:#b5532a}.rT{background:#3e6b8c}.rA{background:#7a3a8c}.rM{background:#5b4fc4}.rK{background:#b8862a}.rS{background:#2e8a6e}
 
 
@@ -1008,7 +1011,9 @@ function badge(h){
 <g transform="translate(26.5 26.5) scale(.5)"><circle cx="12" cy="12" r="12" fill="rgba(0,0,0,.45)"/><g fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(3.6 3.6) scale(.7)">${ROLE_ICON[r]}</g></g></svg>`;
  return BADGE_CACHE[h.n]=svg;
 }
-const mono=h=>`<span class="mono badge" title="${esc(h.n)} · ${ROLE_NAME[h.roles[0]]}">${badge(h)}</span>`;
+// Optional pictures: if images/heroes/<name>.png or images/items/<name>.png exist in the repo they show over the badge; otherwise the badge stays.
+const slug=n=>n.toLowerCase().replace(/'/g,"").replace(/\./g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const mono=h=>`<span class="mono badge" title="${esc(h.n)} · ${ROLE_NAME[h.roles[0]]}">${badge(h)}<img class="face" src="images/heroes/${slug(h.n)}.png" alt="" loading="lazy" onerror="this.remove()"></span>`;
 const tierTag=h=>`<span class="tier t${h.tier}" title="${h.tier}-tier">${h.tier}</span>`;
 const patchTag=h=>PATCH[h.n]?`<span class="pf ${PATCH[h.n]}">${t("pf_"+PATCH[h.n])}</span>`:"";
 const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
@@ -1133,7 +1138,7 @@ function renderPro(){
   </ul>
  </div>`;
 }
-function itemList(b){return`<ol class="items">${b.i.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>`}
+function itemList(b){return`<ol class="items">${b.i.map(x=>`<li><img class="ii" src="images/items/${slug(x)}.png" alt="" loading="lazy" onerror="this.remove()">${esc(x)}</li>`).join("")}</ol>`}
 function emblemLine(b){return`<b>${esc(b.e[0])}</b> · ${b.e.slice(1).map(esc).join(" · ")}`}
 function counterRows(map,eng,d){
  const rows=Object.entries(map||{}).map(([n,pp])=>({n,pp})).filter(r=>BY[r.n]);
