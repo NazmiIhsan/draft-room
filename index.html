@@ -197,6 +197,15 @@ button.step{border:0;padding:0;cursor:pointer}
 .crow .mono{width:28px;height:28px}
 .cn{font:600 13.5px var(--display);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cv{font:600 12px var(--display);color:var(--good);font-variant-numeric:tabular-nums}
+.lanec{display:grid;gap:6px}
+.lrow{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px;align-items:center}
+.lcs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+.lc{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:3px 5px;text-align:left;min-width:0}
+.lc:hover{border-color:var(--gold)}
+.lc .mono{width:26px;height:26px}
+.cv.fb{color:var(--muted);font-weight:500}
+.lc .chip{grid-column:2 / -1;justify-self:start;font-size:10.5px}
+@media (max-width:420px){.lcs{grid-template-columns:1fr}}
 .tips{margin:0;padding-left:18px;display:grid;gap:5px;font-size:14px}
 .t5{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px}
 .t5c{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:7px;align-content:start;min-width:0}
@@ -756,9 +765,9 @@ function derive(){
 const I18N={en:{
 skipped:"Skipped",teamTitle:"Recommended team for Patch 2.2.23",teamNote:"Built to fight together, close to what MPL teams won with. Ban Freya, Valentina and Alice to protect it.",ifBanned:"If banned:",refresh:"Refresh",lineupN:"Lineup {0}",genNote:"A new lineup using only current-meta heroes for Patch 2.2.23 (top tier in ranked or often picked or banned in MPL). It has a tank, stuns, someone to start fights and both damage types. Ban {0} to protect it.",metaTier:"{0}-tier in ranked",metaPro:"MPL S18: {0} picks + bans",backToRec:"Show the recommended team",job_tank:"Tank. Starts fights and protects the team",job_heal:"Healer. Keeps the team alive",job_eng:"Starts fights and locks enemies down",job_peel:"Protects your carries",job_control:"Area control. Traps enemies and stops escapes",job_poke:"Hits from long range before fights",job_burst:"Burst. Kills key targets fast",job_late:"Carry. Gets stronger later in the game",job_dps:"Steady damage in long fights",job_dive:"Dives the backline",job_def:"Flexible pick for this lane",advSearch:"Search a hero to {0}…",skipBan:"Skip this ban",skipAll:"Skip all bans",clearSlot:"Clear slot",cancel:"Cancel",choosingFor:"Choosing: {0}",slotHint:"Tap any slot on the board to fill or change it.",
 dupNote:"In ranked, both teams can ban the same hero.",guideTitle:"Hero guide",guideFor:"Guide for {0}",chooseHero:"Choose a hero",buildT:"Build",emblemT:"Emblem",spellT:"Battle spell",
-src_r:"Researched build from 2026 guides",src_g:"Standard build for this role. Adjust it to the enemy team.",beatenBy:"Heroes that beat {0}",strongVs:"{0} is strong against",
+src_r:"Researched build from 2026 guides",src_g:"Standard build for this role. Adjust it to the enemy team.",beatenBy:"Heroes that beat {0}",byLane:"Counters to {0} in every lane",noneLane:"No strong counter in this lane",goodInto:"good pick",strongVs:"{0} is strong against",
 measured:"ranked data",kit:"skill matchup",howTo:"How to play",inDraft:"taken",top5Title:"Top 5 heroes for Patch 2.2.23",top5Note:"One hero per lane, picked from MPL Season 18 pick/ban data, ranked results and the new patch changes.",
-openGuide:"Full guide",whyMeta:"Why now",counterNote:"Percent = how much more often they win in this matchup (official ranked data, Patch 2.2.16a). Skill matchups are based on hero skills.",
+openGuide:"Full guide",whyMeta:"Why now",counterNote:"Percent = how much more often they win in this matchup (official ranked data, Patch 2.2.16a). Skill matchup = their skills beat this hero. Good pick = a strong choice for that lane against this hero's weak points.",
 format:"Format",meta:"Meta",undo:"Undo",reset:"Reset",fmt_tour:"Tournament (2 ban phases)",fmt_r10:"Ranked · 10 bans",fmt_r6:"Ranked · 6 bans",meta_ranked:"Ranked (all servers)",meta_proAll:"Pro · all MPL",
 search:"Search hero…",allRoles:"All roles",allLanes:"All lanes",sortTier:"Sort: tier",sortName:"Sort: A–Z",sortFit:"Sort: best for now",
 hint_tour:"Like MPL: each team bans 3, then picks 3. Then each team bans 2 more and picks the last 2.",hint_r10:"Mythic and up: each team bans 5, then teams take turns picking.",hint_r6:"Epic to Legend: each team bans 3, then teams take turns picking.",
@@ -798,9 +807,9 @@ copyright:"© 2026 Mican. All rights reserved."
 },ms:{
 skipped:"Dilangkau",teamTitle:"Pasukan cadangan untuk Patch 2.2.23",teamNote:"Dibina untuk war bersama, hampir sama dengan pasukan MPL yang menang. Ban Freya, Valentina dan Alice untuk lindunginya.",ifBanned:"Kalau di-ban:",refresh:"Tukar",lineupN:"Lineup {0}",genNote:"Lineup baru dengan hero meta semasa sahaja untuk Patch 2.2.23 (tier teratas dalam ranked atau kerap dipilih atau di-ban dalam MPL). Ada tank, stun, hero untuk mulakan war dan kedua-dua jenis damage. Ban {0} untuk lindunginya.",metaTier:"{0}-tier dalam ranked",metaPro:"MPL S18: {0} pick + ban",backToRec:"Tunjuk pasukan cadangan",job_tank:"Tank. Mulakan war dan lindungi pasukan",job_heal:"Healer. Pastikan pasukan terus hidup",job_eng:"Mulakan war dan kunci musuh",job_peel:"Lindungi carry anda",job_control:"Kawal kawasan. Perangkap musuh dan halang mereka lari",job_poke:"Serang dari jauh sebelum war",job_burst:"Burst. Bunuh sasaran penting dengan cepat",job_late:"Carry. Jadi lebih kuat di late game",job_dps:"Damage berterusan dalam war panjang",job_dive:"Serbu hero belakang musuh",job_def:"Pilihan fleksibel untuk lane ini",advSearch:"Cari hero untuk {0}…",skipBan:"Langkau ban ini",skipAll:"Langkau semua ban",clearSlot:"Kosongkan slot",cancel:"Batal",choosingFor:"Memilih: {0}",slotHint:"Tekan mana-mana slot di papan untuk isi atau tukar.",
 dupNote:"Dalam ranked, kedua-dua pasukan boleh ban hero yang sama.",guideTitle:"Panduan hero",guideFor:"Panduan untuk {0}",chooseHero:"Pilih hero",buildT:"Build",emblemT:"Emblem",spellT:"Battle spell",
-src_r:"Build hasil kajian dari panduan 2026",src_g:"Build biasa untuk role ini. Ubah ikut pasukan musuh.",beatenBy:"Hero yang kalahkan {0}",strongVs:"{0} kuat melawan",
+src_r:"Build hasil kajian dari panduan 2026",src_g:"Build biasa untuk role ini. Ubah ikut pasukan musuh.",beatenBy:"Hero yang kalahkan {0}",byLane:"Counter untuk {0} di setiap lane",noneLane:"Tiada counter kuat di lane ini",goodInto:"pilihan baik",strongVs:"{0} kuat melawan",
 measured:"data ranked",kit:"lawan skill",howTo:"Cara main",inDraft:"dah diambil",top5Title:"Top 5 hero untuk Patch 2.2.23",top5Note:"Satu hero untuk setiap lane, dipilih dari data pick/ban MPL Season 18, keputusan ranked dan perubahan patch baru.",
-openGuide:"Panduan penuh",whyMeta:"Kenapa sekarang",counterNote:"Peratus = berapa kerap mereka lebih banyak menang dalam lawan ini (data ranked rasmi, Patch 2.2.16a). Lawan skill berdasarkan skill hero.",
+openGuide:"Panduan penuh",whyMeta:"Kenapa sekarang",counterNote:"Peratus = berapa kerap mereka lebih banyak menang dalam lawan ini (data ranked rasmi, Patch 2.2.16a). Lawan skill = skill mereka kalahkan hero ini. Pilihan baik = pilihan kuat untuk lane itu berdasarkan kelemahan hero ini.",
 format:"Format",meta:"Meta",undo:"Batal",reset:"Mula semula",fmt_tour:"Kejohanan (2 fasa ban)",fmt_r10:"Ranked · 10 ban",fmt_r6:"Ranked · 6 ban",meta_ranked:"Ranked (semua server)",meta_proAll:"Pro · semua MPL",
 search:"Cari hero…",allRoles:"Semua role",allLanes:"Semua lane",sortTier:"Susun: tier",sortName:"Susun: A–Z",sortFit:"Susun: terbaik sekarang",
 hint_tour:"Macam MPL: setiap pasukan ban 3, kemudian pilih 3. Lepas tu setiap pasukan ban 2 lagi dan pilih 2 terakhir.",hint_r10:"Mythic ke atas: setiap pasukan ban 5, kemudian bergilir pilih hero.",hint_r6:"Epic hingga Legend: setiap pasukan ban 3, kemudian bergilir pilih hero.",
@@ -1130,6 +1139,20 @@ function counterRows(map,eng,d){
  return rows.slice(0,6).map(r=>{const h=BY[r.n];const taken=d.used.has(r.n)||Object.values(state.slots).includes(r.n);
   return`<button class="crow" data-g="${esc(r.n)}">${mono(h)}<span class="cn">${esc(r.n)}</span><span class="cv">${r.pp!=null?"+"+r.pp.toFixed(1)+"%":t("kit")}</span>${taken?`<span class="chip">${t("inDraft")}</span>`:""}</button>`}).join("");
 }
+function laneCounters(h,d){
+ const taken=n=>d.used.has(n)||Object.values(state.slots).includes(n);
+ return ["e","j","m","g","r"].map(ln=>{
+  const c=HEROES.filter(x=>x!==h&&x.lanes.includes(ln)).map(x=>{const pp=Math.max((CM[h.n]&&CM[h.n][x.n])||0,(CB[x.n]&&CB[x.n][h.n])||0);return{x,s:counterScore(x,h),pp}})
+   .filter(o=>o.s>=1).sort((a,b)=>b.s-a.s||metaPts(b.x)-metaPts(a.x)).slice(0,2);
+  if(c.length<2){ // fill with the best general answers from this lane, based on what this hero is weak to
+   const g=(x,k)=>x.tags.has(k);
+   const fb=HEROES.filter(x=>x!==h&&x.lanes.includes(ln)&&!c.some(o=>o.x===x)).map(x=>{let v=metaPts(x)*.2;
+     if(g(h,"dash")&&(g(x,"cc")||g(x,"suppress")))v+=2;if(g(h,"squish")&&(g(x,"burst")||g(x,"pick")))v+=2;
+     if(g(h,"front")&&(g(x,"antitank")||(g(x,"M")&&g(x,"dps"))))v+=1.5;if((g(h,"sus")||g(h,"heal"))&&(g(x,"antiheal")||g(x,"burst")))v+=1.2;
+     if(g(h,"immune")&&g(x,"poke"))v+=1;if(g(x,"cc"))v+=.6;v-=counterScore(h,x)*.8;return{x,s:v,pp:0,fb:1}})
+    .sort((a,b)=>b.s-a.s).slice(0,2-c.length);c.push(...fb)}
+  return`<div class="lrow"><span class="tl">${LANE_NAME[ln]}</span><div class="lcs">${c.length?c.map(o=>`<button class="lc" data-g="${esc(o.x.n)}">${mono(o.x)}<span class="cn">${esc(o.x.n)}</span><span class="cv ${o.fb?"fb":""}">${o.pp?"+"+o.pp.toFixed(1)+"%":o.fb?t("goodInto"):t("kit")}</span>${taken(o.x.n)?`<span class="chip">${t("inDraft")}</span>`:""}</button>`).join(""):`<span class="hint">${t("noneLane")}</span>`}</div></div>`}).join("");
+}
 function renderGuide(d){
  const lastPick=[...d.pickSlots.B,...d.pickSlots.R].filter(Boolean).pop();
  const n=state.guide&&BY[state.guide]?state.guide:(lastPick||TOP5[0].n);const h=BY[n];const b=BUILDS[n];const top=TOP5.find(x=>x.n===n);
@@ -1143,7 +1166,7 @@ function renderGuide(d){
    <div class="kv"><span>${t("emblemT")}</span><span>${emblemLine(b)}</span></div>
    <div class="kv"><span>${t("spellT")}</span><span><b>${esc(b.s)}</b></span></div>
    <div class="src ${b.src}">${t("src_"+b.src)}</div></div>
-  <div class="gbox"><h4>${t("beatenBy",esc(n))}</h4><div class="clist">${counterRows(CM[n],beaten,d)}</div>
+  <div class="gbox"><h4>${t("byLane",esc(n))}</h4><div class="lanec">${laneCounters(h,d)}</div>
    <h4 style="margin-top:10px">${t("strongVs",esc(n))}</h4><div class="clist">${counterRows(CB[n],strong,d)}</div>
    <div class="hint">${t("counterNote")}</div></div>
   ${top?`<div class="gbox"><h4>${t("howTo")}</h4><ul class="tips">${top.tips[state.lang].map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`:""}
